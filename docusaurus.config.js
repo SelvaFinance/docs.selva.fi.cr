@@ -83,7 +83,7 @@ const config = {
         title: 'Selva API',
         logo: {
           alt: 'Selva Logo',
-          src: 'img/logo.svg',
+          src: 'selva-logo-full.png',
         },
         items: [
           {
