@@ -3,6 +3,8 @@
 
 const lightCodeTheme = require('prism-react-renderer').themes.github;
 const darkCodeTheme = require('prism-react-renderer').themes.dracula;
+const fs = require('fs');
+const path = require('path');
 
 /** @type {import('@docusaurus/types').Config} */
 const config = {
@@ -62,7 +64,10 @@ const config = {
         showNavLink: false,
         configuration: {
           spec: {
-            url: '/openapi/openapi.yaml',
+            content: fs.readFileSync(
+              path.resolve(__dirname, 'static/openapi/openapi.yaml'),
+              'utf-8'
+            ),
           },
         },
       },
