@@ -16,7 +16,7 @@ This documentation site provides comprehensive API documentation for the Selva F
 
 ### Prerequisites
 
-- Node.js 18 or higher
+- Node.js 20 or higher (Docusaurus 3.x requires Node 20+)
 - yarn
 
 ### Setup
