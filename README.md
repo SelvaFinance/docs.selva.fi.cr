@@ -88,7 +88,7 @@ The site is automatically deployed to GitHub Pages via GitHub Actions when chang
 The deployment workflow:
 1. Builds the Docusaurus site
 2. Deploys to the `gh-pages` branch
-3. Publishes to `https://selvafinance.github.io/docs.selva.fi.cr/`
+3. Publishes to `https://docs.selva.fi.cr` (custom domain)
 
 ### Manual Deployment
 
@@ -101,11 +101,14 @@ yarn deploy
 
 ### GitHub Pages Settings
 
-The site is configured for GitHub Pages deployment:
+The site is configured for GitHub Pages deployment with a custom domain:
 - **Organization**: SelvaFinance
 - **Repository**: docs.selva.fi.cr
-- **Base URL**: `/docs.selva.fi.cr/`
+- **Custom Domain**: `docs.selva.fi.cr`
+- **Base URL**: `/` (for custom domain)
 - **Deployment Branch**: `gh-pages`
+
+**Note:** The site is configured for the custom domain `docs.selva.fi.cr`. The original GitHub Pages URL (`https://selvafinance.github.io/docs.selva.fi.cr/`) may not work correctly as assets are built with `baseUrl: '/'`.
 
 ### Scalar Configuration
 

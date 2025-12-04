@@ -14,6 +14,9 @@ const config = {
   url: 'https://docs.selva.fi.cr',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For custom domain, baseUrl should be '/'
+  // Note: This configuration is for the custom domain. If accessed via the original
+  // GitHub Pages URL (selvafinance.github.io/docs.selva.fi.cr/), assets may not load
+  // correctly. The site should be accessed via the custom domain: https://docs.selva.fi.cr
   baseUrl: '/',
 
   // GitHub pages deployment config.
