@@ -1,0 +1,638 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "SELVA",
+        "version": "1.0.0",
+        "description": "Soluciones Electrónicas Locales de Valor"
+    },
+    "servers": [
+        {
+            "url": "https://dev.selva.fi.cr"
+        },
+        {
+            "url": "http://localhost"
+        },
+        {
+            "url": "{{URL_API}}"
+        }
+    ],
+    "paths": {
+        "/oauth/authorize": {
+            "get": {
+                "summary": "oauth/code",
+                "tags": ["auth"],
+                "parameters": [
+                    {
+                        "name": "client_id",
+                        "in": "query",
+                        "required": false,
+                        "deprecated": false,
+                        "schema": {}
+                    },
+                    {
+                        "name": "redirect_uri",
+                        "in": "query",
+                        "required": false,
+                        "deprecated": false,
+                        "schema": {}
+                    },
+                    {
+                        "name": "response_type",
+                        "in": "query",
+                        "required": false,
+                        "deprecated": false,
+                        "schema": {}
+                    },
+                    {
+                        "name": "scope",
+                        "in": "query",
+                        "required": false,
+                        "deprecated": false,
+                        "schema": {}
+                    }
+                ],
+                "responses": {}
+            }
+        },
+        "/oauth/token": {
+            "post": {
+                "summary": "oauth/token",
+                "tags": ["auth"],
+                "responses": {},
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "grant_type": {
+                                        "type": "string"
+                                    },
+                                    "client_id": {
+                                        "type": "string"
+                                    },
+                                    "client_secret": {
+                                        "type": "string"
+                                    },
+                                    "redirect_uri": {
+                                        "type": "string",
+                                        "format": "uri"
+                                    },
+                                    "code": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payments": {
+            "post": {
+                "summary": "api/payments",
+                "tags": ["payments"],
+                "parameters": [
+                    {
+                        "name": "X-Idempotency-Key",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payments/validate": {
+            "post": {
+                "summary": "api/payments/validate",
+                "tags": ["payments"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/payments/history": {
+            "get": {
+                "summary": "api/payments/history",
+                "tags": ["payments"],
+                "parameters": [
+                    {
+                        "name": "limit",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "offset",
+                        "in": "query",
+                        "schema": {
+                            "type": "integer"
+                        }
+                    },
+                    {
+                        "name": "payment_method",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "transfer_type",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "recipient_identifier",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/payments/{id}": {
+            "get": {
+                "summary": "api/payments",
+                "tags": ["payments"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "/api/accounts/information": {
+            "get": {
+                "summary": "api/payments/service-status",
+                "tags": ["payments"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "identifier": {
+                                        "type": "string"
+                                    },
+                                    "use_internal": {
+                                        "type": "boolean"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/accounts": {
+            "get": {
+                "summary": "api/accounts",
+                "tags": ["account"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "summary": "api/accounts",
+                "tags": ["account"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "currency": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/accounts/CR78037010600458074353/information": {
+            "get": {
+                "summary": "api/accounts/{identifier}/information",
+                "tags": ["account"],
+                "parameters": [
+                    {
+                        "name": "identifier",
+                        "in": "query",
+                        "required": false,
+                        "deprecated": false,
+                        "schema": {}
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/{id}/balance": {
+            "get": {
+                "summary": "api/accounts/{id}/balance",
+                "tags": ["account"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "/api/accounts/0d330d31-076f-4cb1-b22e-ecc3caeda7a2/details": {
+            "get": {
+                "summary": "api/accounts/{id}/details",
+                "tags": ["account"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/0d330d31-076f-4cb1-b22e-ecc3caeda7a2/movements": {
+            "get": {
+                "summary": "api/accounts/{id}/movements",
+                "tags": ["account"],
+                "parameters": [
+                    {
+                        "name": "start_date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "end_date",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/0d330d31-076f-4cb1-b22e-ecc3caeda7a2/kyc": {
+            "get": {
+                "summary": "api/accounts/{id}/kyc",
+                "tags": ["account"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/accounts/0d330d31-076f-4cb1-b22e-ecc3caeda7a2/transactions/123": {
+            "get": {
+                "summary": "api/accounts/{id}/transactions/{transactionCode}",
+                "tags": ["account"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/phone/information": {
+            "get": {
+                "summary": "api/phone/information",
+                "tags": ["verification"],
+                "parameters": [
+                    {
+                        "name": "phone_number",
+                        "in": "query",
+                        "required": false,
+                        "deprecated": false,
+                        "schema": {}
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/iban/information": {
+            "get": {
+                "summary": "api/iban/information",
+                "tags": ["verification"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "iban": {
+                                        "type": "string"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/webhooks/subscriptions": {
+            "get": {
+                "summary": "api/webhooks/subscriptions",
+                "tags": ["webhook", "server"],
+                "parameters": [
+                    {
+                        "name": "page",
+                        "in": "query",
+                        "required": false,
+                        "deprecated": false,
+                        "schema": {}
+                    }
+                ],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "post": {
+                "summary": "api/webhooks/subscriptions",
+                "tags": ["webhook", "server"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ],
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "url": {
+                                        "type": "string"
+                                    },
+                                    "events": {
+                                        "type": "string"
+                                    },
+                                    "max_attempts": {
+                                        "type": "string"
+                                    },
+                                    "headers": {
+                                        "type": "object",
+                                        "properties": {
+                                            "X-Custom-Header": {
+                                                "type": "string"
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/webhooks/subscriptions/53d04104-f130-4901-9ba0-b5fc0d7a2b9d": {
+            "get": {
+                "summary": "api/webhooks/subscriptions/{id}",
+                "tags": ["webhook", "server"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/api/webhooks/subscriptions/{id}": {
+            "delete": {
+                "summary": "api/webhooks/subscriptions",
+                "tags": ["webhook", "server"],
+                "responses": {},
+                "security": [
+                    {
+                        "BearerAuth": []
+                    }
+                ]
+            },
+            "parameters": [
+                {
+                    "name": "id",
+                    "in": "path",
+                    "required": true,
+                    "schema": {
+                        "type": "string"
+                    }
+                }
+            ]
+        },
+        "/api/NotifyIncomingTransfers": {
+            "post": {
+                "summary": "/api/webhooks/NotifyIncomingTransfers",
+                "tags": ["webhook", "client"],
+                "parameters": [
+                    {
+                        "name": "Signature",
+                        "in": "header",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {},
+                "requestBody": {
+                    "content": {
+                        "application/json": {
+                            "schema": {
+                                "type": "object",
+                                "properties": {
+                                    "SecurityInfo": {
+                                        "type": "string"
+                                    },
+                                    "Transfers": {
+                                        "type": "array",
+                                        "items": {
+                                            "type": "object",
+                                            "properties": {
+                                                "CGPRefNumber": {
+                                                    "type": "integer"
+                                                },
+                                                "SINPERefNumber": {
+                                                    "type": "string",
+                                                    "format": "utc-millisec"
+                                                },
+                                                "AuthorizationDate": {
+                                                    "type": "string",
+                                                    "format": "style"
+                                                },
+                                                "OriginEntity": {
+                                                    "type": "string"
+                                                },
+                                                "OriginCustomer": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "Id": {
+                                                            "type": "string"
+                                                        },
+                                                        "IdType": {
+                                                            "type": "string",
+                                                            "format": "utc-millisec"
+                                                        },
+                                                        "Name": {
+                                                            "type": "string"
+                                                        },
+                                                        "IBAN": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "DestinationCustomer": {
+                                                    "type": "object",
+                                                    "properties": {
+                                                        "Id": {
+                                                            "type": "string"
+                                                        },
+                                                        "IdType": {
+                                                            "type": "string",
+                                                            "format": "utc-millisec"
+                                                        },
+                                                        "Name": {
+                                                            "type": "string"
+                                                        },
+                                                        "IBAN": {
+                                                            "type": "string"
+                                                        }
+                                                    }
+                                                },
+                                                "Amount": {
+                                                    "type": "integer"
+                                                },
+                                                "CurrencyCode": {
+                                                    "type": "string"
+                                                },
+                                                "Description": {
+                                                    "type": "string"
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/api/IsServiceAvailable": {
+            "get": {
+                "summary": "api/IsServiceAvailable",
+                "tags": [],
+                "responses": {}
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "BearerAuth": {
+                "type": "http",
+                "scheme": "bearer"
+            }
+        }
+    }
+}
