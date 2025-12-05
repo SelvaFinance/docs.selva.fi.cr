@@ -14,13 +14,13 @@ function HomepageHeader() {
       <div className="container">
         <Heading as="h1" className="hero__title">
           {isSpanish 
-            ? 'Inclusión financiera para toda Costa Rica'
-            : 'Financial Inclusion for All of Costa Rica'}
+            ? 'Selva API'
+            : 'Selva API'}
         </Heading>
         <p className="hero__subtitle">
           {isSpanish
-            ? 'Servicios financieros innovadores, seguros y sostenibles para comunidades rurales, costeras y expatriados. Pague como un local, crezca con Selva.'
-            : 'Innovative, secure, and sustainable financial services for rural, coastal communities, and expatriates. Pay like a local, grow with Selva.'}
+            ? 'Documentación completa de la API para integrar servicios financieros en sus aplicaciones.'
+            : 'Complete API documentation for integrating financial services into your applications.'}
         </p>
         <div className={styles.buttons}>
           <Link
@@ -46,45 +46,29 @@ function HomepageFeatures() {
   
   const features = isSpanish ? [
     {
-      title: 'Interfaz Unificada de Pagos',
-      description: 'Gestione múltiples cuentas bancarias, transfiera fondos y pague servicios desde una sola aplicación diseñada para todos.',
+      title: 'Procesamiento de Pagos',
+      description: 'Procese pagos, valide transacciones y gestione el historial de pagos con nuestra API de pagos integral.',
     },
     {
-      title: 'Diseño Inclusivo',
-      description: 'Compatible con dispositivos de gama baja y fácil de usar, garantizando acceso para todos los costarricenses.',
+      title: 'Gestión de Cuentas',
+      description: 'Cree y gestione cuentas, consulte saldos, vea transacciones y acceda a detalles de cuentas mediante programación.',
     },
     {
-      title: 'Enfoque B2B',
-      description: 'Soluciones especializadas para negocios en comunidades rurales y expatriados que necesitan pagos eficientes.',
-    },
-    {
-      title: 'Cumplimiento Regulatorio Integral',
-      description: 'Aseguramos el pleno cumplimiento de las obligaciones regulatorias, equilibrando privacidad y seguridad con nuestro modelo de \'Cumplimiento Regulatorio Integral\'.',
-    },
-    {
-      title: 'Para Expatriados y Comunidades Locales',
-      description: 'Ya sea que sea un expatriado buscando pagar como un local o una empresa rural necesitando acceso a servicios financieros, Selva está aquí para usted.',
+      title: 'Webhooks',
+      description: 'Suscríbase a eventos y reciba notificaciones en tiempo real sobre transacciones y actividades de cuentas.',
     },
   ] : [
     {
-      title: 'Unified Payment Interface',
-      description: 'Manage multiple bank accounts, transfer funds, and pay for services from a single application designed for everyone.',
+      title: 'Payment Processing',
+      description: 'Process payments, validate transactions, and manage payment history with our comprehensive payment API.',
     },
     {
-      title: 'Inclusive Design',
-      description: 'Compatible with low-end devices and easy to use, ensuring access for all Costa Ricans.',
+      title: 'Account Management',
+      description: 'Create and manage accounts, check balances, view transactions, and access account details programmatically.',
     },
     {
-      title: 'B2B Focus',
-      description: 'Specialized solutions for businesses in rural communities and expatriates who need efficient payments.',
-    },
-    {
-      title: 'Comprehensive Regulatory Compliance',
-      description: 'We ensure full compliance with regulatory obligations, balancing privacy and security with our \'Comprehensive Regulatory Compliance\' model.',
-    },
-    {
-      title: 'For Expatriates and Local Communities',
-      description: 'Whether you are an expatriate looking to pay like a local or a rural business needing access to financial services, Selva is here for you.',
+      title: 'Webhooks',
+      description: 'Subscribe to events and receive real-time notifications about transactions and account activities.',
     },
   ];
   
@@ -92,18 +76,8 @@ function HomepageFeatures() {
     <section className={styles.features}>
       <div className="container">
         <div className="row">
-          {features.slice(0, 3).map((feature, idx) => (
+          {features.map((feature, idx) => (
             <div key={idx} className="col col--4">
-              <div className="text--center padding-horiz--md">
-                <Heading as="h3">{feature.title}</Heading>
-                <p>{feature.description}</p>
-              </div>
-            </div>
-          ))}
-        </div>
-        <div className="row" style={{ marginTop: '2rem' }}>
-          {features.slice(3).map((feature, idx) => (
-            <div key={idx} className="col col--6">
               <div className="text--center padding-horiz--md">
                 <Heading as="h3">{feature.title}</Heading>
                 <p>{feature.description}</p>
@@ -133,6 +107,3 @@ export default function Home(): JSX.Element {
     </Layout>
   );
 }
-
-
-
