@@ -1,0 +1,1507 @@
+openapi: 3.0.0
+info:
+  title: SELVA API
+  version: 1.0.0
+  description: |
+    Soluciones Electrónicas Locales de Valor
+    
+    La API de Selva proporciona servicios financieros integrales incluyendo procesamiento de pagos,
+    gestión de cuentas y suscripciones de webhooks. Todas las solicitudes a la API requieren autenticación
+    OAuth 2.0 usando tokens Bearer.
+    
+    ## Autenticación
+    
+    La API utiliza OAuth 2.0 para la autenticación. Para comenzar:
+    
+    1. Obtenga credenciales de cliente desde el panel de Selva
+    2. Use el endpoint `/oauth/authorize` para iniciar el flujo OAuth
+    3. Intercambie el código de autorización por un token de acceso usando `/oauth/token`
+    4. Incluya el token de acceso en el encabezado `Authorization` como `Bearer {token}`
+    
+    ## URLs Base
+    
+    - Producción: `https://api.selva.fi.cr`
+    - Desarrollo: `https://dev.selva.fi.cr`
+    - Local: `http://localhost`
+
+servers:
+  - url: https://dev.selva.fi.cr
+    description: Servidor de desarrollo
+  - url: http://localhost
+    description: Servidor de desarrollo local
+  - url: '{{URL_API}}'
+    description: URL de API personalizada
+
+tags:
+  - name: auth
+    description: Endpoints de autenticación OAuth 2.0
+  - name: accounts
+    description: Operaciones de gestión de cuentas
+  - name: payments
+    description: Procesamiento de pagos y gestión de transacciones
+  - name: webhooks
+    description: Gestión de suscripciones de webhooks
+  - name: verification
+    description: Servicios de verificación de cuentas y pagos
+
+paths:
+  /oauth/authorize:
+    get:
+      operationId: authorize
+      summary: Endpoint de Autorización OAuth
+      description: |
+        Inicia el flujo de autorización OAuth 2.0. Redirige al usuario al
+        servidor de autorización donde puede otorgar acceso a su aplicación.
+      tags:
+        - auth
+      parameters:
+        - name: client_id
+          in: query
+          required: true
+          description: ID de cliente de su aplicación
+          schema:
+            type: string
+            example: 'your-client-id'
+        - name: redirect_uri
+          in: query
+          required: true
+          description: URI a la que redirigir después de la autorización
+          schema:
+            type: string
+            format: uri
+            example: 'https://your-app.com/callback'
+        - name: response_type
+          in: query
+          required: true
+          description: Debe ser 'code' para el flujo de código de autorización
+          schema:
+            type: string
+            enum: [code]
+            default: code
+        - name: scope
+          in: query
+          required: false
+          description: Lista de alcances separados por espacios
+          schema:
+            type: string
+            example: 'read write'
+      responses:
+        '302':
+          description: Redirige al servidor de autorización
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /oauth/token:
+    post:
+      operationId: getToken
+      summary: Intercambiar Código de Autorización por Token
+      description: |
+        Intercambia un código de autorización por un token de acceso. Este endpoint
+        debe ser llamado del lado del servidor para intercambiar el código de forma segura.
+      tags:
+        - auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TokenRequest'
+            example:
+              grant_type: authorization_code
+              client_id: 'your-client-id'
+              client_secret: 'your-client-secret'
+              redirect_uri: 'https://your-app.com/callback'
+              code: 'authorization-code-from-callback'
+      responses:
+        '200':
+          description: Intercambio de token exitoso
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+              example:
+                access_token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'
+                token_type: Bearer
+                expires_in: 3600
+                refresh_token: 'refresh-token-here'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/payments:
+    post:
+      operationId: createPayment
+      summary: Crear Pago
+      description: |
+        Crea una nueva transacción de pago. Use el encabezado X-Idempotency-Key para
+        asegurar solicitudes idempotentes.
+      tags:
+        - payments
+      parameters:
+        - name: X-Idempotency-Key
+          in: header
+          required: true
+          description: Clave única para asegurar la idempotencia de la solicitud
+          schema:
+            type: string
+            format: uuid
+            example: '550e8400-e29b-41d4-a716-446655440000'
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentRequest'
+            example:
+              amount: 10000
+              currency: CRC
+              recipient_identifier: 'CR78037010600458074353'
+              description: 'Pago por servicios'
+              payment_method: 'SINPE Movil'
+      responses:
+        '201':
+          description: Pago creado exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/payments/validate:
+    post:
+      operationId: validatePayment
+      summary: Validar Pago
+      description: Valida los detalles del pago antes de procesarlo
+      tags:
+        - payments
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PaymentValidationRequest'
+            example:
+              amount: 10000
+              currency: CRC
+              recipient_identifier: 'CR78037010600458074353'
+      responses:
+        '200':
+          description: Resultado de la validación del pago
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaymentValidation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/payments/history:
+    get:
+      operationId: getPaymentHistory
+      summary: Obtener Historial de Pagos
+      description: Obtiene una lista paginada de transacciones de pago
+      tags:
+        - payments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          description: Número máximo de resultados a devolver
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+            example: 20
+        - name: offset
+          in: query
+          required: false
+          description: Número de resultados a omitir
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+            example: 0
+        - name: payment_method
+          in: query
+          required: false
+          description: Filtrar por método de pago
+          schema:
+            type: string
+            enum: ['SINPE Movil', 'PIN']
+            example: 'SINPE Movil'
+        - name: transfer_type
+          in: query
+          required: false
+          description: Filtrar por tipo de transferencia
+          schema:
+            type: string
+            example: 'outgoing'
+        - name: recipient_identifier
+          in: query
+          required: false
+          description: Filtrar por identificador del destinatario
+          schema:
+            type: string
+            example: 'CR78037010600458074353'
+      responses:
+        '200':
+          description: Historial de pagos obtenido exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPayments'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/payments/{id}:
+    get:
+      operationId: getPayment
+      summary: Obtener Pago por ID
+      description: Obtiene los detalles de una transacción de pago específica
+      tags:
+        - payments
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de la transacción de pago
+          schema:
+            type: string
+            example: '550e8400-e29b-41d4-a716-446655440000'
+      responses:
+        '200':
+          description: Detalles del pago
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Payment'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/accounts/information:
+    get:
+      operationId: getAccountInformation
+      summary: Obtener Información de Cuenta
+      description: Obtiene información de cuenta para un identificador dado
+      tags:
+        - accounts
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - identifier
+              properties:
+                identifier:
+                  type: string
+                  description: Identificador de cuenta (IBAN o número de cuenta)
+                  example: 'CR78037010600458074353'
+                use_internal:
+                  type: boolean
+                  description: Si se debe usar búsqueda interna de cuenta
+                  default: false
+            example:
+              identifier: 'CR78037010600458074353'
+              use_internal: false
+      responses:
+        '200':
+          description: Información de cuenta obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountInformation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/accounts:
+    get:
+      operationId: listAccounts
+      summary: Listar Cuentas
+      description: Obtiene una lista de todas las cuentas del usuario autenticado
+      tags:
+        - accounts
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Lista de cuentas
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Account'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: createAccount
+      summary: Crear Cuenta
+      description: Crea una nueva cuenta para el usuario autenticado
+      tags:
+        - accounts
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currency
+              properties:
+                currency:
+                  type: string
+                  description: Currency code (ISO 4217)
+                  example: CRC
+            example:
+              currency: CRC
+      responses:
+        '201':
+          description: Cuenta creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/accounts/{identifier}/information:
+    get:
+      operationId: getAccountInformationByIdentifier
+      summary: Obtener Información de Cuenta por Identificador
+      description: Obtiene información de cuenta usando un identificador de cuenta
+      tags:
+        - accounts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: identifier
+          in: path
+          required: true
+          description: Identificador de cuenta (IBAN o número de cuenta)
+          schema:
+            type: string
+            example: 'CR78037010600458074353'
+      responses:
+        '200':
+          description: Información de cuenta obtenida exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountInformation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/accounts/{id}/balance:
+    get:
+      operationId: getAccountBalance
+      summary: Obtener Saldo de Cuenta
+      description: Obtiene el saldo actual de una cuenta específica
+      tags:
+        - accounts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de cuenta (UUID)
+          schema:
+            type: string
+            format: uuid
+            example: '0d330d31-076f-4cb1-b22e-ecc3caeda7a2'
+      responses:
+        '200':
+          description: Saldo de cuenta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AccountBalance'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/accounts/{id}/details:
+    get:
+      operationId: getAccountDetails
+      summary: Obtener Detalles de Cuenta
+      description: Obtiene información detallada de una cuenta específica
+      tags:
+        - accounts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de cuenta (UUID)
+          schema:
+            type: string
+            format: uuid
+            example: '0d330d31-076f-4cb1-b22e-ecc3caeda7a2'
+      responses:
+        '200':
+          description: Detalles de cuenta
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Account'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/accounts/{id}/movements:
+    get:
+      operationId: getAccountMovements
+      summary: Obtener Movimientos de Cuenta
+      description: Obtiene los movimientos de transacciones de una cuenta dentro de un rango de fechas
+      tags:
+        - accounts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de cuenta (UUID)
+          schema:
+            type: string
+            format: uuid
+            example: '0d330d31-076f-4cb1-b22e-ecc3caeda7a2'
+        - name: start_date
+          in: query
+          required: false
+          description: Fecha de inicio para el rango de movimientos (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+            example: '2024-01-01T00:00:00Z'
+        - name: end_date
+          in: query
+          required: false
+          description: Fecha de fin para el rango de movimientos (ISO 8601)
+          schema:
+            type: string
+            format: date-time
+            example: '2024-12-31T23:59:59Z'
+      responses:
+        '200':
+          description: Movimientos de cuenta
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AccountMovement'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/accounts/{id}/kyc:
+    get:
+      operationId: getAccountKYC
+      summary: Obtener Estado KYC de Cuenta
+      description: Obtiene el estado de Conozca a su Cliente (KYC) de una cuenta
+      tags:
+        - accounts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de cuenta (UUID)
+          schema:
+            type: string
+            format: uuid
+            example: '0d330d31-076f-4cb1-b22e-ecc3caeda7a2'
+      responses:
+        '200':
+          description: Estado KYC
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/KYCStatus'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/accounts/{id}/transactions/{transactionCode}:
+    get:
+      operationId: getTransaction
+      summary: Obtener Transacción por Código
+      description: Obtiene una transacción específica por su código de transacción
+      tags:
+        - accounts
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ID de cuenta (UUID)
+          schema:
+            type: string
+            format: uuid
+            example: '0d330d31-076f-4cb1-b22e-ecc3caeda7a2'
+        - name: transactionCode
+          in: path
+          required: true
+          description: Transaction code
+          schema:
+            type: string
+            example: '123'
+      responses:
+        '200':
+          description: Detalles de transacción
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Transaction'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/phone/information:
+    get:
+      operationId: getPhoneInformation
+      summary: Obtener Información de Número de Teléfono
+      description: Obtiene información asociada con un número de teléfono
+      tags:
+        - verification
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: phone_number
+          in: query
+          required: true
+          description: Número de teléfono a buscar
+          schema:
+            type: string
+            example: '+50688888888'
+      responses:
+        '200':
+          description: Información del número de teléfono
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PhoneInformation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/iban/information:
+    get:
+      operationId: getIBANInformation
+      summary: Obtener Información de IBAN
+      description: Obtiene información para un IBAN (Número de Cuenta Bancaria Internacional)
+      tags:
+        - verification
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - iban
+              properties:
+                iban:
+                  type: string
+                  description: IBAN a buscar
+                  example: 'CR78037010600458074353'
+            example:
+              iban: 'CR78037010600458074353'
+      responses:
+        '200':
+          description: Información de IBAN
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/IBANInformation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/webhooks/subscriptions:
+    get:
+      operationId: listWebhookSubscriptions
+      summary: Listar Suscripciones de Webhooks
+      description: Obtiene una lista paginada de suscripciones de webhooks
+      tags:
+        - webhooks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: page
+          in: query
+          required: false
+          description: Número de página para paginación
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+            example: 1
+      responses:
+        '200':
+          description: Lista de suscripciones de webhooks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedWebhookSubscriptions'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    post:
+      operationId: createWebhookSubscription
+      summary: Crear Suscripción de Webhook
+      description: Crea una nueva suscripción de webhook para recibir notificaciones de eventos
+      tags:
+        - webhooks
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookSubscriptionRequest'
+            example:
+              url: 'https://your-app.com/webhooks'
+              events: 'payment.completed,payment.failed'
+              max_attempts: '3'
+              headers:
+                X-Custom-Header: 'custom-value'
+      responses:
+        '201':
+          description: Suscripción de webhook creada exitosamente
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookSubscription'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/webhooks/subscriptions/{id}:
+    get:
+      operationId: getWebhookSubscription
+      summary: Obtener Suscripción de Webhook
+      description: Obtiene los detalles de una suscripción de webhook específica
+      tags:
+        - webhooks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Webhook subscription ID (UUID)
+          schema:
+            type: string
+            format: uuid
+            example: '53d04104-f130-4901-9ba0-b5fc0d7a2b9d'
+      responses:
+        '200':
+          description: Detalles de suscripción de webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookSubscription'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+    delete:
+      operationId: deleteWebhookSubscription
+      summary: Eliminar Suscripción de Webhook
+      description: Elimina una suscripción de webhook
+      tags:
+        - webhooks
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Webhook subscription ID (UUID)
+          schema:
+            type: string
+            format: uuid
+            example: '53d04104-f130-4901-9ba0-b5fc0d7a2b9d'
+      responses:
+        '204':
+          description: Suscripción de webhook eliminada exitosamente
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/NotifyIncomingTransfers:
+    post:
+      operationId: notifyIncomingTransfers
+      summary: Incoming Transfer Webhook
+      description: |
+        Webhook endpoint that receives notifications about incoming transfers.
+        This endpoint is called by Selva when transfers are received.
+        The request must include a valid Signature header for verification.
+      tags:
+        - webhooks
+      parameters:
+        - name: Signature
+          in: header
+          required: true
+          description: HMAC signature for webhook verification
+          schema:
+            type: string
+            example: 'sha256=abc123...'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncomingTransferNotification'
+            example:
+              SecurityInfo: 'security-info-string'
+              Transfers:
+                - CGPRefNumber: 12345
+                  SINPERefNumber: '20240101120000000'
+                  AuthorizationDate: '2024-01-01T12:00:00Z'
+                  OriginEntity: 'BANCO_ORIGEN'
+                  OriginCustomer:
+                    Id: '123456789'
+                    IdType: '01'
+                    Name: 'John Doe'
+                    IBAN: 'CR12345678901234567890'
+                  DestinationCustomer:
+                    Id: '987654321'
+                    IdType: '01'
+                    Name: 'Jane Smith'
+                    IBAN: 'CR98765432109876543210'
+                  Amount: 10000
+                  CurrencyCode: 'CRC'
+                  Description: 'Transfer description'
+      responses:
+        '200':
+          description: Webhook received successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: 'received'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/InternalServerError'
+
+  /api/IsServiceAvailable:
+    get:
+      operationId: checkServiceAvailability
+      summary: Check Service Availability
+      description: Checks if the API service is currently available
+      tags: []
+      responses:
+        '200':
+          description: Service is available
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  available:
+                    type: boolean
+                    example: true
+                  timestamp:
+                    type: string
+                    format: date-time
+                    example: '2024-01-01T12:00:00Z'
+        '503':
+          description: Service is unavailable
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  available:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Service temporarily unavailable'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: |
+        OAuth 2.0 Bearer Token authentication. Include the access token
+        obtained from the `/oauth/token` endpoint in the Authorization header
+        as `Bearer {token}`.
+
+  schemas:
+    Error:
+      type: object
+      required:
+        - error
+        - message
+      properties:
+        error:
+          type: string
+          description: Error code
+          example: 'invalid_request'
+        message:
+          type: string
+          description: Human-readable error message
+          example: 'The request is missing a required parameter'
+        details:
+          type: object
+          description: Additional error details
+          additionalProperties: true
+
+    Pagination:
+      type: object
+      properties:
+        limit:
+          type: integer
+          description: Maximum number of results per page
+          example: 20
+        offset:
+          type: integer
+          description: Number of results skipped
+          example: 0
+        total:
+          type: integer
+          description: Total number of results
+          example: 100
+        has_more:
+          type: boolean
+          description: Whether there are more results available
+          example: true
+
+    TokenRequest:
+      type: object
+      required:
+        - grant_type
+        - client_id
+        - client_secret
+      properties:
+        grant_type:
+          type: string
+          enum: [authorization_code]
+          description: OAuth grant type
+        client_id:
+          type: string
+          description: ID de cliente de su aplicación
+        client_secret:
+          type: string
+          description: Your application's client secret
+        redirect_uri:
+          type: string
+          format: uri
+          description: The redirect URI used in the authorization request
+        code:
+          type: string
+          description: Authorization code received from the authorization endpoint
+
+    TokenResponse:
+      type: object
+      required:
+        - access_token
+        - token_type
+      properties:
+        access_token:
+          type: string
+          description: OAuth access token
+        token_type:
+          type: string
+          enum: [Bearer]
+          description: Token type
+        expires_in:
+          type: integer
+          description: Token expiration time in seconds
+          example: 3600
+        refresh_token:
+          type: string
+          description: Refresh token for obtaining new access tokens
+        scope:
+          type: string
+          description: Granted scopes
+
+    Account:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Account ID
+          example: '0d330d31-076f-4cb1-b22e-ecc3caeda7a2'
+        identifier:
+          type: string
+          description: Account identifier (IBAN)
+          example: 'CR78037010600458074353'
+        currency:
+          type: string
+          description: Account currency code
+          example: CRC
+        status:
+          type: string
+          enum: [active, inactive, suspended]
+          description: Account status
+        created_at:
+          type: string
+          format: date-time
+          description: Account creation timestamp
+
+    AccountInformation:
+      type: object
+      properties:
+        identifier:
+          type: string
+          description: Account identifier
+          example: 'CR78037010600458074353'
+        name:
+          type: string
+          description: Account holder name
+          example: 'John Doe'
+        bank:
+          type: string
+          description: Bank name
+          example: 'Banco Nacional'
+        verified:
+          type: boolean
+          description: Whether the account is verified
+
+    AccountBalance:
+      type: object
+      properties:
+        account_id:
+          type: string
+          format: uuid
+          description: Account ID
+        balance:
+          type: number
+          description: Current account balance
+          example: 50000.00
+        currency:
+          type: string
+          description: Currency code
+          example: CRC
+        available_balance:
+          type: number
+          description: Available balance (excluding holds)
+          example: 45000.00
+        last_updated:
+          type: string
+          format: date-time
+          description: Last balance update timestamp
+
+    AccountMovement:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Movement ID
+        transaction_code:
+          type: string
+          description: Transaction code
+        amount:
+          type: number
+          description: Transaction amount
+        currency:
+          type: string
+          description: Currency code
+        type:
+          type: string
+          enum: [credit, debit]
+          description: Movement type
+        description:
+          type: string
+          description: Transaction description
+        date:
+          type: string
+          format: date-time
+          description: Transaction date
+
+    KYCStatus:
+      type: object
+      properties:
+        account_id:
+          type: string
+          format: uuid
+          description: Account ID
+        status:
+          type: string
+          enum: [pending, verified, rejected]
+          description: KYC verification status
+        verified_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Verification timestamp
+        level:
+          type: string
+          description: KYC verification level
+          example: 'basic'
+
+    Transaction:
+      type: object
+      properties:
+        transaction_code:
+          type: string
+          description: Transaction code
+        account_id:
+          type: string
+          format: uuid
+          description: Account ID
+        amount:
+          type: number
+          description: Transaction amount
+        currency:
+          type: string
+          description: Currency code
+        type:
+          type: string
+          description: Transaction type
+        status:
+          type: string
+          enum: [pending, completed, failed, cancelled]
+          description: Transaction status
+        description:
+          type: string
+          description: Transaction description
+        created_at:
+          type: string
+          format: date-time
+          description: Transaction creation timestamp
+
+    Payment:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Payment ID
+        amount:
+          type: number
+          description: Payment amount
+          example: 10000
+        currency:
+          type: string
+          description: Currency code
+          example: CRC
+        recipient_identifier:
+          type: string
+          description: Recipient account identifier
+          example: 'CR78037010600458074353'
+        status:
+          type: string
+          enum: [pending, processing, completed, failed, cancelled]
+          description: Payment status
+        payment_method:
+          type: string
+          description: Payment method used (SINPE Movil or PIN)
+          example: 'SINPE Movil'
+        description:
+          type: string
+          description: Payment description
+        created_at:
+          type: string
+          format: date-time
+          description: Payment creation timestamp
+        completed_at:
+          type: string
+          format: date-time
+          nullable: true
+          description: Payment completion timestamp
+
+    PaymentRequest:
+      type: object
+      required:
+        - amount
+        - currency
+        - recipient_identifier
+      properties:
+        amount:
+          type: number
+          description: Payment amount in smallest currency unit
+          example: 10000
+          minimum: 1
+        currency:
+          type: string
+          description: Currency code (ISO 4217)
+          example: CRC
+        recipient_identifier:
+          type: string
+          description: Recipient account identifier (IBAN or account number)
+          example: 'CR78037010600458074353'
+        description:
+          type: string
+          description: Payment description
+          example: 'Payment for services'
+        payment_method:
+          type: string
+          enum: ['SINPE Movil', 'PIN']
+          description: Payment method (SINPE Movil or PIN)
+          default: 'SINPE Movil'
+
+    PaymentValidationRequest:
+      type: object
+      required:
+        - amount
+        - currency
+        - recipient_identifier
+      properties:
+        amount:
+          type: number
+          description: Payment amount
+          example: 10000
+        currency:
+          type: string
+          description: Currency code
+          example: CRC
+        recipient_identifier:
+          type: string
+          description: Recipient account identifier
+          example: 'CR78037010600458074353'
+
+    PaymentValidation:
+      type: object
+      properties:
+        valid:
+          type: boolean
+          description: Whether the payment is valid
+        errors:
+          type: array
+          items:
+            type: string
+          description: List of validation errors
+        warnings:
+          type: array
+          items:
+            type: string
+          description: List of validation warnings
+
+    PaginatedPayments:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/Payment'
+
+    PhoneInformation:
+      type: object
+      properties:
+        phone_number:
+          type: string
+          description: Phone number
+          example: '+50688888888'
+        verified:
+          type: boolean
+          description: Whether the phone number is verified
+        account_linked:
+          type: boolean
+          description: Whether the phone is linked to an account
+
+    IBANInformation:
+      type: object
+      properties:
+        iban:
+          type: string
+          description: IBAN
+          example: 'CR78037010600458074353'
+        valid:
+          type: boolean
+          description: Whether the IBAN is valid
+        bank:
+          type: string
+          description: Bank name
+          example: 'Banco Nacional'
+        account_holder:
+          type: string
+          description: Account holder name
+          example: 'John Doe'
+
+    WebhookSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Subscription ID
+          example: '53d04104-f130-4901-9ba0-b5fc0d7a2b9d'
+        url:
+          type: string
+          format: uri
+          description: Webhook URL
+          example: 'https://your-app.com/webhooks'
+        events:
+          type: string
+          description: Comma-separated list of subscribed events
+          example: 'payment.completed,payment.failed'
+        max_attempts:
+          type: integer
+          description: Maximum retry attempts
+          example: 3
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom headers to include in webhook requests
+        active:
+          type: boolean
+          description: Whether the subscription is active
+        created_at:
+          type: string
+          format: date-time
+          description: Subscription creation timestamp
+
+    WebhookSubscriptionRequest:
+      type: object
+      required:
+        - url
+        - events
+      properties:
+        url:
+          type: string
+          format: uri
+          description: Webhook URL to receive notifications
+          example: 'https://your-app.com/webhooks'
+        events:
+          type: string
+          description: Comma-separated list of events to subscribe to
+          example: 'payment.completed,payment.failed,account.created'
+        max_attempts:
+          type: string
+          description: Maximum number of retry attempts (as string)
+          example: '3'
+        headers:
+          type: object
+          additionalProperties:
+            type: string
+          description: Custom headers to include in webhook requests
+          example:
+            X-Custom-Header: 'custom-value'
+
+    PaginatedWebhookSubscriptions:
+      allOf:
+        - $ref: '#/components/schemas/Pagination'
+        - type: object
+          properties:
+            data:
+              type: array
+              items:
+                $ref: '#/components/schemas/WebhookSubscription'
+
+    IncomingTransferNotification:
+      type: object
+      properties:
+        SecurityInfo:
+          type: string
+          description: Security information for verification
+        Transfers:
+          type: array
+          items:
+            $ref: '#/components/schemas/Transfer'
+
+    Transfer:
+      type: object
+      properties:
+        CGPRefNumber:
+          type: integer
+          description: CGP reference number
+          example: 12345
+        SINPERefNumber:
+          type: string
+          description: SINPE reference number
+          example: '20240101120000000'
+        AuthorizationDate:
+          type: string
+          format: date-time
+          description: Transfer authorization date
+          example: '2024-01-01T12:00:00Z'
+        OriginEntity:
+          type: string
+          description: Origin bank entity
+          example: 'BANCO_ORIGEN'
+        OriginCustomer:
+          $ref: '#/components/schemas/Customer'
+        DestinationCustomer:
+          $ref: '#/components/schemas/Customer'
+        Amount:
+          type: integer
+          description: Transfer amount in smallest currency unit
+          example: 10000
+        CurrencyCode:
+          type: string
+          description: Currency code
+          example: CRC
+        Description:
+          type: string
+          description: Transfer description
+          example: 'Transfer description'
+
+    Customer:
+      type: object
+      properties:
+        Id:
+          type: string
+          description: Customer ID
+          example: '123456789'
+        IdType:
+          type: string
+          description: ID type code
+          example: '01'
+        Name:
+          type: string
+          description: Customer name
+          example: 'John Doe'
+        IBAN:
+          type: string
+          description: Customer IBAN
+          example: 'CR12345678901234567890'
+
+  responses:
+    BadRequest:
+      description: Bad request - Invalid parameters or request body
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: 'invalid_request'
+            message: 'The request is missing a required parameter'
+
+    Unauthorized:
+      description: Unauthorized - Invalid or missing authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: 'unauthorized'
+            message: 'Invalid or expired access token'
+
+    Forbidden:
+      description: Forbidden - Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: 'forbidden'
+            message: 'You do not have permission to access this resource'
+
+    NotFound:
+      description: Not found - Resource does not exist
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: 'not_found'
+            message: 'The requested resource was not found'
+
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error: 'internal_error'
+            message: 'An internal server error occurred'
+
+
+

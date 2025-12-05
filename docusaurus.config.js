@@ -33,6 +33,8 @@ const config = {
 
   markdown: {
     hooks: {
+      // Note: This is deprecated in Docusaurus 3.x but still required
+      // Will be removed in Docusaurus v4
       onBrokenMarkdownLinks: 'warn',
     },
   },
@@ -78,24 +80,45 @@ const config = {
   ],
 
   plugins: [
+    // Scalar plugin for Spanish (default locale)
     [
       '@scalar/docusaurus',
       {
+        id: 'scalar-es',
         label: 'API Reference',
         route: '/scalar',
         showNavLink: false,
         configuration: {
           spec: {
             content: fs.readFileSync(
-              path.resolve(__dirname, 'static/openapi/openapi.yaml'),
+              path.resolve(__dirname, 'static/openapi/openapi-es.yaml'),
               'utf-8'
             ),
           },
           theme: 'default',
           layout: 'modern',
-          // Configure Scalar language - note that Scalar UI may not fully support Spanish
-          // The content from OpenAPI spec can be in Spanish if translated
           defaultLanguage: 'es',
+        },
+      },
+    ],
+    // Scalar plugin for English locale
+    [
+      '@scalar/docusaurus',
+      {
+        id: 'scalar-en',
+        label: 'API Reference',
+        route: '/en/scalar',
+        showNavLink: false,
+        configuration: {
+          spec: {
+            content: fs.readFileSync(
+              path.resolve(__dirname, 'static/openapi/openapi-en.yaml'),
+              'utf-8'
+            ),
+          },
+          theme: 'default',
+          layout: 'modern',
+          defaultLanguage: 'en',
         },
       },
     ],
@@ -118,11 +141,6 @@ const config = {
             sidebarId: 'tutorialSidebar',
             position: 'left',
             label: 'Documentación',
-          },
-          {
-            href: 'https://selvafinance.com',
-            label: 'Selva Finance',
-            position: 'right',
           },
           {
             type: 'localeDropdown',

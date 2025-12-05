@@ -10,16 +10,14 @@ export default function ScalarApiReference(): JSX.Element {
   return (
     <BrowserOnly>
       {() => {
-        // The Scalar Docusaurus plugin creates a route at /scalar
+        // The Scalar Docusaurus plugin creates routes at /scalar (es) and /en/scalar (en)
         // We'll embed it using an iframe
         // Use the baseUrl from Docusaurus config to construct the correct URL
         // baseUrl already includes leading slash, so we need to handle it properly
         const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
-        // Scalar plugin only creates route at /scalar for the default locale (es)
-        // For all locales, we always use the absolute path /scalar (default locale route)
-        // This works because the route exists and can be accessed from any locale context
-        // Pass language via query parameter and hash for better Scalar language detection
-        const scalarUrl = `${window.location.origin}${normalizedBaseUrl}scalar?lang=${currentLocale}#lang=${currentLocale}`;
+        // Use the correct Scalar route based on the current locale
+        const scalarRoute = currentLocale === 'en' ? 'en/scalar' : 'scalar';
+        const scalarUrl = `${window.location.origin}${normalizedBaseUrl}${scalarRoute}?lang=${currentLocale}#lang=${currentLocale}`;
         
         return (
           <div
