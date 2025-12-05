@@ -1,0 +1,107 @@
+# Cursor Rules for Selva API Documentation
+
+## Project Overview
+This is a Docusaurus-based API documentation site with Scalar integration for the Selva Finance API.
+
+## Technology Stack
+- **Framework**: Docusaurus 3.x (requires Node.js 20+)
+- **Language**: TypeScript
+- **Package Manager**: Yarn
+- **API Documentation**: Scalar (via @scalar/docusaurus plugin)
+- **OpenAPI Spec**: YAML format in `static/openapi/openapi.yaml`
+- **Deployment**: GitHub Pages (custom domain: docs.selva.fi.cr)
+
+## Code Style
+
+### General
+- Use TypeScript for all source files
+- Follow Docusaurus conventions and patterns
+- Use functional React components with hooks
+- Prefer named exports over default exports where appropriate
+- Add trailing newlines to all files
+
+### File Organization
+- Documentation pages: `docs/*.md` (MDX format)
+- React components: `src/components/`
+- Pages: `src/pages/`
+- Static assets: `static/`
+- OpenAPI spec: `static/openapi/openapi.yaml`
+
+### Naming Conventions
+- Components: PascalCase (e.g., `ScalarApiReference.tsx`)
+- Files: kebab-case for docs, camelCase for components
+- Constants: UPPER_SNAKE_CASE
+
+## Documentation Guidelines
+
+### MDX Pages
+- Use frontmatter for metadata (sidebar_position, etc.)
+- Keep content clear and concise
+- Include code examples where helpful
+- Link between related pages
+- Use proper heading hierarchy
+
+### OpenAPI Specification
+- Maintain OpenAPI 3.0 compliance
+- Include operationIds for all operations
+- Add descriptions to all endpoints, parameters, and schemas
+- Provide examples for request/response bodies
+- Use reusable components in `components/schemas`
+- Keep paths parameterized (no hardcoded IDs)
+
+## Configuration
+
+### Docusaurus Config
+- Custom domain: `docs.selva.fi.cr`
+- Base URL: `/` (for custom domain)
+- Scalar plugin loads OpenAPI spec from filesystem using `fs.readFileSync()`
+
+### Important Notes
+- Node.js 20+ required (specified in package.json engines)
+- Yarn is the package manager (yarn.lock should be committed)
+- GitHub Actions workflow uses Node 20
+
+## Git Workflow
+- Create feature branches from `main`
+- Use conventional commit messages
+- PRs should be reviewed before merging
+- Main branch auto-deploys to GitHub Pages
+
+## Common Tasks
+
+### Adding New Documentation
+1. Create MDX file in `docs/`
+2. Add to `sidebars.js`
+3. Test locally with `yarn start`
+
+### Updating OpenAPI Spec
+1. Edit `static/openapi/openapi.yaml`
+2. Validate against OpenAPI 3.0
+3. Test Scalar rendering locally
+
+### Local Development
+```bash
+yarn install
+yarn start  # Development server
+yarn build  # Production build
+```
+
+## Best Practices
+- Always test changes locally before committing
+- Keep documentation up-to-date with API changes
+- Use semantic versioning for OpenAPI spec
+- Maintain consistent formatting (use Prettier if configured)
+- Add comments for complex logic
+- Document any non-obvious configuration choices
+
+## Dependencies
+- Core: @docusaurus/core, @docusaurus/preset-classic
+- API Docs: @scalar/docusaurus
+- React: react, react-dom
+- Styling: Custom CSS in `src/css/custom.css`
+
+## Deployment
+- Automatic via GitHub Actions on push to `main`
+- Deploys to `gh-pages` branch
+- Served at https://docs.selva.fi.cr
+

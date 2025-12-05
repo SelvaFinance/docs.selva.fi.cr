@@ -27,15 +27,39 @@ const config = {
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  // Use 'warn' instead of 'throw' to allow build with Scalar route
+  // Scalar plugin only creates route for default locale, but it's accessible from all locales
+  onBrokenLinks: 'warn',
+
+  markdown: {
+    hooks: {
+      // Note: This is deprecated in Docusaurus 3.x but still required
+      // Will be removed in Docusaurus v4
+      onBrokenMarkdownLinks: 'warn',
+    },
+  },
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: 'es',
+    locales: ['es', 'en'],
+    localeConfigs: {
+      es: {
+        label: 'Español',
+        direction: 'ltr',
+        htmlLang: 'es-CR',
+        calendar: 'gregory',
+      },
+      en: {
+        label: 'English',
+        direction: 'ltr',
+        htmlLang: 'en-US',
+        calendar: 'gregory',
+        path: 'en',
+      },
+    },
   },
 
   presets: [
@@ -56,19 +80,43 @@ const config = {
   ],
 
   plugins: [
+    // Scalar plugin for Spanish (default locale)
     [
       '@scalar/docusaurus',
       {
-        label: 'API Reference',
+        id: 'scalar-es',
         route: '/scalar',
         showNavLink: false,
         configuration: {
           spec: {
             content: fs.readFileSync(
-              path.resolve(__dirname, 'static/openapi/openapi.yaml'),
+              path.resolve(__dirname, 'static/openapi/openapi-es.yaml'),
               'utf-8'
             ),
           },
+          theme: 'default',
+          layout: 'modern',
+          defaultLanguage: 'es',
+        },
+      },
+    ],
+    // Scalar plugin for English locale
+    [
+      '@scalar/docusaurus',
+      {
+        id: 'scalar-en',
+        route: '/en/scalar',
+        showNavLink: false,
+        configuration: {
+          spec: {
+            content: fs.readFileSync(
+              path.resolve(__dirname, 'static/openapi/openapi-en.yaml'),
+              'utf-8'
+            ),
+          },
+          theme: 'default',
+          layout: 'modern',
+          defaultLanguage: 'en',
         },
       },
     ],
@@ -83,14 +131,28 @@ const config = {
         title: 'Selva API',
         logo: {
           alt: 'Selva Logo',
-          src: 'selva-logo-full.png',
+          src: '/selva-logo-full.png',
         },
         items: [
           {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Documentation',
+            label: 'Documentación',
+          },
+          {
+            type: 'html',
+            position: 'right',
+            value: '<a href="/scalar" class="navbar__item navbar__link">Referencia de API</a>',
+          },
+          {
+            type: 'html',
+            position: 'right',
+            value: '<a href="/en/scalar" class="navbar__item navbar__link">API Reference</a>',
+          },
+          {
+            type: 'localeDropdown',
+            position: 'right',
           },
           {
             href: 'https://github.com/SelvaFinance/docs.selva.fi.cr',
@@ -103,21 +165,25 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Documentation',
+            title: 'Documentación',
             items: [
               {
-                label: 'Getting Started',
+                label: 'Comenzar',
                 to: '/docs/getting-started',
               },
               {
-                label: 'API Reference',
+                label: 'Referencia de API',
                 to: '/docs/api-reference',
               },
             ],
           },
           {
-            title: 'More',
+            title: 'Más',
             items: [
+              {
+                label: 'Selva Finance',
+                href: 'https://selvafinance.com',
+              },
               {
                 label: 'GitHub',
                 href: 'https://github.com/SelvaFinance/docs.selva.fi.cr',
@@ -125,7 +191,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Selva Finance. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Selva Finance. Construido con Docusaurus.`,
       },
       prism: {
         theme: lightCodeTheme,

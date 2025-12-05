@@ -2,17 +2,17 @@
 sidebar_position: 5
 ---
 
-# Flujos de Trabajo Comunes
+# Common Workflows
 
-Esta guía cubre patrones de integración y flujos de trabajo comunes para la API de Selva.
+This guide covers common integration patterns and workflows for the Selva API.
 
-## Flujo de Trabajo 1: Procesamiento de Pagos
+## Workflow 1: Payment Processing
 
-Flujo completo para procesar un pago desde la validación hasta la finalización.
+Complete flow for processing a payment from validation to completion.
 
-### Paso 1: Validar Pago
+### Step 1: Validate Payment
 
-Antes de crear un pago, valide los detalles del pago:
+Before creating a payment, validate the payment details:
 
 ```javascript
 const validateResponse = await fetch('https://dev.selva.fi.cr/api/payments/validate', {
@@ -31,15 +31,15 @@ const validateResponse = await fetch('https://dev.selva.fi.cr/api/payments/valid
 const validation = await validateResponse.json();
 
 if (!validation.valid) {
-  console.error('Errores de validación:', validation.errors);
-  // Manejar errores de validación
+  console.error('Validation errors:', validation.errors);
+  // Handle validation errors
   return;
 }
 ```
 
-### Paso 2: Crear Pago
+### Step 2: Create Payment
 
-Una vez validado, cree el pago con una clave de idempotencia:
+Once validated, create the payment with an idempotency key:
 
 ```javascript
 const idempotencyKey = crypto.randomUUID();
@@ -55,18 +55,18 @@ const paymentResponse = await fetch('https://dev.selva.fi.cr/api/payments', {
     amount: 10000,
     currency: 'CRC',
     recipient_identifier: 'CR78037010600458074353',
-    description: 'Pago por servicios',
-    payment_method: 'SINPE Movil',
+    description: 'Payment for services',
+    payment_method: 'transfer',
   }),
 });
 
 const payment = await paymentResponse.json();
-console.log('Pago creado:', payment.id);
+console.log('Payment created:', payment.id);
 ```
 
-### Paso 3: Consultar Estado
+### Step 3: Poll for Status
 
-Consulte el estado del pago hasta que se complete o falle:
+Check payment status until it's completed or failed:
 
 ```javascript
 async function waitForPaymentCompletion(paymentId) {
@@ -84,20 +84,20 @@ async function waitForPaymentCompletion(paymentId) {
     }
     
     if (payment.status === 'failed' || payment.status === 'cancelled') {
-      throw new Error(`Pago ${payment.status}`);
+      throw new Error(`Payment ${payment.status}`);
     }
     
-    // Esperar antes de consultar nuevamente
+    // Wait before polling again
     await new Promise(resolve => setTimeout(resolve, 2000));
   }
 }
 ```
 
-## Flujo de Trabajo 2: Gestión de Cuentas
+## Workflow 2: Account Management
 
-Flujo completo para gestionar cuentas y ver transacciones.
+Complete flow for managing accounts and viewing transactions.
 
-### Crear Cuenta
+### Create Account
 
 ```javascript
 const accountResponse = await fetch('https://dev.selva.fi.cr/api/accounts', {
@@ -112,10 +112,10 @@ const accountResponse = await fetch('https://dev.selva.fi.cr/api/accounts', {
 });
 
 const account = await accountResponse.json();
-console.log('Cuenta creada:', account.id);
+console.log('Account created:', account.id);
 ```
 
-### Obtener Saldo de Cuenta
+### Get Account Balance
 
 ```javascript
 const balanceResponse = await fetch(
@@ -128,10 +128,10 @@ const balanceResponse = await fetch(
 );
 
 const balance = await balanceResponse.json();
-console.log(`Saldo: ${balance.currency} ${balance.balance}`);
+console.log(`Balance: ${balance.currency} ${balance.balance}`);
 ```
 
-### Ver Movimientos de Cuenta
+### View Account Movements
 
 ```javascript
 const movementsResponse = await fetch(
@@ -144,14 +144,14 @@ const movementsResponse = await fetch(
 );
 
 const movements = await movementsResponse.json();
-console.log('Movimientos de cuenta:', movements);
+console.log('Account movements:', movements);
 ```
 
-## Flujo de Trabajo 3: Integración de Webhooks
+## Workflow 3: Webhook Integration
 
-Configure webhooks para recibir notificaciones en tiempo real.
+Set up webhooks to receive real-time notifications.
 
-### Paso 1: Crear Suscripción de Webhook
+### Step 1: Create Webhook Subscription
 
 ```javascript
 const webhookResponse = await fetch('https://dev.selva.fi.cr/api/webhooks/subscriptions', {
@@ -161,73 +161,73 @@ const webhookResponse = await fetch('https://dev.selva.fi.cr/api/webhooks/subscr
     'Content-Type': 'application/json',
   },
   body: JSON.stringify({
-    url: 'https://su-app.com/webhooks',
+    url: 'https://your-app.com/webhooks',
     events: 'payment.completed,payment.failed,account.created',
     max_attempts: '3',
     headers: {
-      'X-Custom-Header': 'valor-personalizado',
+      'X-Custom-Header': 'custom-value',
     },
   }),
 });
 
 const subscription = await webhookResponse.json();
-console.log('Suscripción de webhook creada:', subscription.id);
+console.log('Webhook subscription created:', subscription.id);
 ```
 
-### Paso 2: Manejar Eventos de Webhook
+### Step 2: Handle Webhook Events
 
-Implemente un endpoint de webhook en su aplicación:
+Implement a webhook endpoint in your application:
 
 ```javascript
-// Ejemplo Express.js
+// Express.js example
 app.post('/webhooks', async (req, res) => {
   const signature = req.headers['signature'];
   const payload = req.body;
   
-  // Verificar firma del webhook
+  // Verify webhook signature
   if (!verifySignature(signature, payload)) {
-    return res.status(401).json({ error: 'Firma inválida' });
+    return res.status(401).json({ error: 'Invalid signature' });
   }
   
-  // Manejar diferentes tipos de eventos
+  // Handle different event types
   if (payload.event === 'payment.completed') {
     await handlePaymentCompleted(payload.data);
   } else if (payload.event === 'payment.failed') {
     await handlePaymentFailed(payload.data);
   }
   
-  res.status(200).json({ status: 'recibido' });
+  res.status(200).json({ status: 'received' });
 });
 ```
 
-### Paso 3: Manejar Transferencias Entrantes
+### Step 3: Handle Incoming Transfers
 
-Para notificaciones de transferencias entrantes:
+For incoming transfer notifications:
 
 ```javascript
 app.post('/webhooks/incoming-transfers', async (req, res) => {
   const signature = req.headers['signature'];
   const notification = req.body;
   
-  // Verificar firma
+  // Verify signature
   if (!verifySignature(signature, notification)) {
-    return res.status(401).json({ error: 'Firma inválida' });
+    return res.status(401).json({ error: 'Invalid signature' });
   }
   
-  // Procesar cada transferencia
+  // Process each transfer
   for (const transfer of notification.Transfers) {
     await processIncomingTransfer(transfer);
   }
   
-  res.status(200).json({ status: 'recibido' });
+  res.status(200).json({ status: 'received' });
 });
 ```
 
-## Flujo de Trabajo 4: Servicios de Verificación
+## Workflow 4: Verification Services
 
-Verifique información de cuenta antes de procesar pagos.
+Verify account information before processing payments.
 
-### Verificar IBAN
+### Verify IBAN
 
 ```javascript
 const ibanResponse = await fetch('https://dev.selva.fi.cr/api/iban/information', {
@@ -244,13 +244,13 @@ const ibanResponse = await fetch('https://dev.selva.fi.cr/api/iban/information',
 const ibanInfo = await ibanResponse.json();
 
 if (ibanInfo.valid) {
-  console.log('IBAN es válido:', ibanInfo.account_holder);
+  console.log('IBAN is valid:', ibanInfo.account_holder);
 } else {
-  console.error('IBAN inválido');
+  console.error('Invalid IBAN');
 }
 ```
 
-### Verificar Número de Teléfono
+### Verify Phone Number
 
 ```javascript
 const phoneResponse = await fetch(
@@ -263,12 +263,12 @@ const phoneResponse = await fetch(
 );
 
 const phoneInfo = await phoneResponse.json();
-console.log('Teléfono verificado:', phoneInfo.verified);
+console.log('Phone verified:', phoneInfo.verified);
 ```
 
-## Flujo de Trabajo 5: Manejo de Errores y Reintentos
+## Workflow 5: Error Handling and Retries
 
-Implemente manejo robusto de errores con retroceso exponencial.
+Implement robust error handling with exponential backoff.
 
 ```javascript
 async function apiCallWithRetry(url, options, maxRetries = 3) {
@@ -280,29 +280,29 @@ async function apiCallWithRetry(url, options, maxRetries = 3) {
         return await response.json();
       }
       
-      // No reintentar en errores del cliente (4xx)
+      // Don't retry on client errors (4xx)
       if (response.status >= 400 && response.status < 500) {
         const error = await response.json();
         throw new Error(error.message);
       }
       
-      // Reintentar en errores del servidor (5xx)
+      // Retry on server errors (5xx)
       if (response.status >= 500) {
-        throw new Error('Error del servidor');
+        throw new Error('Server error');
       }
     } catch (error) {
       if (attempt === maxRetries - 1) {
         throw error;
       }
       
-      // Retroceso exponencial
+      // Exponential backoff
       const delay = Math.pow(2, attempt) * 1000;
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
 }
 
-// Uso
+// Usage
 try {
   const accounts = await apiCallWithRetry(
     'https://dev.selva.fi.cr/api/accounts',
@@ -313,23 +313,25 @@ try {
     }
   );
 } catch (error) {
-  console.error('Llamada a la API falló:', error);
+  console.error('API call failed:', error);
 }
 ```
 
-## Mejores Prácticas
+## Best Practices
 
-1. **Siempre valide pagos** antes de crearlos
-2. **Use claves de idempotencia** para solicitudes de pago
-3. **Implemente verificación de firma de webhook** para seguridad
-4. **Maneje límites de tasa** con retroceso exponencial
-5. **Almacene tokens de acceso de forma segura** y actualícelos antes de que expiren
-6. **Registre todas las llamadas a la API** para depuración y auditoría
-7. **Maneje errores adecuadamente** con mensajes amigables para el usuario
+1. **Always validate payments** before creating them
+2. **Use idempotency keys** for payment requests
+3. **Implement webhook signature verification** for security
+4. **Handle rate limits** with exponential backoff
+5. **Store access tokens securely** and refresh them before expiration
+6. **Log all API calls** for debugging and auditing
+7. **Handle errors gracefully** with user-friendly messages
 
-## Próximos Pasos
+## Next Steps
 
-- Revise la [Referencia de API](/docs/api-reference) para ver todos los endpoints disponibles
-- Consulte la [guía de Manejo de Errores](/docs/errors) para códigos de error y estrategias
-- Vea [Autenticación](/docs/authentication) para gestión de tokens
+- Review the [API Reference](/docs/api-reference) for all available endpoints
+- Check the [Error Handling guide](/docs/errors) for error codes and strategies
+- See [Authentication](/docs/authentication) for token management
+
+
 

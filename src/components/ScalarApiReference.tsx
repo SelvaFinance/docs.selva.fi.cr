@@ -3,18 +3,21 @@ import BrowserOnly from '@docusaurus/BrowserOnly';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
 export default function ScalarApiReference(): JSX.Element {
-  const { siteConfig } = useDocusaurusContext();
+  const { siteConfig, i18n } = useDocusaurusContext();
   const baseUrl = siteConfig.baseUrl;
+  const currentLocale = i18n.currentLocale;
   
   return (
     <BrowserOnly>
       {() => {
-        // The Scalar Docusaurus plugin creates a route at /scalar
+        // The Scalar Docusaurus plugin creates routes at /scalar (es) and /en/scalar (en)
         // We'll embed it using an iframe
         // Use the baseUrl from Docusaurus config to construct the correct URL
         // baseUrl already includes leading slash, so we need to handle it properly
         const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
-        const scalarUrl = `${window.location.origin}${normalizedBaseUrl}scalar`;
+        // Use the correct Scalar route based on the current locale
+        const scalarRoute = currentLocale === 'en' ? 'en/scalar' : 'scalar';
+        const scalarUrl = `${window.location.origin}${normalizedBaseUrl}${scalarRoute}?lang=${currentLocale}#lang=${currentLocale}`;
         
         return (
           <div
@@ -34,7 +37,7 @@ export default function ScalarApiReference(): JSX.Element {
                 height: '100%',
                 border: 'none',
               }}
-              title="API Reference"
+              title={currentLocale === 'es' ? 'Referencia de API' : 'API Reference'}
             />
           </div>
         );

@@ -31,7 +31,14 @@ yarn install
 yarn start
 ```
 
-The site will be available at `http://localhost:3000`
+The site will be available at `http://localhost:3000` (Spanish, default locale)
+
+**Note:** In development mode, Docusaurus only serves one locale at a time. To test the English version:
+```bash
+yarn start:en
+```
+
+This will serve the site at `http://localhost:3000` with English as the active locale. In production builds, all locales are available and the language selector works correctly.
 
 ### Build
 
