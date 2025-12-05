@@ -9,10 +9,11 @@ function HomepageHeader() {
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
         <Heading as="h1" className="hero__title">
-          Selva API Documentation
+          Inclusión financiera para toda Costa Rica
         </Heading>
         <p className="hero__subtitle">
-          Soluciones Electrónicas Locales de Valor
+          Servicios financieros innovadores, seguros y sostenibles para comunidades rurales, costeras y expatriados. 
+          Pague como un local, crezca con Selva.
         </p>
         <div className={styles.buttons}>
           <Link
@@ -25,6 +26,12 @@ function HomepageHeader() {
             to="/docs/api-reference"
             style={{ marginLeft: '1rem' }}>
             API Reference
+          </Link>
+          <Link
+            className="button button--outline button--secondary button--lg"
+            href="https://selvafinance.com"
+            style={{ marginLeft: '1rem' }}>
+            Visit Selva Finance →
           </Link>
         </div>
       </div>
@@ -39,28 +46,48 @@ function HomepageFeatures() {
         <div className="row">
           <div className="col col--4">
             <div className="text--center padding-horiz--md">
-              <Heading as="h3">Payment Processing</Heading>
+              <Heading as="h3">Interfaz Unificada de Pagos</Heading>
               <p>
-                Process payments, validate transactions, and manage payment history
-                with our comprehensive payment API.
+                Gestione múltiples cuentas bancarias, transfiera fondos y pague servicios 
+                desde una sola aplicación diseñada para todos.
               </p>
             </div>
           </div>
           <div className="col col--4">
             <div className="text--center padding-horiz--md">
-              <Heading as="h3">Account Management</Heading>
+              <Heading as="h3">Diseño Inclusivo</Heading>
               <p>
-                Create and manage accounts, check balances, view transactions,
-                and access account details programmatically.
+                Compatible con dispositivos de gama baja y fácil de usar, garantizando 
+                acceso para todos los costarricenses.
               </p>
             </div>
           </div>
           <div className="col col--4">
             <div className="text--center padding-horiz--md">
-              <Heading as="h3">Webhooks</Heading>
+              <Heading as="h3">Enfoque B2B</Heading>
               <p>
-                Subscribe to events and receive real-time notifications about
-                transactions and account activities.
+                Soluciones especializadas para negocios en comunidades rurales y expatriados 
+                que necesitan pagos eficientes.
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="row" style={{ marginTop: '2rem' }}>
+          <div className="col col--6">
+            <div className="text--center padding-horiz--md">
+              <Heading as="h3">Cumplimiento Regulatorio Integral</Heading>
+              <p>
+                Aseguramos el pleno cumplimiento de las obligaciones regulatorias, equilibrando 
+                privacidad y seguridad con nuestro modelo de 'Cumplimiento Regulatorio Integral'.
+              </p>
+            </div>
+          </div>
+          <div className="col col--6">
+            <div className="text--center padding-horiz--md">
+              <Heading as="h3">Para Expatriados y Comunidades Locales</Heading>
+              <p>
+                Ya sea que sea un expatriado buscando pagar como un local o una empresa rural 
+                necesitando acceso a servicios financieros, Selva está aquí para usted.
               </p>
             </div>
           </div>

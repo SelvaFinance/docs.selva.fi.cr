@@ -119,6 +119,10 @@ const config = {
             title: 'More',
             items: [
               {
+                label: 'Selva Finance',
+                href: 'https://selvafinance.com',
+              },
+              {
                 label: 'GitHub',
                 href: 'https://github.com/SelvaFinance/docs.selva.fi.cr',
               },
