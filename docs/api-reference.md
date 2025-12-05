@@ -125,7 +125,8 @@ Consulte la [guía de Manejo de Errores](/docs/errors) para códigos de error de
 
 Descargue la especificación completa de OpenAPI 3.0:
 
-- [openapi.yaml](/openapi/openapi.yaml)
+- [openapi-es.yaml](/openapi/openapi-es.yaml) (Español)
+- [openapi-en.yaml](/openapi/openapi-en.yaml) (English)
 
 Puede usar esta especificación para:
 
