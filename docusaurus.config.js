@@ -113,6 +113,11 @@ const config = {
             label: 'Documentación',
           },
           {
+            href: 'https://selvafinance.com',
+            label: 'Selva Finance',
+            position: 'right',
+          },
+          {
             type: 'localeDropdown',
             position: 'right',
           },

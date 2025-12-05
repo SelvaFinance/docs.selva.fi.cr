@@ -34,12 +34,6 @@ function HomepageHeader() {
             style={{ marginLeft: '1rem' }}>
             {isSpanish ? 'Referencia de API' : 'API Reference'}
           </Link>
-          <Link
-            className="button button--outline button--secondary button--lg"
-            href="https://selvafinance.com"
-            style={{ marginLeft: '1rem' }}>
-            {isSpanish ? 'Visitar Selva Finance →' : 'Visit Selva Finance →'}
-          </Link>
         </div>
       </div>
     </header>
