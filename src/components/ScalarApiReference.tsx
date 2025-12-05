@@ -18,8 +18,8 @@ export default function ScalarApiReference(): JSX.Element {
         // Scalar plugin only creates route at /scalar for the default locale (es)
         // For all locales, we always use the absolute path /scalar (default locale route)
         // This works because the route exists and can be accessed from any locale context
-        // Scalar will handle language preference internally via the hash parameter
-        const scalarUrl = `${window.location.origin}${normalizedBaseUrl}scalar#lang=${currentLocale}`;
+        // Pass language via query parameter and hash for better Scalar language detection
+        const scalarUrl = `${window.location.origin}${normalizedBaseUrl}scalar?lang=${currentLocale}#lang=${currentLocale}`;
         
         return (
           <div

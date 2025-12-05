@@ -93,10 +93,9 @@ const config = {
           },
           theme: 'default',
           layout: 'modern',
-          // Scalar language configuration
-          // Scalar supports language through configuration or auto-detection
-          // The UI will use the browser's language preference
-          // For Spanish, Scalar will auto-detect from browser locale (es-CR)
+          // Configure Scalar language - note that Scalar UI may not fully support Spanish
+          // The content from OpenAPI spec can be in Spanish if translated
+          defaultLanguage: 'es',
         },
       },
     ],
