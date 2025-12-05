@@ -83,6 +83,12 @@ const config = {
               'utf-8'
             ),
           },
+          theme: 'default',
+          layout: 'modern',
+          // Scalar language configuration
+          // Scalar supports language through configuration or auto-detection
+          // The UI will use the browser's language preference
+          // For Spanish, Scalar will auto-detect from browser locale (es-CR)
         },
       },
     ],
