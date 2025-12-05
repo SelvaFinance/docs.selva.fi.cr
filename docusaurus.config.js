@@ -34,8 +34,22 @@ const config = {
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: 'es',
+    locales: ['es', 'en'],
+    localeConfigs: {
+      es: {
+        label: 'Español',
+        direction: 'ltr',
+        htmlLang: 'es-CR',
+        calendar: 'gregory',
+      },
+      en: {
+        label: 'English',
+        direction: 'ltr',
+        htmlLang: 'en-US',
+        calendar: 'gregory',
+      },
+    },
   },
 
   presets: [
@@ -90,7 +104,11 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Documentation',
+            label: 'Documentación',
+          },
+          {
+            type: 'localeDropdown',
+            position: 'right',
           },
           {
             href: 'https://github.com/SelvaFinance/docs.selva.fi.cr',
@@ -103,20 +121,20 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Documentation',
+            title: 'Documentación',
             items: [
               {
-                label: 'Getting Started',
+                label: 'Comenzar',
                 to: '/docs/getting-started',
               },
               {
-                label: 'API Reference',
+                label: 'Referencia de API',
                 to: '/docs/api-reference',
               },
             ],
           },
           {
-            title: 'More',
+            title: 'Más',
             items: [
               {
                 label: 'Selva Finance',
@@ -129,7 +147,7 @@ const config = {
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Selva Finance. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Selva Finance. Construido con Docusaurus.`,
       },
       prism: {
         theme: lightCodeTheme,

@@ -19,19 +19,19 @@ function HomepageHeader() {
           <Link
             className="button button--secondary button--lg"
             to="/docs/getting-started">
-            Get Started - 5min ⏱️
+            Comenzar - 5min ⏱️
           </Link>
           <Link
             className="button button--primary button--lg"
             to="/docs/api-reference"
             style={{ marginLeft: '1rem' }}>
-            API Reference
+            Referencia de API
           </Link>
           <Link
             className="button button--outline button--secondary button--lg"
             href="https://selvafinance.com"
             style={{ marginLeft: '1rem' }}>
-            Visit Selva Finance →
+            Visitar Selva Finance →
           </Link>
         </div>
       </div>
