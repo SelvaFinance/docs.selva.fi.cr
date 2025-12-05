@@ -1,0 +1,15 @@
+{
+  "title": {
+    "message": "Selva API",
+    "description": "The title in the navbar"
+  },
+  "item.label.Documentación": {
+    "message": "Documentación",
+    "description": "Navbar item with label Documentación"
+  },
+  "item.label.GitHub": {
+    "message": "GitHub",
+    "description": "Navbar item with label GitHub"
+  }
+}
+
