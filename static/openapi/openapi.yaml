@@ -164,7 +164,7 @@ paths:
               currency: CRC
               recipient_identifier: 'CR78037010600458074353'
               description: 'Payment for services'
-              payment_method: 'transfer'
+              payment_method: 'SINPE Movil'
       responses:
         '201':
           description: Payment created successfully
@@ -247,8 +247,8 @@ paths:
           description: Filter by payment method
           schema:
             type: string
-            enum: [transfer, card, cash]
-            example: transfer
+            enum: ['SINPE Movil', 'PIN']
+            example: 'SINPE Movil'
         - name: transfer_type
           in: query
           required: false
@@ -1188,8 +1188,8 @@ components:
           description: Payment status
         payment_method:
           type: string
-          description: Payment method used
-          example: transfer
+          description: Payment method used (SINPE Movil or PIN)
+          example: 'SINPE Movil'
         description:
           type: string
           description: Payment description
@@ -1229,9 +1229,9 @@ components:
           example: 'Payment for services'
         payment_method:
           type: string
-          enum: [transfer, card, cash]
-          description: Payment method
-          default: transfer
+          enum: ['SINPE Movil', 'PIN']
+          description: Payment method (SINPE Movil or PIN)
+          default: 'SINPE Movil'
 
     PaymentValidationRequest:
       type: object
