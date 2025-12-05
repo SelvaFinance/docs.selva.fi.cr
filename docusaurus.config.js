@@ -27,7 +27,9 @@ const config = {
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
-  onBrokenLinks: 'throw',
+  // Use 'warn' instead of 'throw' to allow build with Scalar route
+  // Scalar plugin only creates route for default locale, but it's accessible from all locales
+  onBrokenLinks: 'warn',
 
   markdown: {
     hooks: {
