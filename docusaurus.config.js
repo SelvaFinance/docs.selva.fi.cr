@@ -110,7 +110,7 @@ const config = {
         title: 'Selva API',
         logo: {
           alt: 'Selva Logo',
-          src: 'selva-logo-full.png',
+          src: '/selva-logo-full.png',
         },
         items: [
           {
