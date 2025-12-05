@@ -141,6 +141,16 @@ const config = {
             label: 'Documentación',
           },
           {
+            type: 'html',
+            position: 'right',
+            value: '<a href="/scalar" class="navbar__item navbar__link">Referencia de API</a>',
+          },
+          {
+            type: 'html',
+            position: 'right',
+            value: '<a href="/en/scalar" class="navbar__item navbar__link">API Reference</a>',
+          },
+          {
             type: 'localeDropdown',
             position: 'right',
           },

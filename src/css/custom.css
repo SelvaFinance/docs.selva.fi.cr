@@ -29,26 +29,33 @@
   --docusaurus-highlighted-code-line-bg: rgba(0, 0, 0, 0.3);
 }
 
-/* Hide Scalar navbar links based on locale */
-/* Hide English Scalar link when on Spanish locale (default, no /en prefix) */
-html:not([lang='en-US']) a[href='/en/scalar'],
-html:not([lang='en-US']) a[href*='/en/scalar'] {
+/* Hide Scalar navbar links added by plugin (they show "Scalar" text) */
+a.navbar__item[href='/scalar']:not([href*='/en']),
+a.navbar__item[href='/en/scalar'],
+a.navbar__item[href*='/scalar'] {
   display: none !important;
 }
 
-/* Hide Spanish Scalar link when on English locale (with /en prefix) */
-html[lang='en-US'] a[href='/scalar']:not([href*='/en']),
-html[lang='en-US'] a[href='/scalar'] {
+/* Hide manual API Reference links based on locale */
+/* Hide English API Reference link when on Spanish locale (default, no /en prefix) */
+html:not([lang='en-US']) a.navbar__item[href='/en/scalar'],
+html:not([lang='en-US']) a.navbar__item[href*='/en/scalar'] {
+  display: none !important;
+}
+
+/* Hide Spanish API Reference link when on English locale (with /en prefix) */
+html[lang='en-US'] a.navbar__item[href='/scalar']:not([href*='/en']),
+html[lang='en-US'] a.navbar__item[href='/scalar'] {
   display: none !important;
 }
 
 /* Alternative: Hide based on pathname */
-body:not([class*='en']) a[href='/en/scalar'],
-body:not([class*='en']) a[href*='/en/scalar'] {
+body:not([class*='en']) a.navbar__item[href='/en/scalar'],
+body:not([class*='en']) a.navbar__item[href*='/en/scalar'] {
   display: none !important;
 }
 
-body[class*='locale-en'] a[href='/scalar']:not([href*='/en']),
-body[class*='locale-en'] a[href='/scalar'] {
+body[class*='locale-en'] a.navbar__item[href='/scalar']:not([href*='/en']),
+body[class*='locale-en'] a.navbar__item[href='/scalar'] {
   display: none !important;
 }
