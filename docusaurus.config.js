@@ -85,7 +85,6 @@ const config = {
       '@scalar/docusaurus',
       {
         id: 'scalar-es',
-        label: 'API Reference',
         route: '/scalar',
         showNavLink: false,
         configuration: {
@@ -106,7 +105,6 @@ const config = {
       '@scalar/docusaurus',
       {
         id: 'scalar-en',
-        label: 'API Reference',
         route: '/en/scalar',
         showNavLink: false,
         configuration: {
