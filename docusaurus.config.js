@@ -49,7 +49,6 @@ const config = {
         direction: 'ltr',
         htmlLang: 'es-CR',
         calendar: 'gregory',
-        path: 'es', // Explicitly set path for default locale
       },
       en: {
         label: 'English',
