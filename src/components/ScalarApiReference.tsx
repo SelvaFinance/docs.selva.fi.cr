@@ -2,7 +2,7 @@ import React from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
-export default function ScalarApiReference(): JSX.Element {
+export default function ScalarApiReference(): React.ReactElement {
   const { siteConfig } = useDocusaurusContext();
   const baseUrl = siteConfig.baseUrl;
   

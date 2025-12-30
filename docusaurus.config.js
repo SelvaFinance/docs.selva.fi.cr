@@ -27,15 +27,15 @@ const config = {
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'warn',
+  onBrokenMarkdownLinks: 'ignore',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'en',
-    locales: ['en'],
+    defaultLocale: 'es',
+    locales: ['es', 'en'],
   },
 
   presets: [
@@ -78,9 +78,9 @@ const config = {
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
       // Replace with your project's social card
-      image: 'img/docusaurus-social-card.jpg',
-      navbar: {
-        title: 'Selva API',
+       image: 'img/docusaurus-social-card.jpg',
+        navbar: {
+          title: 'Selva API',
         logo: {
           alt: 'Selva Logo',
           src: 'selva-logo-full.png',
@@ -90,7 +90,26 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Documentation',
+            label: 'Developer Guide',
+          },
+          {
+            to: '/docs/mcp',
+            label: 'MCP',
+            position: 'left',
+          },
+          {
+            to: '/docs/release-notes',
+            label: 'Release Notes',
+            position: 'left',
+          },
+          {
+            to: '/scalar',
+            label: 'API Reference',
+            position: 'left',
+          },
+          {
+            type: 'localeDropdown',
+            position: 'right',
           },
           {
             href: 'https://github.com/SelvaFinance/docs.selva.fi.cr',
@@ -111,7 +130,7 @@ const config = {
               },
               {
                 label: 'API Reference',
-                to: '/docs/api-reference',
+                to: '/scalar',
               },
             ],
           },

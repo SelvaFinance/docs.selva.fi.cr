@@ -10,11 +10,9 @@ The Selva API provides a comprehensive set of endpoints for payment processing, 
 
 Explore all available endpoints, try requests, and view responses using our interactive API documentation powered by Scalar.
 
-import ScalarApiReference from '@site/src/components/ScalarApiReference';
+**Open the interactive API Reference:** [/scalar](/scalar)
 
-<ScalarApiReference />
-
-The API reference above is automatically generated from our OpenAPI specification and provides an interactive interface to explore all endpoints, view request/response schemas, and test API calls directly from your browser.
+The API reference is automatically generated from our OpenAPI specification and provides an interactive interface to explore all endpoints, view request/response schemas, and test API calls directly from your browser.
 
 ## Endpoint Categories
 

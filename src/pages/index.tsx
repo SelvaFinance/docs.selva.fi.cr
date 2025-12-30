@@ -1,3 +1,4 @@
+import React from 'react';
 import clsx from 'clsx';
 import Link from '@docusaurus/Link';
 import Layout from '@theme/Layout';
@@ -22,7 +23,7 @@ function HomepageHeader() {
           </Link>
           <Link
             className="button button--primary button--lg"
-            to="/docs/api-reference"
+            to="/scalar"
             style={{ marginLeft: '1rem' }}>
             API Reference
           </Link>
@@ -70,7 +71,7 @@ function HomepageFeatures() {
   );
 }
 
-export default function Home(): JSX.Element {
+export default function Home(): React.ReactElement {
   return (
     <Layout
       title="Home"

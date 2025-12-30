@@ -68,7 +68,7 @@ docs.selva.fi.cr/
 - **Overview** (`/docs/overview`) - API overview and capabilities
 - **Getting Started** (`/docs/getting-started`) - Quickstart guide
 - **Authentication** (`/docs/authentication`) - OAuth 2.0 flow documentation
-- **API Reference** (`/docs/api-reference`) - Interactive API documentation
+- **API Reference** (`/scalar`) - Interactive API documentation
 - **Common Workflows** (`/docs/common-workflows`) - Integration patterns
 - **Errors** (`/docs/errors`) - Error handling guide
 
