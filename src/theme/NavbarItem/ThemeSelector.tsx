@@ -114,10 +114,7 @@ export default function ThemeSelector(): React.ReactElement {
       to: '#',
       onClick: (e) => {
         e.preventDefault();
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('docusaurus-theme');
-          window.location.reload();
-        }
+        setColorMode(null);
       },
       className: !colorModeChoice ? 'dropdown__link--active' : undefined,
     },
