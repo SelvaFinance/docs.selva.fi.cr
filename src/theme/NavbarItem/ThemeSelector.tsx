@@ -3,7 +3,7 @@ import { useColorMode } from '@docusaurus/theme-common';
 import DropdownNavbarItem from '@theme/NavbarItem/DropdownNavbarItem';
 
 export default function ThemeSelector(): React.ReactElement {
-  const { colorMode, setColorMode } = useColorMode();
+  const { colorMode, setColorMode, colorModeChoice } = useColorMode();
   const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
@@ -83,8 +83,12 @@ export default function ThemeSelector(): React.ReactElement {
           <span>Light</span>
         </span>
       ),
-      onClick: () => setColorMode('light'),
-      active: colorMode === 'light',
+      to: '#',
+      onClick: (e) => {
+        e.preventDefault();
+        setColorMode('light');
+      },
+      className: colorModeChoice === 'light' ? 'dropdown__link--active' : undefined,
     },
     {
       label: (
@@ -93,8 +97,12 @@ export default function ThemeSelector(): React.ReactElement {
           <span>Dark</span>
         </span>
       ),
-      onClick: () => setColorMode('dark'),
-      active: colorMode === 'dark',
+      to: '#',
+      onClick: (e) => {
+        e.preventDefault();
+        setColorMode('dark');
+      },
+      className: colorModeChoice === 'dark' ? 'dropdown__link--active' : undefined,
     },
     {
       label: (
@@ -103,13 +111,15 @@ export default function ThemeSelector(): React.ReactElement {
           <span>System</span>
         </span>
       ),
-      onClick: () => {
+      to: '#',
+      onClick: (e) => {
+        e.preventDefault();
         if (typeof window !== 'undefined') {
           localStorage.removeItem('docusaurus-theme');
           window.location.reload();
         }
       },
-      active: colorMode === undefined || getLocalStorageTheme() === null,
+      className: !colorModeChoice ? 'dropdown__link--active' : undefined,
     },
   ];
 
