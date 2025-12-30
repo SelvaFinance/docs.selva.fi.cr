@@ -34,8 +34,18 @@ const config = {
   // useful metadata like html lang. For example, if your site is Chinese, you
   // may want to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: "es",
-    locales: ["es", "en"],
+    defaultLocale: "en",
+    locales: ["en", "es"],
+    localeConfigs: {
+      en: {
+        htmlLang: "en",
+        label: "English",
+      },
+      es: {
+        htmlLang: "es",
+        label: "Español",
+      },
+    },
   },
 
   presets: [
@@ -106,11 +116,6 @@ const config = {
             to: "/docs/release-notes",
             label: "Release Notes",
             position: "left",
-          },
-          {
-            href: "https://github.com/SelvaFinance/docs.selva.fi.cr",
-            label: "GitHub",
-            position: "right",
           },
           {
             type: "localeDropdown",

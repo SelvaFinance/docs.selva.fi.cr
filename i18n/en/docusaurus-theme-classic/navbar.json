@@ -8,11 +8,8 @@
     "description": "The alt text of navbar logo"
   },
   "item.label.Developer Guide": {
-    "message": "Guía de Desarrolladores",
+    "message": "Developer Guide",
     "description": "Navbar item with label Developer Guide"
-  },
-  "theme.navbar.LanguageSwitcher.label": {
-    "message": "Español"
   },
   "item.label.MCP (Coming soon)": {
     "message": "MCP (Coming soon)",

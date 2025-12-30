@@ -9,12 +9,7 @@ export default function ScalarApiReference(): React.ReactElement {
   return (
     <BrowserOnly>
       {() => {
-        // The Scalar Docusaurus plugin creates a route at /api-reference
-        // We'll embed it using an iframe
-        // Use the baseUrl from Docusaurus config to construct the correct URL
-        // baseUrl already includes leading slash, so we need to handle it properly
-        const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
-        const scalarUrl = `${window.location.origin}${normalizedBaseUrl}api-reference`;
+        const scalarUrl = `${window.location.origin}/api-reference`;
 
         return (
           <div

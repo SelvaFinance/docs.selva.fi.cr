@@ -130,7 +130,7 @@ console.log('Payment created:', payment);
 ## Next Steps
 
 - Learn about [Authentication](/docs/authentication) in detail
-- Explore the [API Reference](/api-reference) for all available endpoints
+- Explore the <a href="/api-reference" target="_blank">API Reference</a> for all available endpoints
 - Check out [Common Workflows](/docs/common-workflows) for integration patterns
 - Review [Error Handling](/docs/errors) to handle errors gracefully
 

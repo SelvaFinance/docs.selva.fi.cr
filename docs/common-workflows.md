@@ -329,7 +329,7 @@ try {
 
 ## Next Steps
 
-- Review the [API Reference](/api-reference) for all available endpoints
+- Review the <a href="/api-reference" target="_blank">API Reference</a> for all available endpoints
 - Check the [Error Handling guide](/docs/errors) for error codes and strategies
 - See [Authentication](/docs/authentication) for token management
 
