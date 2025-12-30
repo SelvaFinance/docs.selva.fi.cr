@@ -347,7 +347,7 @@ async function logError(error, context) {
 ## Next Steps
 
 - Review [Common Workflows](/docs/common-workflows) for error handling patterns
-- Check the [API Reference](/scalar) for endpoint-specific errors
+- Check the [API Reference](/api-reference) for endpoint-specific errors
 - See [Authentication](/docs/authentication) for token error handling
 
 

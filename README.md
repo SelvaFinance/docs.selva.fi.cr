@@ -22,11 +22,13 @@ This documentation site provides comprehensive API documentation for the Selva F
 ### Setup
 
 1. Install dependencies:
+
 ```bash
 yarn install
 ```
 
 2. Start the development server:
+
 ```bash
 yarn start
 ```
@@ -36,6 +38,7 @@ The site will be available at `http://localhost:3000`
 ### Build
 
 Build the site for production:
+
 ```bash
 yarn build
 ```
@@ -43,6 +46,7 @@ yarn build
 ### Serve Production Build
 
 Preview the production build locally:
+
 ```bash
 yarn serve
 ```
@@ -68,7 +72,7 @@ docs.selva.fi.cr/
 - **Overview** (`/docs/overview`) - API overview and capabilities
 - **Getting Started** (`/docs/getting-started`) - Quickstart guide
 - **Authentication** (`/docs/authentication`) - OAuth 2.0 flow documentation
-- **API Reference** (`/scalar`) - Interactive API documentation
+- **API Reference** (`/api-reference`) - Interactive API documentation
 - **Common Workflows** (`/docs/common-workflows`) - Integration patterns
 - **Errors** (`/docs/errors`) - Error handling guide
 
@@ -86,6 +90,7 @@ The API specification is located at `static/openapi/openapi.yaml`. This file is:
 The site is automatically deployed to GitHub Pages via GitHub Actions when changes are pushed to the `main` branch.
 
 The deployment workflow:
+
 1. Builds the Docusaurus site
 2. Deploys to the `gh-pages` branch
 3. Publishes to `https://docs.selva.fi.cr` (custom domain)
@@ -93,6 +98,7 @@ The deployment workflow:
 ### Manual Deployment
 
 To manually deploy:
+
 ```bash
 yarn deploy
 ```
@@ -102,6 +108,7 @@ yarn deploy
 ### GitHub Pages Settings
 
 The site is configured for GitHub Pages deployment with a custom domain:
+
 - **Organization**: SelvaFinance
 - **Repository**: docs.selva.fi.cr
 - **Custom Domain**: `docs.selva.fi.cr`
@@ -125,5 +132,5 @@ Scalar is configured in `docusaurus.config.js` to load the OpenAPI spec from `/o
 ## Resources
 
 - [Docusaurus Documentation](https://docusaurus.io/docs)
-- [Scalar Documentation](https://scalar.com/docs)
+- [Scalar Documentation](https://api-reference.com/docs)
 - [OpenAPI Specification](https://swagger.io/specification/)

@@ -11,7 +11,7 @@ La API de Selva proporciona un conjunto completo de endpoints para el procesamie
 
 Explora todos los endpoints disponibles, prueba solicitudes y ve respuestas utilizando nuestra documentación de API interactiva con tecnología Scalar.
 
-**Abra la referencia de API interactiva:** [/scalar](/scalar)
+**Abra la referencia de API interactiva:** [/api-reference](/api-reference)
 
 La referencia de la API se genera automáticamente a partir de nuestra especificación OpenAPI y proporciona una interfaz interactiva para explorar todos los endpoints, ver esquemas de solicitud/respuesta y probar llamadas a la API directamente desde su navegador.
 

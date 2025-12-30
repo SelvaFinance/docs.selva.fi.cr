@@ -182,11 +182,11 @@ You can test the authentication flow using:
 
 1. **Postman**: Import our Postman collection and use the OAuth 2.0 helper
 2. **cURL**: Use the examples above
-3. **API Reference**: Try the endpoints in the [API Reference](/scalar)
+3. **API Reference**: Try the endpoints in the [API Reference](/api-reference)
 
 ## Next Steps
 
-- Explore the [API Reference](/scalar) to see all available endpoints
+- Explore the [API Reference](/api-reference) to see all available endpoints
 - Learn about [Common Workflows](/docs/common-workflows) for typical integration patterns
 - Review [Error Handling](/docs/errors) to handle errors properly
 

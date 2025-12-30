@@ -9,8 +9,6 @@ const sidebars = {
     "authentication",
     "common-workflows",
     "errors",
-    "mcp",
-    "release-notes",
   ],
 };
 
