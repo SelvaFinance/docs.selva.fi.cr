@@ -5,17 +5,38 @@ import DropdownNavbarItem from '@theme/NavbarItem/DropdownNavbarItem';
 export default function ThemeSelector(): React.ReactElement {
   const { colorMode, setColorMode, colorModeChoice } = useColorMode();
   const [isClient, setIsClient] = useState(false);
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
     setIsClient(true);
   }, []);
 
-  const getLocalStorageTheme = () => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('docusaurus-theme');
+  useEffect(() => {
+    if (!initialized && isClient) {
+      const hasUserThemeChoice = localStorage.getItem('selva-theme-choice');
+      const docusaurusTheme = localStorage.getItem('docusaurus-theme');
+
+      if (!hasUserThemeChoice && docusaurusTheme) {
+        localStorage.removeItem('docusaurus-theme');
+        localStorage.setItem('selva-theme-choice', 'system');
+
+        setColorMode(null);
+      }
+
+      setInitialized(true);
     }
-    return null;
+  }, [isClient, initialized]);
+
+  const handleThemeChange = (mode: 'light' | 'dark' | null) => {
+    if (mode === null) {
+      localStorage.removeItem('selva-theme-choice');
+    } else {
+      localStorage.setItem('selva-theme-choice', mode);
+    }
+
+    setColorMode(mode);
   };
+
 
   const SunIcon = () => (
     <svg
@@ -79,6 +100,20 @@ export default function ThemeSelector(): React.ReactElement {
     {
       label: (
         <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <MonitorIcon />
+          <span>System</span>
+        </span>
+      ),
+      to: '#',
+      onClick: (e) => {
+        e.preventDefault();
+        handleThemeChange(null);
+      },
+      className: !colorModeChoice ? 'dropdown__link--active' : undefined,
+    },
+    {
+      label: (
+        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <SunIcon />
           <span>Light</span>
         </span>
@@ -86,7 +121,7 @@ export default function ThemeSelector(): React.ReactElement {
       to: '#',
       onClick: (e) => {
         e.preventDefault();
-        setColorMode('light');
+        handleThemeChange('light');
       },
       className: colorModeChoice === 'light' ? 'dropdown__link--active' : undefined,
     },
@@ -100,27 +135,13 @@ export default function ThemeSelector(): React.ReactElement {
       to: '#',
       onClick: (e) => {
         e.preventDefault();
-        setColorMode('dark');
+        handleThemeChange('dark');
       },
       className: colorModeChoice === 'dark' ? 'dropdown__link--active' : undefined,
     },
-    {
-      label: (
-        <span style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <MonitorIcon />
-          <span>System</span>
-        </span>
-      ),
-      to: '#',
-      onClick: (e) => {
-        e.preventDefault();
-        setColorMode(null);
-      },
-      className: !colorModeChoice ? 'dropdown__link--active' : undefined,
-    },
   ];
 
-  const icon = colorMode === 'dark' ? <MoonIcon /> : <SunIcon />;
+  const icon = !colorModeChoice ? <MonitorIcon /> : colorMode === 'dark' ? <MoonIcon /> : <SunIcon />;
 
   return (
     <DropdownNavbarItem
