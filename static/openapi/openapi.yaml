@@ -173,7 +173,7 @@ paths:
                       items:
                         type: string
               examples:
-                single_error:
+                Single Validation Error:
                   value:
                     success: false
                     message: Amount exceeds maximum limit
@@ -181,7 +181,7 @@ paths:
                     errors:
                       amount:
                         - Amount exceeds maximum limit
-                multiple_errors:
+                Multiple Validation Errors:
                   value:
                     success: false
                     message: Source account does not exist
@@ -192,7 +192,7 @@ paths:
                         - You do not own this account
                       amount:
                         - Amount exceeds maximum limit
-                both_recipient_fields:
+                Both Recipient Fields Provided:
                   value:
                     success: false
                     message: Only one recipient field should be provided
@@ -200,7 +200,7 @@ paths:
                     errors:
                       recipient:
                         - Cannot provide both recipient_iban and recipient_phone
-                missing_idempotency_key:
+                Missing Idempotency Key:
                   value:
                     success: false
                     message: X-Idempotency-Key header is required
@@ -244,12 +244,12 @@ paths:
                   type: string
                   description: Payment reference (optional)
             examples:
-              with_iban:
+              PIN Transfer:
                 value:
                   from_account_id: 70242935-a11b-4018-8e84-0413a8ac9d67
                   amount: 1000
                   recipient_iban: CR02010200000000000001
-              with_phone:
+              SINPE Móvil Transfer:
                 value:
                   from_account_id: 70242935-a11b-4018-8e84-0413a8ac9d67
                   amount: 2500
