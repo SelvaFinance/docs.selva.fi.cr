@@ -1,16 +1,16 @@
 ---
 sidebar_position: 7
-title: Notas de la versión
+title: Release Notes
 ---
 
-# Notas de la Versión
+# Release Notes
 
-Actualizaciones a la plataforma Selva API, incluyendo pagos, gestión de cuentas y más.
+Updates to the Selva API platform, including payments, account management, and more.
 
-### Enero 30, 2025
+### January 30, 2025
 
-- Documentación inicial de Selva API
-- Endpoints de pagos
-- Endpoints de gestión de cuentas
-- Suscripciones a webhooks
-- Referencia de API interactiva con Scalar
+- Initial Selva API documentation
+- Payments endpoints
+- Account management endpoints
+- Webhook subscriptions
+- Interactive API reference with Scalar

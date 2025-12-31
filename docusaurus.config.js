@@ -118,25 +118,17 @@ const config = {
       footer: {
         style: "dark",
         links: [
-          // {
-          //   title: "Documentation",
-          //   items: [
-          //     {
-          //       label: "Getting Started",
-          //       to: "/docs/getting-started",
-          //     },
-          //     {
-          //       label: "API Reference",
-          //       to: "/api-reference",
-          //     },
-          //   ],
-          // },
-          // {
-          //   title: "More",
-          //   items: [],
-          // },
+          {
+            title: "Contact",
+            items: [
+              {
+                label: "info@selvafinance.com",
+                href: "mailto:info@selvafinance.com",
+              },
+            ],
+          },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Selva Finance.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Selva Finance · info@selvafinance.com`,
       },
       prism: {
         theme: lightCodeTheme,

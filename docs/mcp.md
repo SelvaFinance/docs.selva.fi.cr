@@ -3,8 +3,8 @@ sidebar_position: 6
 title: MCP
 ---
 
-# MCP (Próximamente)
+# MCP (Coming soon)
 
-Model Context Protocol (MCP) está próximamente.
+Model Context Protocol (MCP) is coming soon.
 
-Mantente atento a las actualizaciones sobre cómo usar MCP con Selva API.
+Stay tuned for updates on how to use MCP with Selva API.
