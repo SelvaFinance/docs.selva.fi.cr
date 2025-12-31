@@ -13,27 +13,31 @@ Selva (Soluciones Electrónicas Locales de Valor) is a financial services platfo
 ## Key Features
 
 ### Payment Processing
-- Create and process payments
-- Validate payment details before processing
-- Retrieve payment history and status
-- Support for multiple payment methods (transfers, cards, cash)
+- Send payments via PIN (IBAN) or SINPE Móvil (phone)
+- Validate payment payloads before submitting (`POST /api/payments/validate`)
+- Initiate payments with idempotency protection (`POST /api/payments` with `X-Idempotency-Key`)
+- Retrieve payment history and specific payment status
+- Check payment rail availability (`GET /api/payments/service-status`)
 
 ### Account Management
-- Create and manage accounts
-- Check account balances
-- View account details and information
-- Retrieve transaction history and movements
-- Access KYC (Know Your Customer) status
+- Create multi-currency accounts
+- List, view, and fetch balances/details for accounts
+- Retrieve account movements and specific transfer details
+- KYC is handled at the user level (see KYC & Onboarding)
+
+### KYC & Onboarding
+- Track KYC status (`GET /api/kyc/status`)
+- Create/update KYC applications (`GET/POST /api/kyc/application`)
+- Submit applications and upload documents (`POST /api/kyc/submit`, `POST /api/kyc/document`)
 
 ### Verification Services
-- Verify phone numbers
-- Validate IBAN (International Bank Account Number)
-- Check account information
+- Validate SINPE phone ownership (`GET /api/phone/information`)
+- Validate IBAN and account holder data (`GET /api/iban/information`)
 
 ### Webhooks
-- Subscribe to real-time events
-- Receive notifications for payments, transfers, and account activities
-- Configure custom headers and retry policies
+- Manage subscriptions (list/get/create/delete)
+- Control delivery with suspend/resume actions and per-subscription secrets
+- Receive payment and account events in real time
 
 ## API Architecture
 
@@ -47,9 +51,9 @@ All API requests use JSON for request and response bodies, and require OAuth 2.0
 
 ## Base URLs
 
-- **Development**: `https://dev.selva.fi.cr`
-- **Production**: `https://api.selva.fi.cr` (contact support for access)
-- **Local**: `http://localhost` (for local development)
+- **Development**: `https://dev.selva.fi.cr/api`
+- **Production**: `https://api.selva.fi.cr/api` (contact support for access)
+- **Local**: `http://localhost:8000/api` (for local development)
 
 ## Authentication
 
@@ -63,7 +67,7 @@ See the [Authentication guide](/docs/authentication) for detailed instructions.
 
 ## Rate Limits
 
-API rate limits are applied per client and endpoint. Contact support for information about your specific rate limits.
+No explicit per-endpoint rate limits are enforced yet. Payments rely on idempotency keys to prevent duplicates; contact support for production quota details.
 
 ## Support
 
@@ -71,7 +75,7 @@ For questions, issues, or feature requests:
 
 - **Email**: support@selva.fi.cr
 - **Documentation**: This site
-- **Status Page**: Check service availability at `/api/IsServiceAvailable`
+- **Status**: Check payment rail availability at `GET /api/payments/service-status`
 
 ## Getting Started
 

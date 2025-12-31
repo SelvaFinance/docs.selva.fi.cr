@@ -45,7 +45,7 @@ GET https://dev.selva.fi.cr/oauth/authorize?
   client_id=your-client-id&
   redirect_uri=https://your-app.com/callback&
   response_type=code&
-  scope=read write
+  scope=read-user read-accounts send-payments manage-webhooks
 ```
 
 ### Parameters
@@ -53,7 +53,7 @@ GET https://dev.selva.fi.cr/oauth/authorize?
 - **client_id** (required): Your application's client ID
 - **redirect_uri** (required): The URI to redirect to after authorization. Must match a registered redirect URI.
 - **response_type** (required): Must be `code` for authorization code flow
-- **scope** (optional): Space-separated list of scopes (e.g., `read write`)
+- **scope** (optional): Space-separated scopes you need (for example `read-accounts send-payments`)
 
 ### Example
 
@@ -62,7 +62,7 @@ const authUrl = new URL('https://dev.selva.fi.cr/oauth/authorize');
 authUrl.searchParams.set('client_id', 'your-client-id');
 authUrl.searchParams.set('redirect_uri', 'https://your-app.com/callback');
 authUrl.searchParams.set('response_type', 'code');
-authUrl.searchParams.set('scope', 'read write');
+authUrl.searchParams.set('scope', 'read-accounts send-payments');
 
 // Redirect user to authUrl.toString()
 window.location.href = authUrl.toString();
@@ -90,7 +90,8 @@ curl -X POST https://dev.selva.fi.cr/oauth/token \
     "client_id": "your-client-id",
     "client_secret": "your-client-secret",
     "redirect_uri": "https://your-app.com/callback",
-    "code": "AUTHORIZATION_CODE"
+    "code": "AUTHORIZATION_CODE",
+    "scope": "read-accounts send-payments manage-webhooks"
   }'
 ```
 
@@ -102,13 +103,13 @@ curl -X POST https://dev.selva.fi.cr/oauth/token \
   "token_type": "Bearer",
   "expires_in": 3600,
   "refresh_token": "refresh-token-here",
-  "scope": "read write"
+  "scope": "read-accounts send-payments manage-webhooks"
 }
 ```
 
 ## Step 4: Use the Access Token
 
-Include the access token in the `Authorization` header of all API requests:
+Include the access token in the `Authorization` header of all API requests (and `X-Idempotency-Key` where required):
 
 ```bash
 curl -X GET https://dev.selva.fi.cr/api/accounts \
@@ -121,6 +122,8 @@ Access tokens expire after a set period (typically 1 hour). When a token expires
 
 1. Use the `refresh_token` to obtain a new access token
 2. Or redirect the user through the authorization flow again
+
+Include `Accept: application/json` on token and API calls to ensure consistent responses.
 
 ## Refresh Tokens
 
@@ -139,11 +142,13 @@ curl -X POST https://dev.selva.fi.cr/oauth/token \
 
 ## Scopes
 
-Scopes define what your application can access:
+Request only what you need (space-separated):
 
-- **read**: Read account information, balances, and transactions
-- **write**: Create payments and manage accounts
-- **webhooks**: Manage webhook subscriptions
+- **read-user**: Read basic profile information
+- **read-accounts**: View account information, balances, transfers
+- **manage-accounts**: Create accounts
+- **send-payments**: Create/validate/payments and view payment history/status
+- **manage-webhooks**: Manage webhook subscriptions
 
 Request scopes during the authorization step. Users can grant or deny specific scopes.
 
@@ -151,10 +156,10 @@ Request scopes during the authorization step. Users can grant or deny specific s
 
 1. **Never expose client secrets**: Keep your `client_secret` on the server side only
 2. **Use HTTPS**: Always use HTTPS for all API calls
-3. **Store tokens securely**: Encrypt tokens in your database
+3. **Store tokens securely**: Encrypt tokens in your database and rotate refresh tokens as needed
 4. **Validate redirect URIs**: Only use registered redirect URIs
 5. **Handle errors gracefully**: Implement proper error handling for expired or invalid tokens
-6. **Use idempotency keys**: Include `X-Idempotency-Key` headers for payment requests
+6. **Use idempotency keys**: Include `X-Idempotency-Key` headers for payment requests (required for `POST /api/payments`)
 
 ## Error Responses
 
@@ -172,7 +177,7 @@ Common errors:
 - `invalid_client`: Invalid client ID or secret
 - `invalid_grant`: Invalid or expired authorization code
 - `invalid_scope`: Requested scope is invalid
-- `unauthorized`: Access token is invalid or expired
+- `invalid_token`: Access token is missing, invalid, or expired
 
 See the [Error Handling guide](/docs/errors) for more details.
 
