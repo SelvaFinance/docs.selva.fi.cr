@@ -2,10 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { useColorMode } from '@docusaurus/theme-common';
 import DropdownNavbarItem from '@theme/NavbarItem/DropdownNavbarItem';
 
+type ThemeChoice = 'system' | 'light' | 'dark';
+
+const getSystemMode = (): 'light' | 'dark' => {
+  if (typeof window === 'undefined') {
+    return 'light';
+  }
+
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+};
+
 export default function ThemeSelector(): React.ReactElement {
-  const { colorMode, setColorMode, colorModeChoice } = useColorMode();
+  const { colorMode, setColorMode } = useColorMode();
   const [isClient, setIsClient] = useState(false);
   const [initialized, setInitialized] = useState(false);
+  const [themeChoice, setThemeChoice] = useState<ThemeChoice>('system');
 
   useEffect(() => {
     setIsClient(true);
@@ -13,27 +24,35 @@ export default function ThemeSelector(): React.ReactElement {
 
   useEffect(() => {
     if (!initialized && isClient) {
-      const hasUserThemeChoice = localStorage.getItem('selva-theme-choice');
+      const storedChoice = localStorage.getItem('selva-theme-choice');
       const docusaurusTheme = localStorage.getItem('docusaurus-theme');
 
-      if (!hasUserThemeChoice && docusaurusTheme) {
+      if (!storedChoice && docusaurusTheme) {
         localStorage.removeItem('docusaurus-theme');
-        localStorage.setItem('selva-theme-choice', 'system');
-
-        setColorMode(null);
+        setThemeChoice('system');
+        setColorMode(getSystemMode());
+      } else if (storedChoice === 'light' || storedChoice === 'dark') {
+        setThemeChoice(storedChoice);
+        setColorMode(storedChoice);
+      } else {
+        setThemeChoice('system');
+        setColorMode(getSystemMode());
       }
 
       setInitialized(true);
     }
-  }, [isClient, initialized]);
+  }, [isClient, initialized, setColorMode]);
 
-  const handleThemeChange = (mode: 'light' | 'dark' | null) => {
-    if (mode === null) {
+  const handleThemeChange = (mode: ThemeChoice) => {
+    setThemeChoice(mode);
+
+    if (mode === 'system') {
       localStorage.removeItem('selva-theme-choice');
-    } else {
-      localStorage.setItem('selva-theme-choice', mode);
+      setColorMode(getSystemMode());
+      return;
     }
 
+    localStorage.setItem('selva-theme-choice', mode);
     setColorMode(mode);
   };
 
@@ -107,9 +126,9 @@ export default function ThemeSelector(): React.ReactElement {
       to: '#',
       onClick: (e) => {
         e.preventDefault();
-        handleThemeChange(null);
+        handleThemeChange('system');
       },
-      className: !colorModeChoice ? 'dropdown__link--active' : undefined,
+      className: themeChoice === 'system' ? 'dropdown__link--active' : undefined,
     },
     {
       label: (
@@ -123,7 +142,7 @@ export default function ThemeSelector(): React.ReactElement {
         e.preventDefault();
         handleThemeChange('light');
       },
-      className: colorModeChoice === 'light' ? 'dropdown__link--active' : undefined,
+      className: themeChoice === 'light' ? 'dropdown__link--active' : undefined,
     },
     {
       label: (
@@ -137,11 +156,11 @@ export default function ThemeSelector(): React.ReactElement {
         e.preventDefault();
         handleThemeChange('dark');
       },
-      className: colorModeChoice === 'dark' ? 'dropdown__link--active' : undefined,
+      className: themeChoice === 'dark' ? 'dropdown__link--active' : undefined,
     },
   ];
 
-  const icon = !colorModeChoice ? <MonitorIcon /> : colorMode === 'dark' ? <MoonIcon /> : <SunIcon />;
+  const icon = themeChoice === 'system' ? <MonitorIcon /> : colorMode === 'dark' ? <MoonIcon /> : <SunIcon />;
 
   return (
     <DropdownNavbarItem

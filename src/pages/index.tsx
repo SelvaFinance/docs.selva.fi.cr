@@ -5,7 +5,7 @@ import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
 import styles from './index.module.css';
 
-const apiReferenceUrl = 'https://docs.selva.fi.cr/api-reference';
+const apiReferenceUrl = '/api-reference';
 
 const highlights = [
   { label: 'OpenAPI spec', detail: 'Reference stays in lockstep with production' },
@@ -82,9 +82,9 @@ function Hero() {
             <Link className="button button--primary button--lg" to="/docs/getting-started">
               Start building
             </Link>
-            <a className="button button--secondary button--lg" href={apiReferenceUrl}>
+            <Link className="button button--secondary button--lg" to={apiReferenceUrl}>
               View API reference
-            </a>
+            </Link>
           </div>
           <div className={styles.highlightStrip}>
             {highlights.map((item) => (
@@ -147,9 +147,9 @@ function WorkflowSection() {
           <Link className="button button--primary" to="/docs/getting-started">
             Quickstart
           </Link>
-          <a className="button button--secondary" href={apiReferenceUrl}>
+          <Link className="button button--secondary" to={apiReferenceUrl}>
             API reference
-          </a>
+          </Link>
         </div>
       </div>
     </section>
