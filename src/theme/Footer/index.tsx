@@ -58,23 +58,6 @@ export default function Footer(): React.ReactElement {
     <footer className={clsx('footer', styles.footer)}>
       <div className={clsx('container', styles.footerContainer)}>
         <div className={styles.footerGrid}>
-          <div className={styles.brandBlock}>
-            <div className={styles.brandRow}>
-              <LogoMark />
-              <div>
-                <div className={styles.brandTitle}>Selva API</div>
-                <div className={styles.brandSubtitle}>Build reliable payments and operations.</div>
-              </div>
-            </div>
-            <div className={styles.brandCtaRow}>
-              <Link className={clsx('button button--primary button--sm', styles.brandCta)} to="/docs/getting-started">
-                Start building
-              </Link>
-              <Link className={clsx('button button--secondary button--sm', styles.brandCta)} to="/api-reference">
-                View API reference
-              </Link>
-            </div>
-          </div>
 
           {columns.map((col) => (
             <div key={col.title} className={styles.linkColumn}>

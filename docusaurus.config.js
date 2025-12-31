@@ -68,7 +68,7 @@ const config = {
       {
         label: "API Reference",
         route: "/api-reference",
-        showNavLink: false,
+        showNavLink: true,
         configuration: {
           spec: {
             content: fs.readFileSync(
