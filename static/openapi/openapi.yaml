@@ -257,34 +257,164 @@ paths:
   /api/payments/validate:
     post:
       summary: Validate Payment
+      description: Validates payment details without initiating the transaction. Returns validation status and any errors.
       parameters:
         - name: X-Idempotency-Key
           in: header
-          required: false
+          required: true
           deprecated: false
           schema: {}
-          example: "{{$randomUUID}}"
-      responses: {}
+          example: "UUID"
+      responses:
+        "200":
+          description: Payment validated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      payment_type:
+                        type: string
+                      estimated_fees:
+                        type: object
+                        properties:
+                          base_fee:
+                            type: number
+                          currency:
+                            type: string
+                          total_fee:
+                            type: number
+                      service_available:
+                        type: boolean
+              example:
+                success: true
+                message: Payment data is valid
+                data:
+                  payment_type: pin
+                  estimated_fees:
+                    base_fee: 2
+                    currency: CRC
+                    total_fee: 2
+                  service_available: true
+        "409":
+          description: Duplicate request (X-Idempotency-Key already used)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                  errors:
+                    type: object
+              example:
+                success: false
+                message: Payment already processed
+                data: null
+                errors: {}
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+              examples:
+                Missing Idempotency Key:
+                  value:
+                    success: false
+                    message: X-Idempotency-Key header is required
+                    data: null
+                    errors:
+                      X-Idempotency-Key:
+                        - X-Idempotency-Key header is required
+                Both Recipient Fields Provided:
+                  value:
+                    success: false
+                    message: Cannot specify both IBAN and phone number for recipient
+                    data: null
+                    errors:
+                      recipient:
+                        - Cannot specify both IBAN and phone number for recipient
+                Negative Amount:
+                  value:
+                    success: false
+                    message: The amount must be greater than 0
+                    data: null
+                    errors:
+                      amount:
+                        - The amount must be greater than 0
       tags:
         - Payments
       security:
         - BearerAuth: []
       requestBody:
+        description: Either recipient_iban or recipient_phone must be provided (not both). If both are provided, the API will return a validation error.
         content:
           application/json:
             schema:
               type: object
-            example: |-
-              {
-                  "from_account_id": "",
-                  "amount": "",
-                  "recipient_id": "",
-                  // "recipient_iban": ""
-                  "recipient_phone": ""
-                  // "recipient_email": "",
-                  // "description": "",
-                  // "reference": ""
-              }
+              required:
+                - from_account_id
+                - amount
+              properties:
+                from_account_id:
+                  type: string
+                  description: Source account ID
+                amount:
+                  type: number
+                  description: Payment amount
+                recipient_iban:
+                  $ref: "#/components/schemas/CostaRicaIBAN"
+                  description: Recipient IBAN (required if recipient_phone not provided)
+                recipient_phone:
+                  $ref: "#/components/schemas/CostaRicaPhone"
+                  description: Recipient phone number (required if recipient_iban not provided)
+                recipient_email:
+                  type: string
+                  description: Recipient email (optional)
+                description:
+                  type: string
+                  description: Payment description (optional)
+                reference:
+                  type: string
+                  description: Payment reference (optional)
+            examples:
+              With IBAN:
+                value:
+                  from_account_id: 70242935-a11b-4018-8e84-0413a8ac9d67
+                  amount: 1000
+                  recipient_iban: CR02010200000000000001
+              With Phone:
+                value:
+                  from_account_id: 70242935-a11b-4018-8e84-0413a8ac9d67
+                  amount: 2500
+                  recipient_phone: "88881234"
   /api/payments/{id}:
     get:
       summary: Get Payment Details
