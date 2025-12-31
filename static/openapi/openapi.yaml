@@ -5,70 +5,75 @@ info:
   description: Soluciones Electrónicas Locales de Valor
 servers:
   - url: https://dev.selva.fi.cr
-  - url: http://localhost
-  - url: "{{URL_API}}"
+  - url: https://selva.fi.cr
 paths:
-  /oauth/authorize:
-    get:
-      summary: oauth/code
-      parameters:
-        - name: client_id
-          in: query
-          schema:
-            type: string
-          example: 019aa1d3-b622-719d-b880-cda1449b1346
-        - name: redirect_uri
-          in: query
-          schema:
-            type: string
-          example: https://oauthdebugger.com/debug
-        - name: response_type
-          in: query
-          schema:
-            type: string
-          example: code
-        - name: scope
-          in: query
-          schema:
-            type: string
-          example: "*"
-      responses: {}
-      tags:
-        - Auth
-  /oauth/token:
-    post:
-      summary: oauth/token
-      responses: {}
-      tags:
-        - Auth
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                grant_type:
-                  type: string
-                client_id:
-                  type: string
-                client_secret:
-                  type: string
-                redirect_uri:
-                  type: string
-                  format: uri
-                code:
-                  type: string
-            example:
-              grant_type: authorization_code
-              client_id: 0199df95-cc3c-72ce-8c4c-8c06398bc207
-              client_secret: EhQS3lvwDug2vrEVM8k6Pc2PmhCAnFdBVRRa5xNM
-              redirect_uri: https://oauthdebugger.com/debug
-              code: >-
-                def5020095c2df29c8fa38cacecb60e50fd559e955b2d36ace5559d1f904b6c43b22e0f7a5b83327167d08edd3f71c317b979b680d2a95a778615e98af51d22c7b675df4baa598654ad174892f49b8ac4dfdafc76eb526dbb789974fe201a2d3bf1a003e9c4fbf184ac1c9bc3120130972fa3b2625666f5be012ca224371c195b8ca98567b897b9f2ed3530ce5fe41f823997f7d65fb8ea7ed1c9948dc800a387a40ca03e1794929d6c853822352861d61f31b6285dfb380b8fe2148ee5e5352fa5c316618232384a78999976d2a2072a179e976922c59b5c9984040c6f6769ddd4da979551c0397c618a0c3ec8e925fd32cb251194850f13d403fa8ed7c9ee5fd6c035f413508a1b9ca0d0a37529dcc9f7d9d26eccbf273163cf004dcddf7bff9f804b5d36019c63da0b3662a1349604c742f103ac046ba99ff060241b57be060ea21adab7b2875acef704024d4db501fdd1919c633b19a8d90bb15d88453ac0809e5f59ddaa8d96b3011c46cfb6f5c38a16e740f6ac2f32e96b39e04b62ad47f363ac267243f6800f58bffafe2f426cd752677d7068552e2e4a11936024a6de3fa0e3b3eb8809a9198ccf485dfe436782eea1ca268ec73d49128381cefc6eb7ddebb32007d624123e1f8b921b3b847fdf8
   /api/user:
     get:
       summary: Get User
-      responses: {}
+      responses:
+        "200":
+          description: User retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      name:
+                        type: string
+                      email:
+                        type: string
+                        format: email
+                      email_verified_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      created_at:
+                        type: string
+                        format: date-time
+                      updated_at:
+                        type: string
+                        format: date-time
+              example:
+                success: true
+                message: User retrieved successfully
+                data:
+                  id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
+                  name: Philippe Lamy
+                  email: philippe@selva.com
+                  email_verified_at: null
+                  created_at: 2025-12-12T13:30:05.000000Z
+                  updated_at: 2025-12-12T13:31:58.000000Z
+        "401":
+          description: Unauthenticated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                  errors:
+                    type: object
+              example:
+                success: false
+                message: Unauthenticated.
+                data: null
+                errors: {}
       tags:
         - User
       security:
@@ -83,7 +88,70 @@ paths:
           deprecated: false
           schema: {}
           example: "{{$randomUUID}}"
-      responses: {}
+      responses:
+        "201":
+          description: Payment initiated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      payment_id:
+                        type: string
+                        format: uuid
+                      payment_type:
+                        type: string
+                      status:
+                        type: string
+                      channel_reference:
+                        type: string
+              example:
+                success: true
+                message: Payment initiated successfully
+                data:
+                  payment_id: 5e74bd6c-46c5-4933-b46a-bb081e71663e
+                  payment_type: pin
+                  status: pending
+                  channel_reference: "2025123100001198137477666"
+        "409":
+          description: Already use X-Idempotency-Key (duplicated request)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                  errors:
+                    type: object
+                    properties:
+                      payment_id:
+                        type: string
+                        format: uuid
+                      payment_type:
+                        type: string
+                      status:
+                        type: string
+              example:
+                success: false
+                message: Payment already processed
+                data: null
+                errors:
+                  payment_id: 122434f8-0b17-4aa3-8063-d8baf978b617
+                  payment_type: pin
+                  status: pending
       tags:
         - Payments
       security:
@@ -627,12 +695,6 @@ paths:
                   Amount: 2500
                   CurrencyCode: CRC
                   Description: Transf SINPE de Prueba
-  /api/IsServiceAvailable:
-    post:
-      summary: api/IsServiceAvailable
-      responses: {}
-      tags:
-        - ProsoftSpecific
 components:
   securitySchemes:
     BearerAuth:
