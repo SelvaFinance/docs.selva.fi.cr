@@ -1,0 +1,134 @@
+.footer {
+  padding: 3rem 0 2.25rem;
+  background: var(--ifm-background-surface-color);
+  color: var(--ifm-font-color-base);
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+}
+
+[data-theme='dark'] .footer {
+  background: var(--ifm-background-surface-color);
+  border-top-color: var(--ifm-color-emphasis-300);
+}
+
+.footerContainer {
+  max-width: 1220px;
+}
+
+.footerGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 1.75rem 2rem;
+  align-items: start;
+}
+
+.brandBlock {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+  min-width: 260px;
+}
+
+.brandRow {
+  display: flex;
+  gap: 0.8rem;
+  align-items: center;
+}
+
+.logoMark {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: var(--ifm-color-primary);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.12);
+}
+
+.brandTitle {
+  font-weight: 700;
+  color: var(--ifm-font-color-base);
+}
+
+.brandSubtitle {
+  color: var(--ifm-color-secondary-dark);
+  font-size: 0.95rem;
+}
+
+.brandCtaRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.brandCta {
+  text-transform: none;
+}
+
+.linkColumn {
+  min-width: 200px;
+}
+
+.columnTitle {
+  font-weight: 700;
+  margin-bottom: 0.4rem;
+  color: var(--ifm-font-color-base);
+}
+
+.linkList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.3rem;
+}
+
+.linkItem {
+  line-height: 1.5;
+}
+
+.link {
+  color: var(--ifm-color-primary);
+  text-decoration: none;
+}
+
+.link:hover {
+  text-decoration: underline;
+}
+
+.bottomRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding-top: 1.5rem;
+  margin-top: 1.5rem;
+  border-top: 1px solid var(--ifm-color-emphasis-200);
+  color: var(--ifm-color-secondary-dark);
+  flex-wrap: wrap;
+}
+
+@media screen and (max-width: 600px) {
+  .footer {
+    padding: 2.5rem 0 2rem;
+  }
+
+  .footerGrid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .brandRow {
+    align-items: flex-start;
+  }
+
+  .logoMark {
+    width: 42px;
+    height: 42px;
+  }
+
+  .bottomRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
