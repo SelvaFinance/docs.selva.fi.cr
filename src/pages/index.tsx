@@ -4,9 +4,13 @@ import Link from '@docusaurus/Link';
 import Translate from '@docusaurus/Translate';
 import Layout from '@theme/Layout';
 import Heading from '@theme/Heading';
+import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 import styles from './index.module.css';
 
 function HomepageHeader() {
+  const { i18n } = useDocusaurusContext();
+  const apiReferenceUrl = 'https://docs.selva.fi.cr/api-reference';
+
   return (
     <header className={clsx('hero hero--primary', styles.heroBanner)}>
       <div className="container">
@@ -24,8 +28,7 @@ function HomepageHeader() {
           </Link>
           <a
             className="button button--primary button--lg"
-            href="/api-reference"
-            style={{ marginLeft: '1rem' }}>
+            href={apiReferenceUrl}>
             <Translate id="theme.Homepage.APIReference">API Reference</Translate>
           </a>
         </div>

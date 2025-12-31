@@ -35,15 +35,11 @@ const config = {
   // may want to replace "en" with "zh-Hans".
   i18n: {
     defaultLocale: "en",
-    locales: ["en", "es"],
+    locales: ["en"],
     localeConfigs: {
       en: {
         htmlLang: "en",
         label: "English",
-      },
-      es: {
-        htmlLang: "es",
-        label: "Español",
       },
     },
   },
@@ -116,10 +112,6 @@ const config = {
             to: "/docs/release-notes",
             label: "Release Notes",
             position: "left",
-          },
-          {
-            type: "localeDropdown",
-            position: "right",
           },
         ],
       },

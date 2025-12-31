@@ -11,6 +11,10 @@
     "message": "Developer Guide",
     "description": "Navbar item with label Developer Guide"
   },
+  "item.label.API Reference": {
+    "message": "API Reference",
+    "description": "Navbar item with label API Reference"
+  },
   "item.label.MCP (Coming soon)": {
     "message": "MCP (Coming soon)",
     "description": "Navbar item with label MCP (Coming soon)"
