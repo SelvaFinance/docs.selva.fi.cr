@@ -639,7 +639,6 @@ paths:
       responses: {}
       tags:
         - Webhook
-        - server
       security:
         - BearerAuth: []
     parameters:
@@ -653,7 +652,6 @@ paths:
       responses: {}
       tags:
         - Webhook
-        - server
       security:
         - BearerAuth: []
   /api/webhooks/subscriptions:
@@ -668,7 +666,6 @@ paths:
       responses: {}
       tags:
         - Webhook
-        - server
       security:
         - BearerAuth: []
     post:
@@ -676,7 +673,6 @@ paths:
       responses: {}
       tags:
         - Webhook
-        - server
       security:
         - BearerAuth: []
       requestBody:
@@ -708,7 +704,6 @@ paths:
       responses: {}
       tags:
         - Webhook
-        - server
       security:
         - BearerAuth: []
     parameters:
@@ -723,7 +718,6 @@ paths:
       responses: {}
       tags:
         - Webhook
-        - server
       security:
         - BearerAuth: []
     parameters:
@@ -732,182 +726,6 @@ paths:
         required: true
         schema:
           type: string
-  /api/kindo/pin/NotifyIncomingTransfers:
-    post:
-      summary: Simulate PIN-Based Credit Transfer
-      parameters:
-        - name: Signature
-          in: header
-          required: false
-          deprecated: false
-          schema: {}
-          example: 4e0080ca1c99925242c1c2ef9885d4efa2719b7669dfb8b9ed0a096738b29917
-      responses: {}
-      tags:
-        - Webhook
-        - client
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                SecurityInfo:
-                  type: string
-                Transfers:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      CGPRefNumber:
-                        type: integer
-                      SINPERefNumber:
-                        type: string
-                        format: utc-millisec
-                      AuthorizationDate:
-                        type: string
-                        format: style
-                      OriginEntity:
-                        type: string
-                      OriginCustomer:
-                        type: object
-                        properties:
-                          Id:
-                            type: string
-                          IdType:
-                            type: string
-                            format: utc-millisec
-                          Name:
-                            type: string
-                          IBAN:
-                            $ref: "#/components/schemas/CostaRicaIBAN"
-                      DestinationCustomer:
-                        type: object
-                        properties:
-                          Id:
-                            type: string
-                          IdType:
-                            type: string
-                            format: utc-millisec
-                          Name:
-                            type: string
-                          IBAN:
-                            $ref: "#/components/schemas/CostaRicaIBAN"
-                      Amount:
-                        type: integer
-                      CurrencyCode:
-                        type: string
-                      Description:
-                        type: string
-            example:
-              SecurityInfo: >-
-                7523e3fe7208500918ccee1c457d3c604de4e5d4f415547b821d6a6e8281cb779353352051a03baf4b4b84b95d7612506812d368e23e55fa79de2ab31e31d64e
-              Transfers:
-                - CGPRefNumber: 2000
-                  SINPERefNumber: "2025112481483010196438101"
-                  AuthorizationDate: "2025-11-24T11:29:46"
-                  OriginEntity: Banco Nacional
-                  OriginCustomer:
-                    Id: 01-0000-0000
-                    IdType: "0"
-                    Name: Bobby Fisher
-                    IBAN: CR92015101410010010721
-                  DestinationCustomer:
-                    Id: 07-0258-0327
-                    IdType: "0"
-                    Name: Leister Alvarado
-                    IBAN: CR26037010600861494409
-                  Amount: 10001
-                  CurrencyCode: CRC
-                  Description: Transf PIN de Prueba
-  /api/kindo/sinpe-movil/NotifyIncomingTransfers:
-    post:
-      summary: Simulate SINPE-Based Credit Transfer
-      parameters:
-        - name: Signature
-          in: header
-          required: false
-          deprecated: false
-          schema: {}
-          example: 4e0080ca1c99925242c1c2ef9885d4efa2719b7669dfb8b9ed0a096738b29917
-      responses: {}
-      tags:
-        - Webhook
-        - client
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                SecurityInfo:
-                  type: string
-                Transfers:
-                  type: array
-                  items:
-                    type: object
-                    properties:
-                      CGPRefNumber:
-                        type: integer
-                      SINPERefNumber:
-                        type: string
-                        format: utc-millisec
-                      AuthorizationDate:
-                        type: string
-                        format: style
-                      OriginCustomer:
-                        type: object
-                        properties:
-                          Id:
-                            type: string
-                          IdType:
-                            type: string
-                            format: utc-millisec
-                          Name:
-                            type: string
-                          Phone:
-                            $ref: "#/components/schemas/CostaRicaPhone"
-                      DestinationCustomer:
-                        type: object
-                        properties:
-                          Id:
-                            type: string
-                          IdType:
-                            type: string
-                            format: utc-millisec
-                          Name:
-                            type: string
-                          IBAN:
-                            $ref: "#/components/schemas/CostaRicaIBAN"
-                          Phone:
-                            $ref: "#/components/schemas/CostaRicaPhone"
-                      Amount:
-                        type: integer
-                      CurrencyCode:
-                        type: string
-                      Description:
-                        type: string
-            example:
-              SecurityInfo: >-
-                7523e3fe7208500918ccee1c457d3c604de4e5d4f415547b821d6a6e8281cb779353352051a03baf4b4b84b95d7612506812d368e23e55fa79de2ab31e31d64e
-              Transfers:
-                - CGPRefNumber: 2001
-                  SINPERefNumber: "2025112481483010196438103"
-                  AuthorizationDate: "2025-11-24T11:29:46"
-                  OriginCustomer:
-                    Id: 01-0000-0000
-                    IdType: "0"
-                    Name: Bobby Fisher
-                    Phone: "88881234"
-                  DestinationCustomer:
-                    Id: 07-0258-0327
-                    IdType: "0"
-                    Name: Leister Alvarado
-                    IBAN: CR26037010600861494409
-                    Phone: "88509676"
-                  Amount: 2500
-                  CurrencyCode: CRC
-                  Description: Transf SINPE de Prueba
 components:
   schemas:
     CostaRicaIBAN:
