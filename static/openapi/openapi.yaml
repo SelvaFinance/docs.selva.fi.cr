@@ -84,10 +84,10 @@ paths:
       parameters:
         - name: X-Idempotency-Key
           in: header
-          required: false
+          required: true
           deprecated: false
           schema: {}
-          example: "{{$randomUUID}}"
+          example: "UUID"
       responses:
         "201":
           description: Payment initiated successfully
@@ -152,25 +152,108 @@ paths:
                   payment_id: 122434f8-0b17-4aa3-8063-d8baf978b617
                   payment_type: pin
                   status: pending
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+              examples:
+                single_error:
+                  value:
+                    success: false
+                    message: Amount exceeds maximum limit
+                    data: null
+                    errors:
+                      amount:
+                        - Amount exceeds maximum limit
+                multiple_errors:
+                  value:
+                    success: false
+                    message: Source account does not exist
+                    data: null
+                    errors:
+                      from_account_id:
+                        - Source account does not exist
+                        - You do not own this account
+                      amount:
+                        - Amount exceeds maximum limit
+                both_recipient_fields:
+                  value:
+                    success: false
+                    message: Only one recipient field should be provided
+                    data: null
+                    errors:
+                      recipient:
+                        - Cannot provide both recipient_iban and recipient_phone
+                missing_idempotency_key:
+                  value:
+                    success: false
+                    message: X-Idempotency-Key header is required
+                    data: null
+                    errors:
+                      X-Idempotency-Key:
+                        - X-Idempotency-Key header is required
       tags:
         - Payments
       security:
         - BearerAuth: []
       requestBody:
+        description: Either recipient_iban or recipient_phone must be provided (not both). If both are provided, the API will return a validation error.
         content:
           application/json:
             schema:
               type: object
-            example: |-
-              {
-                  "from_account_id": "",
-                  "amount": "",
-                  "recipient_iban": ""
-                  // "recipient_phone": ""
-                  // "recipient_email": "",
-                  // "description": "",
-                  // "reference": ""
-              }
+              required:
+                - from_account_id
+                - amount
+              properties:
+                from_account_id:
+                  type: string
+                  description: Source account ID
+                amount:
+                  type: number
+                  description: Payment amount
+                recipient_iban:
+                  $ref: "#/components/schemas/CostaRicaIBAN"
+                  description: Recipient IBAN (required if recipient_phone not provided)
+                recipient_phone:
+                  $ref: "#/components/schemas/CostaRicaPhone"
+                  description: Recipient phone number (required if recipient_iban not provided)
+                recipient_email:
+                  type: string
+                  description: Recipient email (optional)
+                description:
+                  type: string
+                  description: Payment description (optional)
+                reference:
+                  type: string
+                  description: Payment reference (optional)
+            examples:
+              with_iban:
+                value:
+                  from_account_id: 70242935-a11b-4018-8e84-0413a8ac9d67
+                  amount: 1000
+                  recipient_iban: CR02010200000000000001
+              with_phone:
+                value:
+                  from_account_id: 70242935-a11b-4018-8e84-0413a8ac9d67
+                  amount: 2500
+                  recipient_phone: "88881234"
   /api/payments/validate:
     post:
       summary: Validate Payment
@@ -396,8 +479,9 @@ paths:
           in: query
           required: false
           deprecated: false
-          schema: {}
-          example: "{{phone_number}}"
+          schema:
+            $ref: "#/components/schemas/CostaRicaPhone"
+          example: "88881234"
       responses: {}
       tags:
         - Verification
@@ -411,8 +495,9 @@ paths:
           in: query
           required: false
           deprecated: false
-          schema: {}
-          example: "{{recipient_iban}}"
+          schema:
+            $ref: "#/components/schemas/CostaRicaIBAN"
+          example: CR02010200000000000001
       responses: {}
       tags:
         - Verification
@@ -565,7 +650,7 @@ paths:
                           Name:
                             type: string
                           IBAN:
-                            type: string
+                            $ref: "#/components/schemas/CostaRicaIBAN"
                       DestinationCustomer:
                         type: object
                         properties:
@@ -577,7 +662,7 @@ paths:
                           Name:
                             type: string
                           IBAN:
-                            type: string
+                            $ref: "#/components/schemas/CostaRicaIBAN"
                       Amount:
                         type: integer
                       CurrencyCode:
@@ -651,8 +736,7 @@ paths:
                           Name:
                             type: string
                           Phone:
-                            type: string
-                            format: utc-millisec
+                            $ref: "#/components/schemas/CostaRicaPhone"
                       DestinationCustomer:
                         type: object
                         properties:
@@ -664,10 +748,9 @@ paths:
                           Name:
                             type: string
                           IBAN:
-                            type: string
+                            $ref: "#/components/schemas/CostaRicaIBAN"
                           Phone:
-                            type: string
-                            format: utc-millisec
+                            $ref: "#/components/schemas/CostaRicaPhone"
                       Amount:
                         type: integer
                       CurrencyCode:
@@ -696,6 +779,22 @@ paths:
                   CurrencyCode: CRC
                   Description: Transf SINPE de Prueba
 components:
+  schemas:
+    CostaRicaIBAN:
+      type: string
+      description: Costa Rican IBAN number
+      pattern: '^CR\d{20}$'
+      example: CR02010200000000000001
+    CostaRicaPhone:
+      type: string
+      description: Costa Rican phone number (8 digits, starts with 6, 7, or 8)
+      pattern: '^[678]\d{7}$'
+      example: "88881234"
+    CostaRicaNationalID:
+      type: string
+      description: Costa Rican national ID (Cédula)
+      pattern: '^\d{9,10}$'
+      example: "0123456789"
   securitySchemes:
     BearerAuth:
       type: http
