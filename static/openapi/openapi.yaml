@@ -418,7 +418,166 @@ paths:
   /api/payments/{id}:
     get:
       summary: Get Payment Details
-      responses: {}
+      responses:
+        "200":
+          description: Payment status retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                        format: uuid
+                      idempotency_key:
+                        type: string
+                        format: uuid
+                      transfer_type:
+                        type: string
+                        enum: [debit, credit]
+                      channel_ref_number:
+                        type: string
+                      cgp_ref_number:
+                        type: integer
+                      sinpe_ref:
+                        type: string
+                      status:
+                        type: string
+                        enum: [pending, completed, failed, cancelled]
+                      amount:
+                        type: object
+                        properties:
+                          value:
+                            type: string
+                          currency:
+                            type: string
+                          formatted:
+                            type: string
+                      description:
+                        type: string
+                        nullable: true
+                      reference:
+                        type: string
+                        nullable: true
+                      error_message:
+                        type: string
+                        nullable: true
+                      created_at:
+                        type: string
+                        format: date-time
+                      submitted_at:
+                        type: string
+                        format: date-time
+                      completed_at:
+                        type: string
+                        format: date-time
+                        nullable: true
+                      payment_type:
+                        type: string
+                        enum: [pin, sinpe]
+                      payer:
+                        type: object
+                        properties:
+                          iban:
+                            $ref: "#/components/schemas/CostaRicaIBAN"
+                          document_number:
+                            type: string
+                          currency:
+                            type: string
+                      payee:
+                        type: object
+                        properties:
+                          document_number:
+                            type: string
+                          iban:
+                            $ref: "#/components/schemas/CostaRicaIBAN"
+                          currency:
+                            type: string
+              example:
+                success: true
+                message: Payment status retrieved successfully
+                data:
+                  id: b0087967-dbd9-4692-a4a7-ccb8f1289304
+                  idempotency_key: AF282409-9105-4BFF-8F90-8DC8322CCDF8
+                  transfer_type: debit
+                  channel_ref_number: "2025123100001683790515175"
+                  cgp_ref_number: 10255
+                  sinpe_ref: "2025123137022010000102551"
+                  status: completed
+                  amount:
+                    value: "10.00"
+                    currency: CRC
+                    formatted: "10.00 CRC"
+                  description: null
+                  reference: null
+                  error_message: null
+                  created_at: "2025-12-31T22:48:45.000000Z"
+                  submitted_at: "2025-12-31T22:48:51.000000Z"
+                  completed_at: "2025-12-31T22:48:51.000000Z"
+                  payment_type: pin
+                  payer:
+                    iban: CR17037010600841438269
+                    document_number: "07-1111-1118"
+                    currency: CRC
+                  payee:
+                    document_number: "01-0111-0114"
+                    iban: CR02010200000000000001
+                    currency: CRC
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+              example:
+                success: false
+                message: Payment ID must be a valid UUID
+                data: null
+                errors:
+                  payment_id:
+                    - Payment ID must be a valid UUID
+        "404":
+          description: Payment not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                  errors:
+                    type: object
+              example:
+                success: false
+                message: Payment not found
+                data: null
+                errors: {}
       tags:
         - Payments
       security:
@@ -429,6 +588,7 @@ paths:
         required: true
         schema:
           type: string
+          format: uuid
   /api/payments/history:
     get:
       summary: Get Historical Transfers
@@ -437,33 +597,199 @@ paths:
           in: query
           required: false
           deprecated: false
-          schema: {}
+          schema:
+            type: string
+            enum: [pin, sinpe]
           example: pin
         - name: transfer_type
           in: query
           required: false
           deprecated: false
-          schema: {}
+          schema:
+            type: string
+            enum: [debit, credit]
           example: debit
         - name: recipient_identifier
           in: query
           required: false
           deprecated: false
-          schema: {}
+          schema:
+            $ref: "#/components/schemas/CostaRicaNationalIdentifier"
           example: "111090807"
         - name: limit
           in: query
           required: false
           deprecated: false
-          schema: {}
-          example: "10"
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+          example: 10
         - name: offset
           in: query
           required: false
           deprecated: false
-          schema: {}
-          example: "0"
-      responses: {}
+          schema:
+            type: integer
+            minimum: 0
+          example: 0
+      responses:
+        "200":
+          description: Payment history retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    properties:
+                      payments:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                              format: uuid
+                            idempotency_key:
+                              type: string
+                              format: uuid
+                            transfer_type:
+                              type: string
+                              enum: [debit, credit]
+                            channel_ref_number:
+                              type: string
+                            cgp_ref_number:
+                              type: integer
+                            sinpe_ref:
+                              type: string
+                            status:
+                              type: string
+                              enum: [pending, completed, failed, cancelled]
+                            amount:
+                              type: object
+                              properties:
+                                value:
+                                  type: string
+                                currency:
+                                  type: string
+                                formatted:
+                                  type: string
+                            description:
+                              type: string
+                              nullable: true
+                            reference:
+                              type: string
+                              nullable: true
+                            error_message:
+                              type: string
+                              nullable: true
+                            created_at:
+                              type: string
+                              format: date-time
+                            submitted_at:
+                              type: string
+                              format: date-time
+                            completed_at:
+                              type: string
+                              format: date-time
+                              nullable: true
+                            payment_type:
+                              type: string
+                              enum: [pin, sinpe]
+                            payer:
+                              type: object
+                              properties:
+                                iban:
+                                  $ref: "#/components/schemas/CostaRicaIBAN"
+                                document_number:
+                                  type: string
+                                currency:
+                                  type: string
+                            payee:
+                              type: object
+                              properties:
+                                document_number:
+                                  type: string
+                                iban:
+                                  $ref: "#/components/schemas/CostaRicaIBAN"
+                                currency:
+                                  type: string
+                      count:
+                        type: integer
+              examples:
+                With Items:
+                  value:
+                    success: true
+                    message: Payment history retrieved successfully
+                    data:
+                      payments:
+                        - id: b0087967-dbd9-4692-a4a7-ccb8f1289304
+                          idempotency_key: AF282409-9105-4BFF-8F90-8DC8322CCDF8
+                          transfer_type: debit
+                          channel_ref_number: "2025123100001683790515175"
+                          cgp_ref_number: 10255
+                          sinpe_ref: "2025123137022010000102551"
+                          status: completed
+                          amount:
+                            value: "10.00"
+                            currency: CRC
+                            formatted: "10.00 CRC"
+                          description: null
+                          reference: null
+                          error_message: null
+                          created_at: "2025-12-31T22:48:45.000000Z"
+                          submitted_at: "2025-12-31T22:48:51.000000Z"
+                          completed_at: "2025-12-31T22:48:51.000000Z"
+                          payment_type: pin
+                          payer:
+                            iban: CR17037010600841438269
+                            document_number: "07-1111-1118"
+                            currency: CRC
+                          payee:
+                            document_number: "01-0111-0114"
+                            iban: CR02010200000000000001
+                            currency: CRC
+                      count: 1
+                Empty:
+                  value:
+                    success: true
+                    message: Payment history retrieved successfully
+                    data:
+                      payments: []
+                      count: 0
+        "422":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+              example:
+                success: false
+                message: Invalid payment_method, must be "pin" or "sinpe"
+                data: null
+                errors:
+                  payment_method:
+                    - Invalid payment_method, must be "pin" or "sinpe"
       tags:
         - Payments
       security:
@@ -743,6 +1069,10 @@ components:
       description: Costa Rican national ID (Cédula)
       pattern: '^\d{9,10}$'
       example: "0123456789"
+    CostaRicaNationalIdentifier:
+      type: string
+      description: Costa Rican national identifier (Cédula, DIMEX, or Legal Entity)
+      example: "111090807"
   securitySchemes:
     BearerAuth:
       type: http
