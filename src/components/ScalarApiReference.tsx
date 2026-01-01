@@ -37,4 +37,3 @@ export default function ScalarApiReference(): React.ReactElement {
     </BrowserOnly>
   );
 }
-

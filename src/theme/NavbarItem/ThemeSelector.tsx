@@ -9,7 +9,9 @@ const getSystemMode = (): 'light' | 'dark' => {
     return 'light';
   }
 
-  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+    ? 'dark'
+    : 'light';
 };
 
 export default function ThemeSelector(): React.ReactElement {
@@ -55,7 +57,6 @@ export default function ThemeSelector(): React.ReactElement {
     localStorage.setItem('selva-theme-choice', mode);
     setColorMode(mode);
   };
-
 
   const SunIcon = () => (
     <svg
@@ -128,7 +129,8 @@ export default function ThemeSelector(): React.ReactElement {
         e.preventDefault();
         handleThemeChange('system');
       },
-      className: themeChoice === 'system' ? 'dropdown__link--active' : undefined,
+      className:
+        themeChoice === 'system' ? 'dropdown__link--active' : undefined,
     },
     {
       label: (
@@ -160,7 +162,14 @@ export default function ThemeSelector(): React.ReactElement {
     },
   ];
 
-  const icon = themeChoice === 'system' ? <MonitorIcon /> : colorMode === 'dark' ? <MoonIcon /> : <SunIcon />;
+  const icon =
+    themeChoice === 'system' ? (
+      <MonitorIcon />
+    ) : colorMode === 'dark' ? (
+      <MoonIcon />
+    ) : (
+      <SunIcon />
+    );
 
   return (
     <DropdownNavbarItem

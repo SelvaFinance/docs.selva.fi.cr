@@ -81,7 +81,7 @@ Or using JavaScript:
 const response = await fetch('https://dev.selva.fi.cr/api/accounts', {
   method: 'GET',
   headers: {
-    'Authorization': `Bearer ${accessToken}`,
+    Authorization: `Bearer ${accessToken}`,
   },
 });
 
@@ -112,7 +112,7 @@ const idempotencyKey = crypto.randomUUID();
 const paymentResponse = await fetch('https://dev.selva.fi.cr/api/payments', {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${accessToken}`,
+    Authorization: `Bearer ${accessToken}`,
     'Content-Type': 'application/json',
     'X-Idempotency-Key': idempotencyKey,
   },
@@ -122,7 +122,7 @@ const paymentResponse = await fetch('https://dev.selva.fi.cr/api/payments', {
     currency: 'CRC',
     recipient_phone: '50671234567', // or use recipient_iban instead
     description: 'Payment for services',
-    reference: 'REF-12345'
+    reference: 'REF-12345',
   }),
 });
 
@@ -152,5 +152,3 @@ If you run into issues:
 2. Verify your credentials are correct
 3. Ensure your access token hasn't expired
 4. Contact support at support@selva.fi.cr
-
-

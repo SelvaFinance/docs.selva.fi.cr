@@ -17,10 +17,12 @@ The API reference is automatically generated from our OpenAPI specification and 
 ## Endpoint Categories
 
 ### Authentication
+
 - `GET /oauth/authorize` - Initiate OAuth authorization flow
 - `POST /oauth/token` - Exchange authorization code for access token
 
 ### Accounts
+
 - `GET /api/accounts` - List all accounts
 - `POST /api/accounts` - Create a new account
 - `GET /api/accounts/information` - Get account information
@@ -32,16 +34,19 @@ The API reference is automatically generated from our OpenAPI specification and 
 - `GET /api/accounts/{id}/transactions/{transactionCode}` - Get transaction by code
 
 ### Payments
+
 - `POST /api/payments` - Create a payment
 - `POST /api/payments/validate` - Validate payment details
 - `GET /api/payments/history` - Get payment history
 - `GET /api/payments/{id}` - Get payment by ID
 
 ### Verification
+
 - `GET /api/phone/information` - Get phone number information
 - `GET /api/iban/information` - Get IBAN information
 
 ### Webhooks
+
 - `GET /api/webhooks/subscriptions` - List webhook subscriptions
 - `POST /api/webhooks/subscriptions` - Create webhook subscription
 - `GET /api/webhooks/subscriptions/{id}` - Get webhook subscription
@@ -49,6 +54,7 @@ The API reference is automatically generated from our OpenAPI specification and 
 - `POST /api/NotifyIncomingTransfers` - Incoming transfer webhook
 
 ### System
+
 - `GET /api/IsServiceAvailable` - Check service availability
 
 ## Request Format
@@ -146,4 +152,3 @@ For questions about specific endpoints:
 - Check the interactive API documentation above
 - Review [Common Workflows](/docs/common-workflows) for usage examples
 - Contact support at support@selva.fi.cr
-

@@ -13,6 +13,7 @@ Selva (Soluciones Electrónicas Locales de Valor) is a financial services platfo
 ## Key Features
 
 ### Payment Processing
+
 - Send payments via PIN (IBAN) or SINPE Móvil (phone)
 - Validate payment payloads before submitting (`POST /api/payments/validate`)
 - Initiate payments with idempotency protection (`POST /api/payments` with `X-Idempotency-Key`)
@@ -20,21 +21,25 @@ Selva (Soluciones Electrónicas Locales de Valor) is a financial services platfo
 - Check payment rail availability (`GET /api/payments/service-status`)
 
 ### Account Management
+
 - Create multi-currency accounts
 - List, view, and fetch balances/details for accounts
 - Retrieve account movements and specific transfer details
 - KYC is handled at the user level (see KYC & Onboarding)
 
 ### KYC & Onboarding
+
 - Track KYC status (`GET /api/kyc/status`)
 - Create/update KYC applications (`GET/POST /api/kyc/application`)
 - Submit applications and upload documents (`POST /api/kyc/submit`, `POST /api/kyc/document`)
 
 ### Verification Services
+
 - Validate SINPE phone ownership (`GET /api/phone/information`)
 - Validate IBAN and account holder data (`GET /api/iban/information`)
 
 ### Webhooks
+
 - Manage subscriptions (list/get/create/delete)
 - Control delivery with suspend/resume actions and per-subscription secrets
 - Receive payment and account events in real time
@@ -80,5 +85,3 @@ For questions, issues, or feature requests:
 ## Getting Started
 
 Ready to start integrating? Check out our [Getting Started guide](/docs/getting-started) to make your first API call.
-
-

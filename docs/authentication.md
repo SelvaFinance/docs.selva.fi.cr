@@ -194,5 +194,3 @@ You can test the authentication flow using:
 - Explore the <a href="/api-reference" target="_blank">API Reference</a> to see all available endpoints
 - Learn about [Common Workflows](/docs/common-workflows) for typical integration patterns
 - Review [Error Handling](/docs/errors) to handle errors properly
-
-

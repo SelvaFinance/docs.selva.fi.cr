@@ -4,11 +4,11 @@
 const sidebars = {
   // By default, Docusaurus generates a sidebar from the docs folder structure
   tutorialSidebar: [
-    "overview",
-    "getting-started",
-    "authentication",
-    "common-workflows",
-    "errors",
+    'overview',
+    'getting-started',
+    'authentication',
+    'common-workflows',
+    'errors',
   ],
 };
 

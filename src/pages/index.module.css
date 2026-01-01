@@ -11,7 +11,10 @@
 
 [data-theme='dark'] {
   --bg-surface: var(--ifm-background-color);
-  --bg-surface-alt: var(--ifm-background-surface-color, var(--ifm-background-color));
+  --bg-surface-alt: var(
+    --ifm-background-surface-color,
+    var(--ifm-background-color)
+  );
   --card: var(--ifm-card-background-color, var(--ifm-background-surface-color));
   --card-alt: var(--ifm-background-surface-color, var(--ifm-background-color));
   --text-strong: var(--ifm-font-color-base);
@@ -398,7 +401,6 @@
   flex-wrap: wrap;
 }
 
-
 .stepItem {
   background: var(--card);
   border: 1px solid var(--border);
@@ -410,7 +412,6 @@
   align-items: flex-start;
   box-shadow: 0 10px 24px rgba(15, 26, 45, 0.06);
 }
-
 
 .stepActions {
   display: flex;
