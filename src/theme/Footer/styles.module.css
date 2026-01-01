@@ -97,6 +97,10 @@
   text-decoration: underline;
 }
 
+.copyright {
+  color: var(--ifm-color-primary);
+}
+
 .bottomRow {
   display: flex;
   justify-content: space-between;

@@ -94,11 +94,6 @@ const modules = [
     body: 'Subscribe, verify signatures, and replay events safely.',
     link: '/docs/common-workflows',
   },
-  {
-    title: 'Reporting',
-    body: 'Export transactions, payouts, and fees to keep finance in sync.',
-    link: '/docs/errors',
-  },
 ];
 
 const workflows = [

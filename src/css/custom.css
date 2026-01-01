@@ -15,6 +15,7 @@
   --ifm-color-primary-lightest: #8cb99f;
   --ifm-code-font-size: 95%;
   --docusaurus-highlighted-code-line-bg: rgba(46, 94, 78, 0.1);
+  --ifm-navbar-padding-vertical: 0;
 }
 
 /* For readability concerns, you should choose a lighter palette in dark mode. */
@@ -33,6 +34,22 @@
 .navbar__inner {
   display: flex;
   justify-content: space-between;
+  align-items: center;
+}
+
+.theme-layout-navbar {
+  height: var(--ifm-navbar-height);
+  display: flex;
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.theme-layout-navbar .navbar__inner {
+  height: 100%;
+  align-items: center;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .navbar__items--left {
@@ -56,6 +73,40 @@
 .navbar__inner > .navbar__items--right {
   display: flex;
   align-items: center;
+}
+
+/* Normalize dropdown alignment in navbar */
+.theme-layout-navbar .navbar__item.dropdown {
+  display: flex;
+  align-items: center;
+  height: var(--ifm-navbar-height);
+  padding: 0 0.4rem;
+  margin: 0;
+  box-sizing: border-box;
+}
+
+.theme-layout-navbar .navbar__item.dropdown > .navbar__link {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+  padding: 0;
+}
+
+.theme-layout-navbar .navbar__item.dropdown .dropdown__toggle {
+  display: inline-flex;
+  align-items: center;
+  height: 100%;
+}
+
+.theme-layout-navbar .navbar__item,
+.theme-layout-navbar .navbar__link {
+  display: inline-flex;
+  align-items: center;
+  height: var(--ifm-navbar-height);
+  padding-top: 0;
+  padding-bottom: 0;
+  box-sizing: border-box;
+  line-height: 1;
 }
 
 /* Remove language dropdown icon */
@@ -89,7 +140,11 @@
 .navbar__link.theme-selector-dropdown {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem;
+  height: var(--ifm-navbar-height);
+  padding: 0 0.5rem;
+  line-height: 1;
 }
 
 .navbar__link.theme-selector-dropdown::after {
@@ -103,8 +158,25 @@
 .theme-selector-trigger {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   gap: 0.35rem;
+  height: 100%;
 }
+
+.theme-selector-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.5rem;
+  height: 1.5rem;
+}
+
+.theme-selector-icon svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+
 
 .theme-selector-dropdown .dropdown__menu {
   --ifm-menu-color-background-hover: rgba(46, 94, 78, 0.15);
