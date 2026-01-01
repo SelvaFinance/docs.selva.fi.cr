@@ -908,6 +908,33 @@ paths:
                 message: Account not found
                 data: null
                 errors: {}
+        '422':
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: object
+                    nullable: true
+                  errors:
+                    type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+              example:
+                success: false
+                message: Account ID must be a valid UUID
+                data: null
+                errors:
+                  id:
+                    - Account ID must be a valid UUID
       tags:
         - Account
       security:
@@ -922,9 +949,10 @@ paths:
   /api/accounts:
     get:
       summary: List Accounts
+      description: 'Retrieve all accounts belonging to the authenticated user. **Note: Response format will change soon.**'
       responses:
         '200':
-          description: Accounts retrieved successfully
+          description: 'Accounts retrieved successfully. **Note: Response format will change soon.**'
           content:
             application/json:
               schema:
@@ -1043,40 +1071,24 @@ paths:
                     nullable: true
                   errors:
                     type: object
-        '503':
-          description: Service unavailable
+        tags:
+          - Account
+        security:
+          - BearerAuth: []
+        requestBody:
           content:
             application/json:
               schema:
                 type: object
+                required:
+                  - currency
                 properties:
-                  success:
-                    type: boolean
-                  message:
+                  currency:
                     type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - currency
-              properties:
-                currency:
-                  type: string
-                  enum: [CRC, USD]
-                  description: Currency for the account
-            example:
-              currency: CRC
+                    enum: [CRC, USD]
+                    description: Currency for the account
+              example:
+                currency: CRC
   /api/accounts/{id}/balance:
     get:
       summary: Get Account Balance
@@ -1106,9 +1118,9 @@ paths:
                 success: true
                 message: Balance retrieved successfully
                 data:
-                  iban: CR81037010600746668796
+                  iban: CR17037010600841438269
                   currency: CRC
-                  balance: 176495
+                  balance: 499910
         '404':
           description: Account not found
           content:
@@ -1157,22 +1169,6 @@ paths:
                 errors:
                   id:
                     - Account ID must be a valid UUID
-        '503':
-          description: Service unavailable
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
       tags:
         - Account
       security:
@@ -1214,25 +1210,36 @@ paths:
                         type: string
                         enum: [CRC, USD]
                       document_type:
-                        type: string
-                        nullable: true
+                        type: integer
                       document_number:
                         type: string
                       owner_name:
                         type: string
-                        nullable: true
                       origin_code:
-                        type: string
-                        nullable: true
+                        type: integer
                       status:
                         type: string
-                        nullable: true
                       created_at:
                         type: string
                         format: date-time
                       updated_at:
                         type: string
                         format: date-time
+              example:
+                success: true
+                message: Account details retrieved successfully
+                data:
+                  id: 70242935-a11b-4018-8e84-0413a8ac9d67
+                  user_id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
+                  iban: CR17037010600841438269
+                  currency: CRC
+                  document_type: 0
+                  document_number: '07-1111-1118'
+                  owner_name: Philippe  Lamy
+                  origin_code: 2
+                  status: active
+                  created_at: '2025-12-12T13:35:00.000000Z'
+                  updated_at: '2025-12-12T13:35:00.000000Z'
         '404':
           description: Account not found
           content:
@@ -1254,8 +1261,8 @@ paths:
                 message: Account not found
                 data: null
                 errors: {}
-        '503':
-          description: Service unavailable
+        '422':
+          description: Validation error
           content:
             application/json:
               schema:
@@ -1270,6 +1277,17 @@ paths:
                     nullable: true
                   errors:
                     type: object
+                    additionalProperties:
+                      type: array
+                      items:
+                        type: string
+              example:
+                success: false
+                message: Account ID must be a valid UUID
+                data: null
+                errors:
+                  id:
+                    - Account ID must be a valid UUID
       tags:
         - Account
       security:
@@ -1281,64 +1299,6 @@ paths:
         schema:
           type: string
           format: uuid
-  /api/accounts/{id}/transfers:
-    get:
-      summary: '[DEPRECATED] List Account Transfers'
-      parameters:
-        - name: from
-          in: query
-          schema:
-            type: string
-          example: '{{from}}'
-        - name: to
-          in: query
-          schema:
-            type: string
-          example: '{{to}}'
-      responses: {}
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-  /api/accounts/{id}/kyc:
-    get:
-      summary: '[DEPRECATED] Get Account KYC'
-      responses: {}
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-  /api/accounts/{id}/transfers/{transferId}:
-    get:
-      summary: Get Account Transfer By Id
-      responses: {}
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-      - name: transferId
-        in: path
-        required: true
-        schema:
-          type: string
   /api/phone/information:
     get:
       summary: Verify Phone Is Registered
