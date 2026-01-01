@@ -847,72 +847,440 @@ paths:
       security:
         - BearerAuth: []
   /api/accounts/{id}:
-    get:
-      summary: Get Account
-      responses: {}
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+     get:
+       summary: Get Account
+       responses:
+         "200":
+           description: Account retrieved successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       id:
+                         type: string
+                         format: uuid
+                       iban:
+                         type: string
+                       currency:
+                         type: string
+                         enum: [CRC, USD]
+                       created_at:
+                         type: string
+                         format: date-time
+                       updated_at:
+                         type: string
+                         format: date-time
+               example:
+                 success: true
+                 message: Account retrieved successfully
+                 data:
+                   id: 123e4567-e89b-12d3-a456-426614174000
+                   iban: CR37012345678901234567
+                   currency: CRC
+                   created_at: 2025-06-09T18:30:00.000000Z
+                   updated_at: 2025-06-09T18:30:00.000000Z
+         "404":
+           description: Account not found
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Account not found
+                 data: null
+                 errors: {}
+       tags:
+         - Account
+       security:
+         - BearerAuth: []
+     parameters:
+       - name: id
+         in: path
+         required: true
+         schema:
+           type: string
+           format: uuid
   /api/accounts:
-    get:
-      summary: List Accounts
-      responses: {}
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
-    post:
-      summary: Create Account
-      responses: {}
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                currency:
-                  type: string
-            example:
-              currency: ""
+     get:
+       summary: List Accounts
+       responses:
+         "200":
+           description: Accounts retrieved successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: array
+                     items:
+                       type: object
+                       properties:
+                         id:
+                           type: string
+                           format: uuid
+                         iban:
+                           type: string
+                         currency:
+                           type: string
+                           enum: [CRC, USD]
+                         created_at:
+                           type: string
+                           format: date-time
+                         updated_at:
+                           type: string
+                           format: date-time
+               example:
+                 success: true
+                 message: Accounts retrieved successfully
+                 data:
+                   - id: 123e4567-e89b-12d3-a456-426614174000
+                     iban: CR37012345678901234567
+                     currency: CRC
+                     created_at: 2025-06-09T18:30:00.000000Z
+                     updated_at: 2025-06-09T18:30:00.000000Z
+                   - id: 223e4567-e89b-12d3-a456-426614174001
+                     iban: CR37012345678901234568
+                     currency: CRC
+                     created_at: 2025-06-09T19:00:00.000000Z
+                     updated_at: 2025-06-09T19:00:00.000000Z
+       tags:
+         - Account
+       security:
+         - BearerAuth: []
+     post:
+       summary: Create Account
+       responses:
+         "201":
+           description: Account created successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       id:
+                         type: string
+                         format: uuid
+                       iban:
+                         type: string
+                       currency:
+                         type: string
+                         enum: [CRC, USD]
+                       created_at:
+                         type: string
+                         format: date-time
+                       updated_at:
+                         type: string
+                         format: date-time
+               example:
+                 success: true
+                 message: Account created successfully
+                 data:
+                   id: 123e4567-e89b-12d3-a456-426614174000
+                   iban: CR37012345678901234567
+                   currency: CRC
+                   created_at: 2025-06-09T18:30:00.000000Z
+                   updated_at: 2025-06-09T18:30:00.000000Z
+         "400":
+           description: Bad request
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+         "403":
+           description: User needs to complete verification
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+         "503":
+           description: Service unavailable
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+       tags:
+         - Account
+       security:
+         - BearerAuth: []
+       requestBody:
+         content:
+           application/json:
+             schema:
+               type: object
+               required:
+                 - currency
+               properties:
+                 currency:
+                   type: string
+                   enum: [CRC, USD]
+                   description: Currency for the account
+             example:
+               currency: CRC
   /api/accounts/{id}/balance:
-    get:
-      summary: Get Account Balance
-      responses: {}
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+     get:
+       summary: Get Account Balance
+       responses:
+         "200":
+           description: Balance retrieved successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       iban:
+                         type: string
+                       currency:
+                         type: string
+                         enum: [CRC, USD]
+                       balance:
+                         type: number
+               example:
+                 success: true
+                 message: Balance retrieved successfully
+                 data:
+                   iban: CR81037010600746668796
+                   currency: CRC
+                   balance: 176495
+         "404":
+           description: Account not found
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Account not found
+                 data: null
+                 errors: {}
+         "422":
+           description: Validation error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+                     additionalProperties:
+                       type: array
+                       items:
+                         type: string
+               example:
+                 success: false
+                 message: Account ID must be a valid UUID
+                 data: null
+                 errors:
+                   id:
+                     - Account ID must be a valid UUID
+         "503":
+           description: Service unavailable
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+       tags:
+         - Account
+       security:
+         - BearerAuth: []
+     parameters:
+       - name: id
+         in: path
+         required: true
+         schema:
+           type: string
+           format: uuid
   /api/accounts/{id}/details:
-    get:
-      summary: Get Account Details
-      responses: {}
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+     get:
+       summary: Get Account Details
+       responses:
+         "200":
+           description: Account details retrieved successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       id:
+                         type: string
+                         format: uuid
+                       user_id:
+                         type: string
+                         format: uuid
+                       iban:
+                         type: string
+                       currency:
+                         type: string
+                         enum: [CRC, USD]
+                       document_type:
+                         type: string
+                         nullable: true
+                       document_number:
+                         type: string
+                       owner_name:
+                         type: string
+                         nullable: true
+                       origin_code:
+                         type: string
+                         nullable: true
+                       status:
+                         type: string
+                         nullable: true
+                       created_at:
+                         type: string
+                         format: date-time
+                       updated_at:
+                         type: string
+                         format: date-time
+         "404":
+           description: Account not found
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Account not found
+                 data: null
+                 errors: {}
+         "503":
+           description: Service unavailable
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+       tags:
+         - Account
+       security:
+         - BearerAuth: []
+     parameters:
+       - name: id
+         in: path
+         required: true
+         schema:
+           type: string
+           format: uuid
   /api/accounts/{id}/transfers:
     get:
       summary: "[DEPRECATED] List Account Transfers"
@@ -972,148 +1340,1175 @@ paths:
         schema:
           type: string
   /api/phone/information:
-    get:
-      summary: Verify Phone Is Registered
-      parameters:
-        - name: phone_number
-          in: query
-          required: false
-          deprecated: false
-          schema:
-            $ref: "#/components/schemas/CostaRicaPhone"
-          example: "88881234"
-      responses: {}
-      tags:
-        - Verification
-      security:
-        - BearerAuth: []
+     get:
+       summary: Verify Phone Is Registered
+       parameters:
+         - name: phone_number
+           in: query
+           required: true
+           deprecated: false
+           schema:
+             type: string
+             pattern: '^(506)?[678]\d{7}$'
+           example: "88881234"
+       responses:
+         "200":
+           description: Phone information retrieved successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       phone_number:
+                         type: string
+                       legal_name:
+                         type: string
+                       document_number:
+                         type: string
+                       sinpe_registration_status:
+                         type: string
+                         enum: [registered, not_registered]
+                       entity_code:
+                         type: string
+                       entity_name:
+                         type: string
+                       is_local:
+                         type: boolean
+               example:
+                 success: true
+                 message: Phone information retrieved successfully
+                 data:
+                   phone_number: "77770001"
+                   legal_name: Juan Perez
+                   document_number: "01-0000-0001"
+                   sinpe_registration_status: registered
+                   entity_code: "0102"
+                   entity_name: Banco BAC San José
+                   is_local: false
+         "404":
+           description: Phone number not found in SINPE registry
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Phone number not found in SINPE registry
+                 data: null
+                 errors: {}
+         "422":
+           description: Validation error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+                     additionalProperties:
+                       type: array
+                       items:
+                         type: string
+               example:
+                 success: false
+                 message: Phone number must be a valid Costa Rican phone number (8 digits starting with 6, 7, or 8)
+                 data: null
+                 errors:
+                   phone_number:
+                     - Phone number must be a valid Costa Rican phone number (8 digits starting with 6, 7, or 8)
+         "500":
+           description: Internal server error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Unable to retrieve phone information
+                 data: null
+       tags:
+         - Verification
+       security:
+         - BearerAuth: []
   /api/iban/information:
-    get:
-      summary: Verify IBAN Is Registered
-      parameters:
-        - name: iban
-          in: query
-          required: false
-          deprecated: false
-          schema:
-            $ref: "#/components/schemas/CostaRicaIBAN"
-          example: CR02010200000000000001
-      responses: {}
-      tags:
-        - Verification
-      security:
-        - BearerAuth: []
+     get:
+       summary: Verify IBAN Is Registered
+       parameters:
+         - name: iban
+           in: query
+           required: true
+           deprecated: false
+           schema:
+             type: string
+             pattern: '^CR\d{20}$'
+           example: CR02010200000000000001
+       responses:
+         "200":
+           description: IBAN information retrieved successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       account_number:
+                         type: string
+                       holder_id:
+                         type: string
+                       holder_id_type:
+                         type: integer
+                       holder:
+                         type: string
+                       currency_code:
+                         type: string
+                       country_code:
+                         type: string
+                       country_name:
+                         type: string
+                       entity_code:
+                         type: string
+                       entity_name:
+                         type: string
+                       product_name:
+                         type: string
+                       state:
+                         type: string
+               example:
+                 success: true
+                 message: IBAN information retrieved successfully
+                 data:
+                   account_number: CR02010200000000000001
+                   holder_id: "01-0111-0114"
+                   holder_id_type: 0
+                   holder: CARLOS ALBERTO AMADOR HIDALGO
+                   currency_code: CRC
+                   country_code: CR
+                   country_name: COSTA RICA
+                   entity_code: "102"
+                   entity_name: CR - Banco BAC San José
+                   product_name: Cuenta de Ahorro
+                   state: "1"
+         "404":
+           description: IBAN not found
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: IBAN not found
+                 data: null
+                 errors: {}
+         "422":
+           description: Validation error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+                     additionalProperties:
+                       type: array
+                       items:
+                         type: string
+               example:
+                 success: false
+                 message: IBAN must be a valid Costa Rican IBAN (CR followed by 20 digits)
+                 data: null
+                 errors:
+                   iban:
+                     - IBAN must be a valid Costa Rican IBAN (CR followed by 20 digits)
+         "503":
+           description: Service unavailable
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+       tags:
+         - Verification
+       security:
+         - BearerAuth: []
   /api/webhooks/subscriptions/{id}:
-    get:
-      summary: Get Webhook
-      responses: {}
-      tags:
-        - Webhook
-      security:
-        - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-    delete:
-      summary: Delete Webhook
-      responses: {}
-      tags:
-        - Webhook
-      security:
-        - BearerAuth: []
+     get:
+       summary: Get Webhook
+       parameters:
+         - name: id
+           in: path
+           required: true
+           schema:
+             type: string
+             format: uuid
+       responses:
+         "200":
+           description: Webhook subscription retrieved successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       id:
+                         type: string
+                         format: uuid
+                       user_id:
+                         type: string
+                         format: uuid
+                       url:
+                         type: string
+                       events:
+                         type: array
+                         items:
+                           type: string
+                           enum: [payment.created, payment.processing, payment.completed, payment.failed, transaction.received]
+                       active:
+                         type: boolean
+                       max_attempts:
+                         type: integer
+                       timeout:
+                         type: integer
+                       headers:
+                         type: object
+                         additionalProperties:
+                           type: string
+                       last_sent_at:
+                         type: string
+                         format: date-time
+                         nullable: true
+                       created_at:
+                         type: string
+                         format: date-time
+                       updated_at:
+                         type: string
+                         format: date-time
+                       suspended_at:
+                         type: string
+                         format: date-time
+                         nullable: true
+                       suspended_reason:
+                         type: string
+                         nullable: true
+               example:
+                 success: true
+                 message: Webhook subscription retrieved successfully
+                 data:
+                   id: 071c00a7-e248-437a-b42a-171eb087c704
+                   user_id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
+                   url: https://api04.bullbitcoin.dev/selva/payment
+                   events:
+                     - payment.created
+                     - payment.processing
+                     - payment.completed
+                     - payment.failed
+                     - transaction.received
+                   active: false
+                   max_attempts: 5
+                   timeout: 30
+                   headers:
+                     X-Custom-Header: value
+                   last_sent_at: null
+                   created_at: "2025-12-15T21:27:25.000000Z"
+                   updated_at: "2025-12-15T22:41:23.000000Z"
+                   suspended_at: "2025-12-15T22:41:23.000000Z"
+                   suspended_reason: Manual suspension
+         "404":
+           description: Webhook subscription not found
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Webhook subscription not found
+                 data: null
+                 errors: {}
+         "422":
+           description: Validation error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+                     additionalProperties:
+                       type: array
+                       items:
+                         type: string
+               example:
+                 success: false
+                 message: Validation failed
+                 data: null
+                 errors:
+                   id:
+                     - The id field must be a valid UUID.
+       tags:
+         - Webhook
+       security:
+         - BearerAuth: []
+     delete:
+       summary: Delete Webhook
+       parameters:
+         - name: id
+           in: path
+           required: true
+           schema:
+             type: string
+             format: uuid
+       responses:
+         "200":
+           description: Webhook subscription deleted successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       id:
+                         type: string
+                         format: uuid
+                       url:
+                         type: string
+                       events:
+                         type: array
+                         items:
+                           type: string
+                           enum: [payment.created, payment.processing, payment.completed, payment.failed, transaction.received]
+                       max_attempts:
+                         type: integer
+                       timeout:
+                         type: integer
+                       headers:
+                         type: object
+                         additionalProperties:
+                           type: string
+                       created_at:
+                         type: string
+                         format: date-time
+                       updated_at:
+                         type: string
+                         format: date-time
+               example:
+                 success: true
+                 message: Webhook subscription deleted successfully
+                 data:
+                   id: ad991538-b62a-44ca-98a4-8af7e8bd21ea
+                   url: https://webhook-test.com/fcd684635d8e381dfa1a8f7205c29118
+                   events:
+                     - payment.created
+                     - payment.processing
+                     - payment.completed
+                     - payment.failed
+                     - transaction.received
+                   max_attempts: 5
+                   timeout: 30
+                   headers:
+                     X-Custom-Header: value
+                   created_at: "2025-12-12T18:39:42.000000Z"
+                   updated_at: "2026-01-01T04:26:13.000000Z"
+         "404":
+           description: Webhook subscription not found
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Webhook subscription not found
+                 data: null
+                 errors: {}
+         "422":
+           description: Validation error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+                     additionalProperties:
+                       type: array
+                       items:
+                         type: string
+               example:
+                 success: false
+                 message: Validation failed
+                 data: null
+                 errors:
+                   id:
+                     - The id field must be a valid UUID.
+         "500":
+           description: Internal server error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Failed to delete webhook subscription
+                 data: null
+       tags:
+         - Webhook
+       security:
+         - BearerAuth: []
   /api/webhooks/subscriptions:
-    get:
-      summary: List Webhooks
-      parameters:
-        - name: page
-          in: query
-          schema:
-            type: integer
-          example: "1"
-      responses: {}
-      tags:
-        - Webhook
-      security:
-        - BearerAuth: []
-    post:
-      summary: Create Webhook
-      responses: {}
-      tags:
-        - Webhook
-      security:
-        - BearerAuth: []
-      requestBody:
-        content:
-          application/json:
-            schema:
-              type: object
-              properties:
-                url:
-                  type: string
+     get:
+       summary: List Webhooks
+       parameters:
+         - name: per_page
+           in: query
+           required: false
+           schema:
+             type: integer
+             minimum: 1
+             maximum: 1000
+           example: 15
+       responses:
+         "200":
+           description: Webhook subscriptions retrieved successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       current_page:
+                         type: integer
+                       data:
+                         type: array
+                         items:
+                           type: object
+                           properties:
+                             id:
+                               type: string
+                               format: uuid
+                             user_id:
+                               type: string
+                               format: uuid
+                             url:
+                               type: string
+                               maxLength: 2048
+                             events:
+                               type: array
+                               items:
+                                 type: string
+                                 enum: [payment.created, payment.processing, payment.completed, payment.failed, transaction.received]
+                             active:
+                               type: boolean
+                             max_attempts:
+                               type: integer
+                             timeout:
+                               type: integer
+                             headers:
+                               type: object
+                               additionalProperties:
+                                 type: string
+                             last_sent_at:
+                               type: string
+                               format: date-time
+                               nullable: true
+                             created_at:
+                               type: string
+                               format: date-time
+                             updated_at:
+                               type: string
+                               format: date-time
+                             suspended_at:
+                               type: string
+                               format: date-time
+                               nullable: true
+                             suspended_reason:
+                               type: string
+                               nullable: true
+                       first_page_url:
+                         type: string
+                         nullable: true
+                       from:
+                         type: integer
+                         nullable: true
+                       last_page:
+                         type: integer
+                       last_page_url:
+                         type: string
+                         nullable: true
+                       links:
+                         type: array
+                         items:
+                           type: object
+                           properties:
+                             url:
+                               type: string
+                               nullable: true
+                             label:
+                               type: string
+                             page:
+                               type: integer
+                               nullable: true
+                             active:
+                               type: boolean
+                       next_page_url:
+                         type: string
+                         nullable: true
+                       path:
+                         type: string
+                       per_page:
+                         type: integer
+                       prev_page_url:
+                         type: string
+                         nullable: true
+                       to:
+                         type: integer
+                         nullable: true
+                       total:
+                         type: integer
+               example:
+                 success: true
+                 message: Webhook subscriptions retrieved successfully
+                 data:
+                   current_page: 1
+                   data:
+                     - id: 071c00a7-e248-437a-b42a-171eb087c704
+                       user_id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
+                       url: https://api04.bullbitcoin.dev/selva/payment
+                       events:
+                         - payment.created
+                         - payment.processing
+                         - payment.completed
+                         - payment.failed
+                         - transaction.received
+                       active: false
+                       max_attempts: 5
+                       timeout: 30
+                       headers:
+                         X-Custom-Header: value
+                       last_sent_at: null
+                       created_at: "2025-12-15T21:27:25.000000Z"
+                       updated_at: "2025-12-15T22:41:23.000000Z"
+                       suspended_at: "2025-12-15T22:41:23.000000Z"
+                       suspended_reason: Manual suspension
+                     - id: ad991538-b62a-44ca-98a4-8af7e8bd21ea
+                       user_id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
+                       url: https://webhook-test.com/fcd684635d8e381dfa1a8f7205c29118
+                       events:
+                         - payment.created
+                         - payment.processing
+                         - payment.completed
+                         - payment.failed
+                         - transaction.received
+                       active: true
+                       max_attempts: 5
+                       timeout: 30
+                       headers:
+                         X-Custom-Header: value
+                       last_sent_at: "2025-12-31T22:48:51.000000Z"
+                       created_at: "2025-12-12T18:39:42.000000Z"
+                       updated_at: "2025-12-31T22:48:51.000000Z"
+                       suspended_at: null
+                       suspended_reason: null
+                   first_page_url: https://dev.selva.fi.cr/api/webhooks/subscriptions?page=1
+                   from: 1
+                   last_page: 1
+                   last_page_url: https://dev.selva.fi.cr/api/webhooks/subscriptions?page=1
+                   links:
+                     - url: null
+                       label: Previous
+                       page: null
+                       active: false
+                     - url: https://dev.selva.fi.cr/api/webhooks/subscriptions?page=1
+                       label: "1"
+                       page: 1
+                       active: true
+                     - url: null
+                       label: Next
+                       page: null
+                       active: false
+                   next_page_url: null
+                   path: https://dev.selva.fi.cr/api/webhooks/subscriptions
+                   per_page: 15
+                   prev_page_url: null
+                   to: 2
+                   total: 2
+       tags:
+         - Webhook
+       security:
+         - BearerAuth: []
+     post:
+       summary: Create Webhook
+       responses:
+         "201":
+           description: Webhook subscription created successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       url:
+                         type: string
+                       events:
+                         type: array
+                         items:
+                           type: string
+                           enum: [payment.created, payment.processing, payment.completed, payment.failed, transaction.received]
+                       secret:
+                         type: string
+                         description: Secret key for webhook signature verification (only returned once during creation)
+                       max_attempts:
+                         type: integer
+                       timeout:
+                         type: integer
+                       headers:
+                         type: object
+                         additionalProperties:
+                           type: string
+                       active:
+                         type: boolean
+                       user_id:
+                         type: string
+                         format: uuid
+                       id:
+                         type: string
+                         format: uuid
+                       updated_at:
+                         type: string
+                         format: date-time
+                       created_at:
+                         type: string
+                         format: date-time
+               example:
+                 success: true
+                 message: Webhook subscription created successfully
+                 data:
+                   url: https://webhook-test.com/0a2d430ff5e3e474d9e1299f894d3468
+                   events:
+                     - payment.created
+                     - payment.processing
+                     - payment.completed
+                     - payment.failed
+                     - transaction.received
+                   secret: 91mfngr6a0fCVFPiKp36q9rgvB6YF8aE
+                   max_attempts: 5
+                   timeout: 30
+                   headers:
+                     X-Custom-Header: value
+                   active: true
+                   user_id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
+                   id: 183e2bd0-4664-48de-b0a6-7954f9022ac4
+                   updated_at: "2026-01-01T04:22:14.000000Z"
+                   created_at: "2026-01-01T04:22:14.000000Z"
+         "422":
+           description: Validation error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+                     additionalProperties:
+                       type: array
+                       items:
+                         type: string
+               examples:
+                 Duplicate Subscription:
+                   value:
+                     success: false
+                     message: A webhook subscription with same URL and events already exists
+                     data: null
+                     errors:
+                       events:
+                         - A webhook subscription with same URL and events already exists
+                 Invalid Event Type:
+                   value:
+                     success: false
+                     message: "Invalid webhook event type, allowed events: payment.created, payment.processing, payment.completed, payment.failed, transaction.received"
+                     data: null
+                     errors:
+                       events.0:
+                         - "Invalid webhook event type, allowed events: payment.created, payment.processing, payment.completed, payment.failed, transaction.received"
+                 Multiple Validation Errors:
+                   value:
+                     success: false
+                     message: A webhook subscription with same URL and events already exists
+                     data: null
+                     errors:
+                       events:
+                         - A webhook subscription with same URL and events already exists
+                       max_attempts:
+                         - Max attempts must be at least 1
+         "500":
+           description: Internal server error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Failed to create webhook subscription
+                 data: null
+       tags:
+         - Webhook
+       security:
+         - BearerAuth: []
+       requestBody:
+         content:
+           application/json:
+             schema:
+               type: object
+               required:
+                 - url
+                 - events
+               properties:
+                 url:
+                   type: string
+                   format: uri
+                   maxLength: 2048
+                   description: Webhook endpoint URL (must use HTTPS)
+                 events:
+                   type: array
+                   minItems: 1
+                   items:
+                     type: string
+                     enum: [payment.created, payment.processing, payment.completed, payment.failed, transaction.received]
+                   description: Array of event types to subscribe to
+                 max_attempts:
+                   type: integer
+                   minimum: 1
+                   maximum: 10
+                   default: 3
+                   description: Maximum number of retry attempts for failed webhooks
+                 timeout:
+                   type: integer
+                   minimum: 5
+                   maximum: 120
+                   default: 30
+                   description: Timeout in seconds for webhook requests
+                 headers:
+                   type: object
+                   description: Custom headers to include in webhook requests
+                   additionalProperties:
+                     type: string
+                     maxLength: 255
+               example:
+                url: https://webhook-test.com/endpoint
                 events:
-                  type: string
-                max_attempts:
-                  type: string
+                  - payment.created
+                  - payment.completed
+                  - payment.failed
+                max_attempts: 5
+                timeout: 30
                 headers:
-                  type: object
-                  properties:
-                    X-Custom-Header:
-                      type: string
-            example:
-              url: ""
-              events: ""
-              max_attempts: ""
-              headers:
-                X-Custom-Header: value
+                  X-Custom-Header: value
   /api/webhooks/subscriptions/{id}/suspend:
-    post:
-      summary: Suspend Webhook
-      responses: {}
-      tags:
-        - Webhook
-      security:
-        - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+     post:
+       summary: Suspend Webhook
+       responses:
+         "200":
+           description: Webhook subscription suspended successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       id:
+                         type: string
+                         format: uuid
+                       active:
+                         type: boolean
+                       suspended_at:
+                         type: string
+                         format: date-time
+                       suspended_reason:
+                         type: string
+               example:
+                 success: true
+                 message: Webhook subscription suspended successfully
+                 data:
+                   id: ad991538-b62a-44ca-98a4-8af7e8bd21ea
+                   active: false
+                   suspended_at: "2026-01-01T04:25:14.000000Z"
+                   suspended_reason: Manual suspension
+         "400":
+           description: Webhook subscription is already suspended
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Webhook subscription is already suspended
+                 data: null
+                 errors: {}
+         "422":
+           description: Validation error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+                     additionalProperties:
+                       type: array
+                       items:
+                         type: string
+               example:
+                 success: false
+                 message: Validation failed
+                 data: null
+                 errors:
+                   id:
+                     - The id field must be a valid UUID.
+         "500":
+           description: Internal server error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Failed to suspend webhook subscription
+                 data: null
+       tags:
+         - Webhook
+       security:
+         - BearerAuth: []
+       requestBody:
+         content:
+           application/json:
+             schema:
+               type: object
+               properties:
+                 reason:
+                   type: string
+                   description: Reason for suspension (optional)
+             example:
+               reason: Manual suspension
+     parameters:
+       - name: id
+         in: path
+         required: true
+         schema:
+           type: string
+           format: uuid
   /api/webhooks/subscriptions/{id}/resume:
-    post:
-      summary: Resume Webhook
-      responses: {}
-      tags:
-        - Webhook
-      security:
-        - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
+     post:
+       summary: Resume Webhook
+       responses:
+         "200":
+           description: Webhook subscription resumed successfully
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     properties:
+                       id:
+                         type: string
+                         format: uuid
+                       active:
+                         type: boolean
+                       suspended_webhooks_count:
+                         type: integer
+                       retry_job_dispatched:
+                         type: boolean
+               example:
+                 success: true
+                 message: Webhook subscription resumed successfully
+                 data:
+                   id: ad991538-b62a-44ca-98a4-8af7e8bd21ea
+                   active: true
+                   suspended_webhooks_count: 0
+                   retry_job_dispatched: true
+         "400":
+           description: Webhook subscription is not suspended
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Webhook subscription is not suspended
+                 data: null
+                 errors: {}
+         "422":
+           description: Validation error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+                     additionalProperties:
+                       type: array
+                       items:
+                         type: string
+               example:
+                 success: false
+                 message: Validation failed
+                 data: null
+                 errors:
+                   id:
+                     - The id field must be a valid UUID.
+         "500":
+           description: Internal server error
+           content:
+             application/json:
+               schema:
+                 type: object
+                 properties:
+                   success:
+                     type: boolean
+                   message:
+                     type: string
+                   data:
+                     type: object
+                     nullable: true
+                   errors:
+                     type: object
+               example:
+                 success: false
+                 message: Failed to resume webhook subscription
+                 data: null
+       tags:
+         - Webhook
+       security:
+         - BearerAuth: []
+     parameters:
+       - name: id
+         in: path
+         required: true
+         schema:
+           type: string
+           format: uuid
 components:
   schemas:
-    CostaRicaIBAN:
+     CostaRicaIBAN:
       type: string
       description: Costa Rican IBAN number
       pattern: '^CR\d{20}$'
       example: CR02010200000000000001
-    CostaRicaPhone:
-      type: string
-      description: Costa Rican phone number (8 digits, starts with 6, 7, or 8)
-      pattern: '^[678]\d{7}$'
-      example: "88881234"
-    CostaRicaNationalID:
+     CostaRicaPhone:
+       type: string
+       description: Costa Rican phone number (8 digits starting with 6, 7, or 8, optionally prefixed with 506 country code)
+       pattern: '^(506)?[678]\d{7}$'
+       example: "88881234"
+     CostaRicaNationalID:
       type: string
       description: Costa Rican national ID (Cédula)
       pattern: '^\d{9,10}$'
       example: "0123456789"
-    CostaRicaNationalIdentifier:
+     CostaRicaNationalIdentifier:
       type: string
       description: Costa Rican national identifier (Cédula, DIMEX, or Legal Entity)
       example: "111090807"
