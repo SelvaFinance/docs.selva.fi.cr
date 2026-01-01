@@ -1,0 +1,15 @@
+# Dependencies
+node_modules/
+
+# Build output
+build/
+.docusaurus/
+.cache-loader/
+
+# Lock files
+yarn.lock
+package-lock.json
+
+# Generated files
+*.min.js
+*.min.css
