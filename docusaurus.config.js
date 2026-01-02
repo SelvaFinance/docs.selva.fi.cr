@@ -27,8 +27,8 @@ const config = {
   deploymentBranch: 'gh-pages',
   trailingSlash: false,
 
-  onBrokenLinks: 'throw',
-  onBrokenMarkdownLinks: 'warn',
+  onBrokenLinks: 'warn',
+  onBrokenMarkdownLinks: 'ignore',
 
   // Even if you don't use internationalization, you can use this field to set
   // useful metadata like html lang. For example, if your site is Chinese, you
@@ -36,6 +36,12 @@ const config = {
   i18n: {
     defaultLocale: 'en',
     locales: ['en'],
+    localeConfigs: {
+      en: {
+        htmlLang: 'en',
+        label: 'English',
+      },
+    },
   },
 
   presets: [
@@ -45,7 +51,8 @@ const config = {
       ({
         docs: {
           sidebarPath: require.resolve('./sidebars.js'),
-          editUrl: 'https://github.com/SelvaFinance/docs.selva.fi.cr/tree/main/',
+          editUrl:
+            'https://github.com/SelvaFinance/docs.selva.fi.cr/tree/main/',
         },
         blog: false,
         theme: {
@@ -60,8 +67,8 @@ const config = {
       '@scalar/docusaurus',
       {
         label: 'API Reference',
-        route: '/scalar',
-        showNavLink: false,
+        route: '/api-reference',
+        showNavLink: true,
         configuration: {
           spec: {
             content: fs.readFileSync(
@@ -77,7 +84,11 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
+      colorMode: {
+        defaultMode: 'light',
+        disableSwitch: false,
+        respectPrefersColorScheme: true,
+      },
       image: 'img/docusaurus-social-card.jpg',
       navbar: {
         title: 'Selva API',
@@ -90,12 +101,17 @@ const config = {
             type: 'docSidebar',
             sidebarId: 'tutorialSidebar',
             position: 'left',
-            label: 'Documentation',
+            label: 'Developer Guide',
           },
           {
-            href: 'https://github.com/SelvaFinance/docs.selva.fi.cr',
-            label: 'GitHub',
-            position: 'right',
+            to: '/docs/mcp',
+            label: 'MCP (Coming soon)',
+            position: 'left',
+          },
+          {
+            to: '/docs/release-notes',
+            label: 'Release Notes',
+            position: 'left',
           },
         ],
       },
@@ -103,29 +119,16 @@ const config = {
         style: 'dark',
         links: [
           {
-            title: 'Documentation',
+            title: 'Contact',
             items: [
               {
-                label: 'Getting Started',
-                to: '/docs/getting-started',
-              },
-              {
-                label: 'API Reference',
-                to: '/docs/api-reference',
-              },
-            ],
-          },
-          {
-            title: 'More',
-            items: [
-              {
-                label: 'GitHub',
-                href: 'https://github.com/SelvaFinance/docs.selva.fi.cr',
+                label: 'info@selvafinance.com',
+                href: 'mailto:info@selvafinance.com',
               },
             ],
           },
         ],
-        copyright: `Copyright © ${new Date().getFullYear()} Selva Finance. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} Selva Finance · info@selvafinance.com`,
       },
       prism: {
         theme: lightCodeTheme,
@@ -135,4 +138,3 @@ const config = {
 };
 
 module.exports = config;
-

@@ -24,23 +24,24 @@ All API errors follow a consistent format:
 
 The API uses standard HTTP status codes:
 
-| Status Code | Meaning | Description |
-|------------|---------|-------------|
-| 200 | OK | Request successful |
-| 201 | Created | Resource created successfully |
-| 204 | No Content | Request successful, no content to return |
-| 400 | Bad Request | Invalid request parameters or body |
-| 401 | Unauthorized | Invalid or missing authentication token |
-| 403 | Forbidden | Insufficient permissions |
-| 404 | Not Found | Resource does not exist |
-| 500 | Internal Server Error | Server error occurred |
-| 503 | Service Unavailable | Service temporarily unavailable |
+| Status Code | Meaning               | Description                              |
+| ----------- | --------------------- | ---------------------------------------- |
+| 200         | OK                    | Request successful                       |
+| 201         | Created               | Resource created successfully            |
+| 204         | No Content            | Request successful, no content to return |
+| 400         | Bad Request           | Invalid request parameters or body       |
+| 401         | Unauthorized          | Invalid or missing authentication token  |
+| 403         | Forbidden             | Insufficient permissions                 |
+| 404         | Not Found             | Resource does not exist                  |
+| 500         | Internal Server Error | Server error occurred                    |
+| 503         | Service Unavailable   | Service temporarily unavailable          |
 
 ## Common Error Codes
 
 ### Authentication Errors
 
 #### `invalid_client`
+
 - **Status**: 401
 - **Description**: Invalid client ID or secret
 - **Solution**: Verify your credentials are correct
@@ -53,6 +54,7 @@ The API uses standard HTTP status codes:
 ```
 
 #### `invalid_grant`
+
 - **Status**: 401
 - **Description**: Invalid or expired authorization code
 - **Solution**: Request a new authorization code
@@ -65,6 +67,7 @@ The API uses standard HTTP status codes:
 ```
 
 #### `unauthorized`
+
 - **Status**: 401
 - **Description**: Invalid or expired access token
 - **Solution**: Refresh your access token or re-authenticate
@@ -79,6 +82,7 @@ The API uses standard HTTP status codes:
 ### Request Errors
 
 #### `invalid_request`
+
 - **Status**: 400
 - **Description**: Missing or invalid request parameters
 - **Solution**: Check required parameters and their formats
@@ -94,6 +98,7 @@ The API uses standard HTTP status codes:
 ```
 
 #### `validation_error`
+
 - **Status**: 400
 - **Description**: Request body validation failed
 - **Solution**: Review validation errors and fix the request
@@ -111,6 +116,7 @@ The API uses standard HTTP status codes:
 ### Resource Errors
 
 #### `not_found`
+
 - **Status**: 404
 - **Description**: Requested resource does not exist
 - **Solution**: Verify the resource ID is correct
@@ -123,6 +129,7 @@ The API uses standard HTTP status codes:
 ```
 
 #### `forbidden`
+
 - **Status**: 403
 - **Description**: Insufficient permissions
 - **Solution**: Check your OAuth scopes and permissions
@@ -137,6 +144,7 @@ The API uses standard HTTP status codes:
 ### Server Errors
 
 #### `internal_error`
+
 - **Status**: 500
 - **Description**: Internal server error
 - **Solution**: Retry the request with exponential backoff
@@ -149,6 +157,7 @@ The API uses standard HTTP status codes:
 ```
 
 #### `service_unavailable`
+
 - **Status**: 503
 - **Description**: Service temporarily unavailable
 - **Solution**: Retry after the indicated retry period
@@ -174,17 +183,17 @@ async function apiCallWithRetry(url, options, maxRetries = 3) {
   for (let attempt = 0; attempt < maxRetries; attempt++) {
     try {
       const response = await fetch(url, options);
-      
+
       if (response.ok) {
         return await response.json();
       }
-      
+
       // Don't retry client errors
       if (response.status >= 400 && response.status < 500) {
         const error = await response.json();
         throw new Error(error.message);
       }
-      
+
       // Retry server errors
       if (response.status >= 500) {
         throw new Error('Server error');
@@ -193,10 +202,10 @@ async function apiCallWithRetry(url, options, maxRetries = 3) {
       if (attempt === maxRetries - 1) {
         throw error;
       }
-      
+
       // Exponential backoff
       const delay = Math.pow(2, attempt) * 1000;
-      await new Promise(resolve => setTimeout(resolve, delay));
+      await new Promise((resolve) => setTimeout(resolve, delay));
     }
   }
 }
@@ -211,9 +220,9 @@ async function handleRateLimit(response) {
   if (response.status === 429) {
     const retryAfter = response.headers.get('Retry-After');
     const delay = retryAfter ? parseInt(retryAfter) * 1000 : 60000;
-    
+
     console.log(`Rate limited. Retrying after ${delay}ms`);
-    await new Promise(resolve => setTimeout(resolve, delay));
+    await new Promise((resolve) => setTimeout(resolve, delay));
     return true; // Indicate retry needed
   }
   return false;
@@ -227,29 +236,29 @@ Automatically refresh expired tokens:
 ```javascript
 async function makeAuthenticatedRequest(url, options = {}) {
   let accessToken = getStoredAccessToken();
-  
+
   const response = await fetch(url, {
     ...options,
     headers: {
       ...options.headers,
-      'Authorization': `Bearer ${accessToken}`,
+      Authorization: `Bearer ${accessToken}`,
     },
   });
-  
+
   // If unauthorized, try refreshing token
   if (response.status === 401) {
     accessToken = await refreshAccessToken();
-    
+
     // Retry with new token
     return fetch(url, {
       ...options,
       headers: {
         ...options.headers,
-        'Authorization': `Bearer ${accessToken}`,
+        Authorization: `Bearer ${accessToken}`,
       },
     });
   }
-  
+
   return response;
 }
 ```
@@ -260,11 +269,11 @@ Map error codes to user-friendly messages:
 
 ```javascript
 const errorMessages = {
-  'invalid_request': 'Please check your input and try again',
-  'unauthorized': 'Your session has expired. Please log in again',
-  'not_found': 'The requested item could not be found',
-  'forbidden': 'You do not have permission to perform this action',
-  'internal_error': 'A server error occurred. Please try again later',
+  invalid_request: 'Please check your input and try again',
+  unauthorized: 'Your session has expired. Please log in again',
+  not_found: 'The requested item could not be found',
+  forbidden: 'You do not have permission to perform this action',
+  internal_error: 'A server error occurred. Please try again later',
 };
 
 function getUserFriendlyError(errorCode) {
@@ -301,10 +310,10 @@ app.post('/webhooks', async (req, res) => {
     if (!verifySignature(req.headers['signature'], req.body)) {
       return res.status(401).json({ error: 'Invalid signature' });
     }
-    
+
     // Process webhook
     await processWebhook(req.body);
-    
+
     // Always return 200 to acknowledge receipt
     res.status(200).json({ status: 'received' });
   } catch (error) {
@@ -338,7 +347,7 @@ async function logError(error, context) {
     endpoint: context.url,
     timestamp: new Date().toISOString(),
   });
-  
+
   // Send to error tracking service (e.g., Sentry)
   // trackError(error, context);
 }
@@ -347,7 +356,5 @@ async function logError(error, context) {
 ## Next Steps
 
 - Review [Common Workflows](/docs/common-workflows) for error handling patterns
-- Check the [API Reference](/docs/api-reference) for endpoint-specific errors
+- Check the <a href="/api-reference" target="_blank">API Reference</a> for endpoint-specific errors
 - See [Authentication](/docs/authentication) for token error handling
-
-

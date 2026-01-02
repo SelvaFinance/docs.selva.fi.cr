@@ -25,7 +25,7 @@ Keep these credentials secure and never commit them to version control.
 
 ## Step 2: Authenticate
 
-The Selva API uses OAuth 2.0. To get an access token:
+The Selva API uses OAuth 2.0. Request scopes that match what you need (for example, `read-accounts` to list accounts, `send-payments` to create payments).
 
 ### Option A: Using cURL
 
@@ -37,7 +37,8 @@ curl -X POST https://dev.selva.fi.cr/oauth/token \
     "client_id": "your-client-id",
     "client_secret": "your-client-secret",
     "redirect_uri": "https://your-app.com/callback",
-    "code": "authorization-code-from-callback"
+    "code": "authorization-code-from-callback",
+    "scope": "read-accounts send-payments"
   }'
 ```
 
@@ -55,6 +56,7 @@ const response = await fetch('https://dev.selva.fi.cr/oauth/token', {
     client_secret: 'your-client-secret',
     redirect_uri: 'https://your-app.com/callback',
     code: 'authorization-code-from-callback',
+    scope: 'read-accounts send-payments',
   }),
 });
 
@@ -66,7 +68,7 @@ The response will include an `access_token` that you'll use for subsequent API c
 
 ## Step 3: Make Your First API Call
 
-Now that you have an access token, let's check your accounts:
+Now that you have an access token (with `read-accounts` scope), list your accounts:
 
 ```bash
 curl -X GET https://dev.selva.fi.cr/api/accounts \
@@ -79,7 +81,7 @@ Or using JavaScript:
 const response = await fetch('https://dev.selva.fi.cr/api/accounts', {
   method: 'GET',
   headers: {
-    'Authorization': `Bearer ${accessToken}`,
+    Authorization: `Bearer ${accessToken}`,
   },
 });
 
@@ -89,37 +91,38 @@ console.log('Your accounts:', accounts);
 
 ## Step 4: Check Service Status
 
-Verify the API is available:
+Verify the payment rails are online:
 
 ```bash
-curl https://dev.selva.fi.cr/api/IsServiceAvailable
+curl https://dev.selva.fi.cr/api/payments/service-status
 ```
 
 ## Example: Create a Payment
 
-Here's a complete example of creating a payment:
+Here's a complete example of creating a payment (requires the `send-payments` scope). Use a UUID `X-Idempotency-Key` header—it's required and prevents duplicates.
 
 ```javascript
 // 1. Get access token (from Step 2)
 const accessToken = 'your-access-token';
 
-// 2. Generate idempotency key
+// 2. Generate idempotency key (must be a UUID)
 const idempotencyKey = crypto.randomUUID();
 
 // 3. Create payment
 const paymentResponse = await fetch('https://dev.selva.fi.cr/api/payments', {
   method: 'POST',
   headers: {
-    'Authorization': `Bearer ${accessToken}`,
+    Authorization: `Bearer ${accessToken}`,
     'Content-Type': 'application/json',
     'X-Idempotency-Key': idempotencyKey,
   },
   body: JSON.stringify({
+    from_account_id: '550e8400-e29b-41d4-a716-446655440000',
     amount: 10000,
     currency: 'CRC',
-    recipient_identifier: 'CR78037010600458074353',
+    recipient_phone: '50671234567', // or use recipient_iban instead
     description: 'Payment for services',
-    payment_method: 'transfer',
+    reference: 'REF-12345',
   }),
 });
 
@@ -130,7 +133,7 @@ console.log('Payment created:', payment);
 ## Next Steps
 
 - Learn about [Authentication](/docs/authentication) in detail
-- Explore the [API Reference](/docs/api-reference) for all available endpoints
+- Explore the <a href="/api-reference" target="_blank">API Reference</a> for all available endpoints
 - Check out [Common Workflows](/docs/common-workflows) for integration patterns
 - Review [Error Handling](/docs/errors) to handle errors gracefully
 
@@ -149,5 +152,3 @@ If you run into issues:
 2. Verify your credentials are correct
 3. Ensure your access token hasn't expired
 4. Contact support at support@selva.fi.cr
-
-

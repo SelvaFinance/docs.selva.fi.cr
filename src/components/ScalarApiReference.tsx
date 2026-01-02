@@ -2,20 +2,15 @@ import React from 'react';
 import BrowserOnly from '@docusaurus/BrowserOnly';
 import useDocusaurusContext from '@docusaurus/useDocusaurusContext';
 
-export default function ScalarApiReference(): JSX.Element {
+export default function ScalarApiReference(): React.ReactElement {
   const { siteConfig } = useDocusaurusContext();
   const baseUrl = siteConfig.baseUrl;
-  
+
   return (
     <BrowserOnly>
       {() => {
-        // The Scalar Docusaurus plugin creates a route at /scalar
-        // We'll embed it using an iframe
-        // Use the baseUrl from Docusaurus config to construct the correct URL
-        // baseUrl already includes leading slash, so we need to handle it properly
-        const normalizedBaseUrl = baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`;
-        const scalarUrl = `${window.location.origin}${normalizedBaseUrl}scalar`;
-        
+        const scalarUrl = `${window.location.origin}/api-reference`;
+
         return (
           <div
             style={{
@@ -42,4 +37,3 @@ export default function ScalarApiReference(): JSX.Element {
     </BrowserOnly>
   );
 }
-

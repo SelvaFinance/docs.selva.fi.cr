@@ -1,38 +1,466 @@
-/**
- * CSS files with the .module.css suffix will be treated as CSS modules
- * and scoped locally.
- */
+:root {
+  --bg-surface: #f9fafb;
+  --bg-surface-alt: #f3f4f6;
+  --card: #ffffff;
+  --card-alt: #f8fafc;
+  --text-strong: #0b1420;
+  --text-muted: #4b5563;
+  --border: var(--ifm-color-emphasis-300);
+  --accent: var(--ifm-color-primary);
+}
 
-.heroBanner {
-  padding: 4rem 0;
+[data-theme='dark'] {
+  --bg-surface: var(--ifm-background-color);
+  --bg-surface-alt: var(
+    --ifm-background-surface-color,
+    var(--ifm-background-color)
+  );
+  --card: var(--ifm-card-background-color, var(--ifm-background-surface-color));
+  --card-alt: var(--ifm-background-surface-color, var(--ifm-background-color));
+  --text-strong: var(--ifm-font-color-base);
+  --text-muted: var(--ifm-color-secondary);
+  --border: var(--ifm-color-emphasis-200);
+  --accent: var(--ifm-color-primary);
+}
+
+.hero {
+  background: linear-gradient(120deg, var(--bg-surface), var(--bg-surface-alt));
+  color: var(--text-strong);
+  padding: 4.25rem 0 3.5rem;
+}
+
+.heroContainer {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+  gap: 2.5rem;
+  align-items: stretch;
+  justify-items: center;
+  max-width: 1280px;
+  margin: 0 auto;
+}
+
+.heroContent {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  max-width: 1100px;
+  width: 100%;
   text-align: center;
+  align-items: center;
+}
+
+.title {
+  font-size: clamp(2.4rem, 4vw, 3.1rem);
+  line-height: 1.1;
+  margin: 0;
+  color: var(--text-strong);
+}
+
+.subtitle {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+.ctaRow {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.highlightStrip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1.25rem;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.highlightItem {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  padding: 1.15rem 1.25rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.75rem;
+  align-items: center;
+  box-shadow: 0 12px 24px rgba(15, 26, 45, 0.06);
+}
+
+.highlightIcon {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 0.65rem;
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.highlightCopy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.highlightLabel {
+  display: block;
+  font-weight: 700;
+  color: var(--text-strong);
+  letter-spacing: 0.01em;
+}
+
+.highlightDetail {
+  display: block;
+  color: var(--text-muted);
+  font-size: 0.96rem;
+  line-height: 1.4;
+}
+
+.heroPanel {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.panelCard {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.25rem;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 14px 30px rgba(15, 26, 45, 0.12);
+}
+
+.panelLabel {
+  display: inline-block;
+  color: var(--accent);
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.codeBlock {
+  background: var(--ifm-pre-background);
+  color: var(--ifm-code-color);
+  border-radius: 0.75rem;
+  padding: 1rem;
+  overflow: auto;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  margin: 0 0 0.75rem;
+  border: 1px solid var(--ifm-color-emphasis-300);
+}
+
+.panelFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--text-strong);
+  font-weight: 600;
+}
+
+.inlineLink {
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.inlineLink:hover {
+  text-decoration: underline;
+}
+
+.section,
+.sectionAlt {
+  padding: 3.5rem 0;
+}
+
+.sectionAlt {
+  background: var(--bg-surface-alt);
+}
+
+.sectionContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.sectionHeader {
+  max-width: 720px;
+}
+
+.sectionTitle {
+  margin: 0 0 0.4rem;
+  color: var(--text-strong);
+  font-size: 2rem;
+}
+
+.sectionBody {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 1.05rem;
+}
+
+[data-theme='dark'] .sectionBody {
+  color: var(--text-muted);
+}
+
+.cardsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.card,
+.cardSmall {
+  background: var(--card);
+  color: var(--text-strong);
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  padding: 1.4rem;
+  box-shadow: 0 10px 24px rgba(15, 26, 45, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.sectionAlt .cardSmall {
+  background: var(--card);
+  color: var(--text-strong);
+  border-color: var(--border);
+}
+
+.timeline {
+  margin-top: 1.5rem;
+}
+
+.timelineList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 1.1rem;
+}
+
+.timelineItem {
+  display: block;
+}
+
+.timelineCard {
   position: relative;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  padding: 1.15rem 1.25rem;
+  box-shadow: 0 12px 26px rgba(15, 26, 45, 0.08);
   overflow: hidden;
 }
 
-@media screen and (max-width: 996px) {
-  .heroBanner {
-    padding: 2rem;
+.timelineCard::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: color-mix(in srgb, var(--accent) 85%, transparent);
+  opacity: 0.8;
+}
+
+.timelineCardHeader {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-bottom: 0.35rem;
+}
+
+.timelineIcon {
+  width: 2.4rem;
+  height: 2.4rem;
+  border-radius: 0.7rem;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  color: var(--accent);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.timelineCardTitle {
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+@media screen and (max-width: 768px) {
+  .timeline {
+    margin-top: 1.25rem;
   }
 }
 
-.buttons {
+.cardTitle {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+}
+
+.cardBody {
+  margin: 0;
+  color: var(--text-muted);
+}
+
+.cardLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  margin-top: auto;
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+  align-self: flex-start;
+}
+
+.cardLink:hover {
+  text-decoration: underline;
+}
+
+.sectionAlt .cardBody {
+  color: var(--text-muted);
+}
+
+.band {
+  background: var(--bg-surface-alt);
+  color: var(--text-strong);
+  padding: 3.25rem 0;
+}
+
+.bandContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 1.75rem;
+}
+
+.stepList {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+.stepItem {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  padding: 1rem 1.15rem;
+  color: var(--text-strong);
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  box-shadow: 0 10px 24px rgba(15, 26, 45, 0.06);
+}
+
+.stepContent {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.stepTitle {
+  font-weight: 700;
+  color: var(--text-strong);
+}
+
+.stepDetail {
+  color: var(--text-muted);
+  font-size: 0.98rem;
+  line-height: 1.45;
+}
+
+.stepLinkRow {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-end;
+  margin-top: auto;
+}
+
+.stepLink {
+  color: var(--accent);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.stepLink:hover {
+  text-decoration: underline;
+}
+
+.stepActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.stepItem {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 0.9rem;
+  padding: 1rem 1.1rem;
+  color: var(--text-strong);
+  display: flex;
+  gap: 0.6rem;
+  align-items: flex-start;
+  box-shadow: 0 10px 24px rgba(15, 26, 45, 0.06);
+}
+
+.stepActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.strip {
+  background: var(--bg-surface-alt);
+  color: var(--text-strong);
+  padding: 2.6rem 0;
+}
+
+.stripContainer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   flex-wrap: wrap;
   gap: 1rem;
 }
 
-.features {
+.stripActions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.finalCta {
   display: flex;
   align-items: center;
-  padding: 2rem 0;
-  width: 100%;
+  justify-content: space-between;
+  gap: 1.5rem;
+  flex-wrap: wrap;
 }
 
-.features > .container {
-  padding: 2rem 0;
+@media screen and (max-width: 996px) {
+  .hero {
+    padding: 3rem 0;
+  }
+
+  .heroContainer {
+    grid-template-columns: 1fr;
+  }
+
+  .heroPanel {
+    justify-content: flex-start;
+  }
+
+  .panelCard {
+    max-width: 100%;
+  }
 }
-
-

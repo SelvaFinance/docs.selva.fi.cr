@@ -1,0 +1,14 @@
+{
+  "copyright": {
+    "message": "Copyright © 2025 Selva Finance · info@selvafinance.com",
+    "description": "The footer copyright"
+  },
+  "link.contact.title": {
+    "message": "Contact",
+    "description": "Footer column title for contact"
+  },
+  "link.contact.item.0.label": {
+    "message": "info@selvafinance.com",
+    "description": "Footer contact email label"
+  }
+}
