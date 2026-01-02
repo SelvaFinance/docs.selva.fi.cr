@@ -10,7 +10,42 @@ const path = require('path');
 const config = {
   title: 'Selva API Documentation',
   tagline: 'Soluciones Electrónicas Locales de Valor',
-  favicon: 'img/favicon.ico',
+  favicon: 'favicons/favicon.ico',
+  headTags: [
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'apple-touch-icon',
+        sizes: '180x180',
+        href: '/favicons/apple-touch-icon.png',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '32x32',
+        href: '/favicons/favicon-32x32.png',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '16x16',
+        href: '/favicons/favicon-16x16.png',
+      },
+    },
+    {
+      tagName: 'link',
+      attributes: {
+        rel: 'manifest',
+        href: '/favicons/site.webmanifest',
+      },
+    },
+  ],
 
   // Set the production url of your site here
   url: 'https://docs.selva.fi.cr',
