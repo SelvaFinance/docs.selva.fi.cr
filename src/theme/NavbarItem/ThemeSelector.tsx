@@ -4,15 +4,9 @@ import DropdownNavbarItem from '@theme/NavbarItem/DropdownNavbarItem';
 
 type ThemeChoice = 'system' | 'light' | 'dark';
 
-const getSystemMode = (): 'light' | 'dark' => {
-  if (typeof window === 'undefined') {
-    return 'light';
-  }
-
-  return window.matchMedia('(prefers-color-scheme: dark)').matches
-    ? 'dark'
-    : 'light';
-};
+const THEME_CHOICE_KEY = 'selva-theme-choice';
+const DOCUSAURUS_THEME_KEY = 'theme';
+const LEGACY_DOCUSAURUS_THEME_KEY = 'docusaurus-theme';
 
 export default function ThemeSelector(): React.ReactElement {
   const { colorMode, setColorMode } = useColorMode();
@@ -25,36 +19,71 @@ export default function ThemeSelector(): React.ReactElement {
   }, []);
 
   useEffect(() => {
-    if (!initialized && isClient) {
-      const storedChoice = localStorage.getItem('selva-theme-choice');
-      const docusaurusTheme = localStorage.getItem('docusaurus-theme');
-
-      if (!storedChoice && docusaurusTheme) {
-        localStorage.removeItem('docusaurus-theme');
-        setThemeChoice('system');
-        setColorMode(getSystemMode());
-      } else if (storedChoice === 'light' || storedChoice === 'dark') {
-        setThemeChoice(storedChoice);
-        setColorMode(storedChoice);
-      } else {
-        setThemeChoice('system');
-        setColorMode(getSystemMode());
-      }
-
-      setInitialized(true);
+    if (!isClient || initialized) {
+      return undefined;
     }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const applySystemMode = () => {
+      setColorMode(mediaQuery.matches ? 'dark' : 'light');
+
+      localStorage.removeItem(DOCUSAURUS_THEME_KEY);
+      localStorage.removeItem(LEGACY_DOCUSAURUS_THEME_KEY);
+    };
+
+    const storedChoice = localStorage.getItem(THEME_CHOICE_KEY);
+
+    if (storedChoice === 'light' || storedChoice === 'dark') {
+      setThemeChoice(storedChoice);
+      setColorMode(storedChoice);
+    } else {
+      setThemeChoice('system');
+      localStorage.removeItem(THEME_CHOICE_KEY);
+      applySystemMode();
+    }
+
+    setInitialized(true);
+
+    return undefined;
   }, [isClient, initialized, setColorMode]);
+
+  useEffect(() => {
+    if (!isClient || !initialized) {
+      return undefined;
+    }
+
+    const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+
+    const applySystemMode = () => {
+      setColorMode(mediaQuery.matches ? 'dark' : 'light');
+      localStorage.removeItem(DOCUSAURUS_THEME_KEY);
+      localStorage.removeItem(LEGACY_DOCUSAURUS_THEME_KEY);
+    };
+
+    if (themeChoice === 'system') {
+      applySystemMode();
+      mediaQuery.addEventListener('change', applySystemMode);
+
+      return () => {
+        mediaQuery.removeEventListener('change', applySystemMode);
+      };
+    }
+
+    return undefined;
+  }, [themeChoice, initialized, isClient, setColorMode]);
 
   const handleThemeChange = (mode: ThemeChoice) => {
     setThemeChoice(mode);
 
     if (mode === 'system') {
-      localStorage.removeItem('selva-theme-choice');
-      setColorMode(getSystemMode());
+      localStorage.removeItem(THEME_CHOICE_KEY);
+      localStorage.removeItem(DOCUSAURUS_THEME_KEY);
+      localStorage.removeItem(LEGACY_DOCUSAURUS_THEME_KEY);
       return;
     }
 
-    localStorage.setItem('selva-theme-choice', mode);
+    localStorage.setItem(THEME_CHOICE_KEY, mode);
     setColorMode(mode);
   };
 
