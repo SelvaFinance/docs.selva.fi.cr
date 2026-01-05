@@ -54,13 +54,6 @@ Updates to the Selva API platform, including payments, account management, and m
 - Returns HTTP 409 Conflict if payment already processed with same idempotency key
 - Added `bail` flag to payment validation for faster failure on first error
 
-**New Enums and Types**
-
-- Added `CountryCode` enum for country code references
-- Added `ProsoftAccountStatus` enum for account status tracking
-- Added `SinpeRegistrationStatus` enum for SINPE registration states
-- Added database migrations to update enum types in accounts table
-
 #### Enhancements
 
 **API Improvements**
@@ -69,19 +62,6 @@ Updates to the Selva API platform, including payments, account management, and m
 - Improved error message consistency across all endpoints
 - Added UUID validation for `from_account_id` field
 - Replaced Spanish error messages from third-party services with English
-
-**Testing**
-
-- Added `PaymentStatusApiTest` for payment status endpoint
-- Added `PaymentStatusTest` for payment status service
-- Added `ValidatePaymentRequestTest` for payment validation
-- Added `IbanControllerTest` for IBAN endpoint
-- Added `PaymentResourceTest` for payment resource formatting
-- Extended coverage for account, payment, and webhook tests
-
-**Documentation**
-
-- Updated API documentation for payments and account verification endpoints
 
 ### January 30, 2025
 
