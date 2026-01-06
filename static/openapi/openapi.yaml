@@ -454,7 +454,7 @@ paths:
                       amount:
                         type: object
                         properties:
-                          balance:
+                          value:
                             type: integer
                             description: Amount in cents (multiply by 0.01 to get actual amount)
                           currency:
@@ -519,7 +519,7 @@ paths:
                       transfer_type: debit
                       status: completed
                       amount:
-                        balance: 1700
+                        value: 1700
                         currency: CRC
                         formatted: '17.00 CRC'
                       description: null
@@ -550,7 +550,7 @@ paths:
                       transfer_type: debit
                       status: completed
                       amount:
-                        balance: 1012
+                        value: 1012
                         currency: CRC
                         formatted: '10.12 CRC'
                       description: null
@@ -712,7 +712,7 @@ paths:
                             amount:
                               type: object
                               properties:
-                                balance:
+                                value:
                                   type: integer
                                   description: Amount in cents (multiply by 0.01 to get actual amount)
                                 currency:
@@ -780,7 +780,7 @@ paths:
                           transfer_type: debit
                           status: completed
                           amount:
-                            balance: 100
+                            value: 100
                             currency: CRC
                             formatted: '1.00 CRC'
                           description: null
@@ -806,7 +806,7 @@ paths:
                           transfer_type: debit
                           status: completed
                           amount:
-                            balance: 1700
+                            value: 1700
                             currency: CRC
                             formatted: '17.00 CRC'
                           description: null
@@ -832,7 +832,7 @@ paths:
                           transfer_type: debit
                           status: completed
                           amount:
-                            balance: 1500
+                            value: 1500
                             currency: CRC
                             formatted: '15.00 CRC'
                           description: null
