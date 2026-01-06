@@ -497,11 +497,15 @@ paths:
                           name:
                             type: string
                           iban:
-                            $ref: '#/components/schemas/CostaRicaIBAN'
-                            nullable: true
+                            oneOf:
+                              - $ref: '#/components/schemas/CostaRicaIBAN'
+                              - type: string
+                                nullable: true
                           phone_number:
-                            $ref: '#/components/schemas/CostaRicaPhone'
-                            nullable: true
+                            oneOf:
+                              - $ref: '#/components/schemas/CostaRicaPhone'
+                              - type: string
+                                nullable: true
               examples:
                 PIN Payment:
                   value:
@@ -752,11 +756,15 @@ paths:
                                 name:
                                   type: string
                                 iban:
-                                  $ref: '#/components/schemas/CostaRicaIBAN'
-                                  nullable: true
+                                  oneOf:
+                                    - $ref: '#/components/schemas/CostaRicaIBAN'
+                                    - type: string
+                                      nullable: true
                                 phone_number:
-                                  $ref: '#/components/schemas/CostaRicaPhone'
-                                  nullable: true
+                                  oneOf:
+                                    - $ref: '#/components/schemas/CostaRicaPhone'
+                                    - type: string
+                                      nullable: true
                       count:
                         type: integer
               examples:
