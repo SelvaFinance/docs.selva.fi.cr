@@ -440,8 +440,7 @@ paths:
                         type: string
                         format: uuid
                       transfer_type:
-                        type: string
-                        enum: [debit, credit]
+                        $ref: '#/components/schemas/TransferType'
                       channel_ref_number:
                         type: string
                       cgp_ref_number:
@@ -449,8 +448,7 @@ paths:
                       sinpe_ref:
                         type: string
                       status:
-                        type: string
-                        enum: [pending, completed, failed, cancelled]
+                        $ref: '#/components/schemas/PaymentStatus'
                       amount:
                         type: object
                         properties:
@@ -481,8 +479,7 @@ paths:
                         format: date-time
                         nullable: true
                       payment_type:
-                        type: string
-                        enum: [pin, sinpe]
+                        $ref: '#/components/schemas/PaymentType'
                       payer:
                         type: object
                         properties:
@@ -698,8 +695,7 @@ paths:
                               type: string
                               format: uuid
                             transfer_type:
-                              type: string
-                              enum: [debit, credit]
+                              $ref: '#/components/schemas/TransferType'
                             channel_ref_number:
                               type: string
                             cgp_ref_number:
@@ -707,8 +703,7 @@ paths:
                             sinpe_ref:
                               type: string
                             status:
-                              type: string
-                              enum: [pending, completed, failed, cancelled]
+                              $ref: '#/components/schemas/PaymentStatus'
                             amount:
                               type: object
                               properties:
@@ -739,8 +734,7 @@ paths:
                               format: date-time
                               nullable: true
                             payment_type:
-                              type: string
-                              enum: [pin, sinpe]
+                              $ref: '#/components/schemas/PaymentType'
                             payer:
                               type: object
                               properties:
@@ -1306,14 +1300,15 @@ paths:
                       iban:
                         type: string
                       origin_code:
-                        type: string
+                        $ref: '#/components/schemas/AccountOrigin'
                       currency:
                         type: string
                         enum: [CRC, USD]
                       owner_name:
                         type: string
                       status:
-                        type: string
+                        $ref: '#/components/schemas/AccountStatus'
+
                       created_at:
                         type: string
                         format: date-time
@@ -1433,8 +1428,7 @@ paths:
                       entity_name:
                         type: string
                       status:
-                        type: string
-                        enum: [registered, not_registered]
+                        $ref: '#/components/schemas/PhoneVerificationStatus'
                 example:
                   success: true
                   message: Phone information retrieved successfully
@@ -1559,8 +1553,7 @@ paths:
                       entity_name:
                         type: string
                       status:
-                        type: string
-                        enum: [active, inactive]
+                        $ref: '#/components/schemas/IBANStatus'
                 example:
                   success: true
                   message: IBAN information retrieved successfully
@@ -2555,6 +2548,34 @@ components:
       type: string
       description: Costa Rican national identifier (Cédula, DIMEX, or Legal Entity)
       example: '111090807'
+    PaymentStatus:
+      type: string
+      enum: [pending, processing, completed, failed]
+    TransferType:
+      type: string
+      enum: [debit, credit]
+    PaymentType:
+      type: string
+      enum: [pin, sinpe]
+    AccountOrigin:
+      type: string
+      enum:
+        [
+          loans,
+          special_savings,
+          payroll_deduction_savings,
+          credit_card,
+          bank_ledger,
+        ]
+    AccountStatus:
+      type: string
+      enum: [inactive, active, closed]
+    PhoneVerificationStatus:
+      type: string
+      enum: [registered, not_registered]
+    IBANStatus:
+      type: string
+      enum: [active, closed, blocked]
   securitySchemes:
     BearerAuth:
       type: http
