@@ -37,8 +37,8 @@ The API reference is automatically generated from our OpenAPI specification and 
 
 - `POST /api/payments` - Create a payment
 - `POST /api/payments/validate` - Validate payment details
-- `GET /api/payments/history` - Get payment history
-- `GET /api/payments/{id}` - Get payment by ID
+- [`GET /api/payments/history`](/api-reference#tag/payments/get/api/payments/history) - Get payment history
+- [`GET /api/payments/{id}`](/api-reference#tag/payments/get/api/payments/%7Bid%7D) - Get payment by ID
 
 ### Verification
 
