@@ -56,6 +56,17 @@ Updates to the Selva API platform, including payments, account management, and m
 
 #### Enhancements
 
+**Payment Response Enhancements**
+
+- Added `name` to both `payer` and `payee` objects in payment responses
+- Payee now includes `iban` for PIN payments or `phone_number` for SINPE payments
+- Removed `currency` and `email` fields from payer/payee payloads
+- Affected endpoints: `GET /api/payments/{id}`, `GET /api/payments/history`
+
+**Account Details Response Update**
+
+- `GET /api/accounts/{id}/details` now returns `origin_code` as a string and includes `owner_name`, `document_number`, `iban`, `currency`, `status`, and timestamps; deprecated `user_id` and `document_type` fields removed
+
 **API Improvements**
 
 - Standardized phone and IBAN endpoint request/response structures

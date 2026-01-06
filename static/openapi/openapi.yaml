@@ -490,47 +490,84 @@ paths:
                             $ref: '#/components/schemas/CostaRicaIBAN'
                           document_number:
                             type: string
-                          currency:
+                          name:
                             type: string
                       payee:
                         type: object
                         properties:
                           document_number:
                             type: string
+                          name:
+                            type: string
                           iban:
                             $ref: '#/components/schemas/CostaRicaIBAN'
-                          currency:
-                            type: string
-              example:
-                success: true
-                message: Payment status retrieved successfully
-                data:
-                  id: cf9ca667-063f-4de2-a02b-b82f1789aa33
-                  idempotency_key: 073ed271-682b-4ede-9145-64c9915e8565
-                  cgp_ref_number: 93
-                  channel_ref_number: '2026010500002784250844633'
-                  sinpe_ref: '2026010537083000000000932'
-                  transfer_type: debit
-                  status: completed
-                  amount:
-                    balance: 1012
-                    currency: CRC
-                    formatted: '10.12 CRC'
-                  description: null
-                  reference: null
-                  error_message: null
-                  created_at: '2026-01-05T21:33:37.000000Z'
-                  submitted_at: '2026-01-05T21:33:41.000000Z'
-                  completed_at: '2026-01-05T21:33:41.000000Z'
-                  payment_type: sinpe
-                  payer:
-                    iban: CR06037010600471851492
-                    document_number: '0700000021'
-                    currency: CRC
-                  payee:
-                    document_number: '0100000001'
-                    phone_number: '77770001'
-                    email: null
+                            nullable: true
+                          phone_number:
+                            $ref: '#/components/schemas/CostaRicaPhone'
+                            nullable: true
+              examples:
+                PIN Payment:
+                  value:
+                    success: true
+                    message: Payment status retrieved successfully
+                    data:
+                      id: ca43e1b9-ae79-4e52-8712-791d474a1ede
+                      idempotency_key: a3f21177-d5df-4fc2-bddb-063cd0283316
+                      cgp_ref_number: 10259
+                      channel_ref_number: '2026010500001270607738051'
+                      sinpe_ref: '2026010537022010000102590'
+                      transfer_type: debit
+                      status: completed
+                      amount:
+                        balance: 1700
+                        currency: CRC
+                        formatted: '17.00 CRC'
+                      description: null
+                      reference: null
+                      error_message: null
+                      created_at: '2026-01-05T14:31:11.000000Z'
+                      submitted_at: '2026-01-05T14:31:14.000000Z'
+                      completed_at: '2026-01-05T14:31:14.000000Z'
+                      payment_type: pin
+                      payer:
+                        iban: CR06037010600471851492
+                        document_number: '0700000021'
+                        name: Bob Darl
+                      payee:
+                        document_number: '0101110114'
+                        name: CARLOS ALBERTO AMADOR HIDALGO
+                        iban: CR02010200000000000001
+                SINPE Payment:
+                  value:
+                    success: true
+                    message: Payment status retrieved successfully
+                    data:
+                      id: 1fe1add0-9d17-418e-a850-d34dfb630a96
+                      idempotency_key: 7e15acae-8c4a-4379-8059-e4207ff39ed0
+                      cgp_ref_number: 96
+                      channel_ref_number: '2026010500002553137596121'
+                      sinpe_ref: '2026010537083000000000961'
+                      transfer_type: debit
+                      status: completed
+                      amount:
+                        balance: 1012
+                        currency: CRC
+                        formatted: '10.12 CRC'
+                      description: null
+                      reference: null
+                      error_message: null
+                      created_at: '2026-01-06T02:23:23.000000Z'
+                      submitted_at: '2026-01-06T02:23:31.000000Z'
+                      completed_at: '2026-01-06T02:23:31.000000Z'
+                      payment_type: sinpe
+                      payer:
+                        iban: CR06037010600471851492
+                        document_number: '0700000021'
+                        name: Bob Darl
+                      payee:
+                        document_number: '0100000001'
+                        name: Juan Perez
+                        phone_number: '77770001'
         '422':
           description: Validation error
           content:
@@ -711,17 +748,21 @@ paths:
                                   $ref: '#/components/schemas/CostaRicaIBAN'
                                 document_number:
                                   type: string
-                                currency:
+                                name:
                                   type: string
                             payee:
                               type: object
                               properties:
                                 document_number:
                                   type: string
+                                name:
+                                  type: string
                                 iban:
                                   $ref: '#/components/schemas/CostaRicaIBAN'
-                                currency:
-                                  type: string
+                                  nullable: true
+                                phone_number:
+                                  $ref: '#/components/schemas/CostaRicaPhone'
+                                  nullable: true
                       count:
                         type: integer
               examples:
@@ -752,11 +793,11 @@ paths:
                           payer:
                             iban: CR06037010600471851492
                             document_number: '0700000021'
-                            currency: CRC
+                            name: Bob Darl
                           payee:
                             document_number: '0101110114'
+                            name: CARLOS ALBERTO AMADOR HIDALGO
                             iban: CR02010200000000000001
-                            currency: CRC
                         - id: ca43e1b9-ae79-4e52-8712-791d474a1ede
                           idempotency_key: a3f21177-d5df-4fc2-bddb-063cd0283316
                           cgp_ref_number: 10259
@@ -778,11 +819,11 @@ paths:
                           payer:
                             iban: CR06037010600471851492
                             document_number: '0700000021'
-                            currency: CRC
+                            name: Bob Darl
                           payee:
                             document_number: '0101110114'
+                            name: CARLOS ALBERTO AMADOR HIDALGO
                             iban: CR02010200000000000001
-                            currency: CRC
                         - id: c464988c-7fbf-42c9-a1e1-2d5ca262fc63
                           idempotency_key: 4be2dbb7-d30a-4c60-becd-87b0f2080150
                           cgp_ref_number: 10258
@@ -804,11 +845,11 @@ paths:
                           payer:
                             iban: CR06037010600471851492
                             document_number: '0700000021'
-                            currency: CRC
+                            name: Bob Darl
                           payee:
                             document_number: '0101110114'
+                            name: CARLOS ALBERTO AMADOR HIDALGO
                             iban: CR02010200000000000001
-                            currency: CRC
                       count: 3
                 Empty:
                   value:
@@ -1260,22 +1301,17 @@ paths:
                       id:
                         type: string
                         format: uuid
-                      user_id:
+                      document_number:
                         type: string
-                        format: uuid
                       iban:
+                        type: string
+                      origin_code:
                         type: string
                       currency:
                         type: string
                         enum: [CRC, USD]
-                      document_type:
-                        type: integer
-                      document_number:
-                        type: string
                       owner_name:
                         type: string
-                      origin_code:
-                        type: integer
                       status:
                         type: string
                       created_at:
@@ -1288,17 +1324,15 @@ paths:
                   success: true
                   message: Account details retrieved successfully
                   data:
-                    id: 70242935-a11b-4018-8e84-0413a8ac9d67
-                    user_id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
-                    iban: CR17037010600841438269
+                    id: db88a007-f3c6-412c-9898-a800c8edfadf
+                    document_number: '0700000021'
+                    iban: CR06037010600471851492
+                    origin_code: special_savings
                     currency: CRC
-                    document_type: 0
-                    document_number: '0711111118'
-                    owner_name: Bob Dalf
-                    origin_code: 2
+                    owner_name: 'Bob Darl'
                     status: active
-                    created_at: '2025-12-12T13:35:00.000000Z'
-                    updated_at: '2025-12-12T13:35:00.000000Z'
+                    created_at: '2026-01-03T08:01:44.000000Z'
+                    updated_at: '2026-01-03T08:01:44.000000Z'
         '404':
           description: Account not found
           content:
@@ -1586,22 +1620,6 @@ paths:
                 errors:
                   iban:
                     - IBAN must be a valid Costa Rican IBAN (CR followed by 20 digits)
-        '503':
-          description: Service unavailable
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
       tags:
         - Verification
       security:
@@ -1874,26 +1892,6 @@ paths:
                 errors:
                   id:
                     - The id field must be a valid UUID.
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Failed to delete webhook subscription
-                data: null
       tags:
         - Webhook
       security:
