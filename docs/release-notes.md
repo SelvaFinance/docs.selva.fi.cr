@@ -7,6 +7,26 @@ title: Release Notes
 
 Updates to the Selva API platform, including payments, account management, and more.
 
+### April 10, 2026
+
+#### Breaking Changes
+
+- `GET /api/accounts/{id}/details` is no longer part of the published public API.
+- Detailed account data is now returned from `GET /api/accounts/{id}`.
+- Payment request payloads now use `source_account_id` instead of `from_account_id`.
+- Payment history query parameters changed from `payment_method` to `channel`, `recipient_identifier` to `recipient_document_number`, and `limit`/`offset` to `per_page`/`page`.
+
+#### Response Changes
+
+- `GET /api/accounts/{id}` now returns the detailed account payload, including `document_number`, `document_type`, `iban`, `origin_code`, `balance`, `owner_name`, `status`, `created_at`, and `updated_at`.
+- `POST /api/payments/validate` now returns `channel` and `fee` instead of `payment_type`, `estimated_fees`, and `service_available`.
+- Payment resources were aligned to the latest payload fields, including `channel_reference`, `sinpe_reference`, `channel`, and payer/payee `document_type` values.
+- Phone and IBAN verification responses were standardized around holder identity and account status fields.
+
+#### Notes
+
+- Internal-only endpoint groups remain excluded from the public documentation.
+
 ### January 5, 2026
 
 #### Breaking Changes

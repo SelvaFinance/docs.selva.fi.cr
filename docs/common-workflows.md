@@ -83,5 +83,5 @@ Implement robust error handling with exponential backoff. Use idempotency for pa
 ## Next Steps
 
 - Review the <a href="/api-reference" target="_blank">API Reference</a> for all available endpoints
-- Check the [Error Handling guide](/docs/errors) for error codes and strategies
+- Check the [Error Handling guide](/docs/errors) for error response examples and strategies
 - See [Authentication](/docs/authentication) for token management

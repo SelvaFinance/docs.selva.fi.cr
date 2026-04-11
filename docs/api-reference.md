@@ -28,7 +28,6 @@ The API reference is automatically generated from our OpenAPI specification and 
 - `GET /api/accounts/information` - Get account information
 - `GET /api/accounts/{identifier}/information` - Get account information by identifier
 - `GET /api/accounts/{id}/balance` - Get account balance
-- `GET /api/accounts/{id}/details` - Get account details
 - `GET /api/accounts/{id}/movements` - Get account movements
 - `GET /api/accounts/{id}/kyc` - Get KYC status
 - `GET /api/accounts/{id}/transactions/{transactionCode}` - Get transaction by code
@@ -117,13 +116,14 @@ All errors follow a consistent format:
 
 ```json
 {
-  "error": "error_code",
+  "success": false,
   "message": "Human-readable error message",
-  "details": {}
+  "data": null,
+  "errors": {}
 }
 ```
 
-See the [Error Handling guide](/docs/errors) for detailed error codes and handling strategies.
+See the [Error Handling guide](/docs/errors) for detailed error examples and handling strategies.
 
 ## OpenAPI Specification
 

@@ -1,18 +1,65 @@
-openapi: 3.0.0
+openapi: 3.1.0
 info:
-  title: SELVA
-  version: 1.0.0
-  description: Soluciones Electrónicas Locales de Valor
+  title: SELVA Core API
+  version: 0.0.1
+  description: |-
+    Customer-facing SELVA Core API documentation.
+
+    Authenticated endpoints use Passport bearer tokens. Internal KINDO callback routes are intentionally excluded.
 servers:
   - url: https://dev.selva.fi.cr
   - url: https://selva.fi.cr
 paths:
   /api/user:
     get:
-      summary: Get User
+      operationId: user.show
+      tags:
+        - User
       responses:
         '200':
-          description: User retrieved successfully
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: User retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/UserResource'
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+      summary: Get User
+      security:
+        - BearerAuth: []
+  /api/payments:
+    post:
+      operationId: payment.sendPayment
+      summary: Send Payment
+      tags:
+        - Payments
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SendPaymentRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+        '201':
+          description: ''
           content:
             application/json:
               schema:
@@ -27,133 +74,29 @@ paths:
                     properties:
                       id:
                         type: string
-                        format: uuid
-                      name:
-                        type: string
-                      email:
-                        type: string
-                        format: email
-                      email_verified_at:
-                        type: string
-                        format: date-time
-                        nullable: true
-                      created_at:
-                        type: string
-                        format: date-time
-                      updated_at:
-                        type: string
-                        format: date-time
-              example:
-                success: true
-                message: User retrieved successfully
-                data:
-                  id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
-                  name: Bob Dalf
-                  email: bob@selva.com
-                  email_verified_at: null
-                  created_at: 2025-12-12T13:30:05.000000Z
-                  updated_at: 2025-12-12T13:31:58.000000Z
-        '401':
-          description: Unauthenticated
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Unauthenticated.
-                data: null
-                errors: {}
-      tags:
-        - User
-      security:
-        - BearerAuth: []
-  /api/payments:
-    post:
-      summary: Send Payment
-      parameters:
-        - name: X-Idempotency-Key
-          in: header
-          required: true
-          deprecated: false
-          schema: {}
-          example: 'UUID'
-      responses:
-        '201':
-          description: Payment initiated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      payment_id:
-                        type: string
-                        format: uuid
-                      payment_type:
+                      channel:
                         type: string
                       status:
                         type: string
                       channel_reference:
                         type: string
-              example:
-                success: true
-                message: Payment initiated successfully
-                data:
-                  payment_id: 5e74bd6c-46c5-4933-b46a-bb081e71663e
-                  payment_type: pin
-                  status: pending
-                  channel_reference: '2025123100001198137477666'
-        '409':
-          description: Already use X-Idempotency-Key (duplicated request)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    properties:
-                      payment_id:
-                        type: string
-                        format: uuid
-                      payment_type:
-                        type: string
-                      status:
-                        type: string
-              example:
-                success: false
-                message: Payment already processed
-                data: null
-                errors:
-                  payment_id: 122434f8-0b17-4aa3-8063-d8baf978b617
-                  payment_type: pin
-                  status: pending
+                    required:
+                      - id
+                      - channel
+                      - status
+                      - channel_reference
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
         '422':
-          description: Validation error
+          $ref: '#/components/responses/ValidationException'
+        '500':
+          description: ''
           content:
             application/json:
               schema:
@@ -163,264 +106,35 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Payment processing failed
                   data:
-                    type: object
-                    nullable: true
+                    type: 'null'
                   errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              examples:
-                Single Validation Error:
-                  value:
-                    success: false
-                    message: Amount exceeds maximum limit
-                    data: null
-                    errors:
-                      amount:
-                        - Amount exceeds maximum limit
-                Multiple Validation Errors:
-                  value:
-                    success: false
-                    message: Source account does not exist
-                    data: null
-                    errors:
-                      from_account_id:
-                        - Source account does not exist
-                        - You do not own this account
-                      amount:
-                        - Amount exceeds maximum limit
-                Both Recipient Fields Provided:
-                  value:
-                    success: false
-                    message: Only one recipient field should be provided
-                    data: null
-                    errors:
-                      recipient:
-                        - Cannot provide both recipient_iban and recipient_phone
-                Missing Idempotency Key:
-                  value:
-                    success: false
-                    message: X-Idempotency-Key header is required
-                    data: null
-                    errors:
-                      X-Idempotency-Key:
-                        - X-Idempotency-Key header is required
-      tags:
-        - Payments
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
       security:
         - BearerAuth: []
-      requestBody:
-        description: Either recipient_iban or recipient_phone must be provided (not both). If both are provided, the API will return a validation error.
-        content:
-          application/json:
-            schema:
-              type: object
-              required:
-                - from_account_id
-                - amount
-              properties:
-                from_account_id:
-                  type: string
-                  description: Source account ID
-                amount:
-                  type: number
-                  description: Payment amount
-                recipient_iban:
-                  $ref: '#/components/schemas/CostaRicaIBAN'
-                  description: Recipient IBAN (required if recipient_phone not provided)
-                recipient_phone:
-                  $ref: '#/components/schemas/CostaRicaPhone'
-                  description: Recipient phone number (required if recipient_iban not provided)
-                recipient_email:
-                  type: string
-                  description: Recipient email (optional)
-                description:
-                  type: string
-                  description: Payment description (optional)
-                reference:
-                  type: string
-                  description: Payment reference (optional)
-            examples:
-              PIN Transfer:
-                value:
-                  from_account_id: 70242935-a11b-4018-8e84-0413a8ac9d67
-                  amount: 1000
-                  recipient_iban: CR02010200000000000001
-              SINPE Móvil Transfer:
-                value:
-                  from_account_id: 70242935-a11b-4018-8e84-0413a8ac9d67
-                  amount: 2500
-                  recipient_phone: '88881234'
   /api/payments/validate:
     post:
+      operationId: payment.validatePayment
       summary: Validate Payment
-      description: Validates payment details without initiating the transaction. Returns validation status and any errors.
-      parameters:
-        - name: X-Idempotency-Key
-          in: header
-          required: true
-          deprecated: false
-          schema: {}
-          example: 'UUID'
-      responses:
-        '200':
-          description: Payment validated successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      payment_type:
-                        type: string
-                      estimated_fees:
-                        type: object
-                        properties:
-                          base_fee:
-                            type: number
-                          currency:
-                            type: string
-                          total_fee:
-                            type: number
-                      service_available:
-                        type: boolean
-              example:
-                success: true
-                message: Payment data is valid
-                data:
-                  payment_type: pin
-                  estimated_fees:
-                    base_fee: 2
-                    currency: CRC
-                    total_fee: 2
-                  service_available: true
-        '409':
-          description: Duplicate request (X-Idempotency-Key already used)
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Payment already processed
-                data: null
-                errors: {}
-        '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              examples:
-                Missing Idempotency Key:
-                  value:
-                    success: false
-                    message: X-Idempotency-Key header is required
-                    data: null
-                    errors:
-                      X-Idempotency-Key:
-                        - X-Idempotency-Key header is required
-                Both Recipient Fields Provided:
-                  value:
-                    success: false
-                    message: Cannot specify both IBAN and phone number for recipient
-                    data: null
-                    errors:
-                      recipient:
-                        - Cannot specify both IBAN and phone number for recipient
-                Negative Amount:
-                  value:
-                    success: false
-                    message: The amount must be greater than 0
-                    data: null
-                    errors:
-                      amount:
-                        - The amount must be greater than 0
       tags:
         - Payments
-      security:
-        - BearerAuth: []
       requestBody:
-        description: Either recipient_iban or recipient_phone must be provided (not both). If both are provided, the API will return a validation error.
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - from_account_id
-                - amount
-              properties:
-                from_account_id:
-                  type: string
-                  description: Source account ID
-                amount:
-                  type: number
-                  description: Payment amount
-                recipient_iban:
-                  $ref: '#/components/schemas/CostaRicaIBAN'
-                  description: Recipient IBAN (required if recipient_phone not provided)
-                recipient_phone:
-                  $ref: '#/components/schemas/CostaRicaPhone'
-                  description: Recipient phone number (required if recipient_iban not provided)
-                recipient_email:
-                  type: string
-                  description: Recipient email (optional)
-                description:
-                  type: string
-                  description: Payment description (optional)
-                reference:
-                  type: string
-                  description: Payment reference (optional)
-            examples:
-              With IBAN:
-                value:
-                  from_account_id: 70242935-a11b-4018-8e84-0413a8ac9d67
-                  amount: 1000
-                  recipient_iban: CR02010200000000000001
-              With Phone:
-                value:
-                  from_account_id: 70242935-a11b-4018-8e84-0413a8ac9d67
-                  amount: 2500
-                  recipient_phone: '88881234'
-  /api/payments/{id}:
-    get:
-      summary: Get Payment Details
+              $ref: '#/components/schemas/SendPaymentRequest'
       responses:
         '200':
-          description: Payment status retrieved successfully
+          description: ''
           content:
             application/json:
               schema:
@@ -430,147 +144,62 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Payment data is valid
                   data:
                     type: object
                     properties:
-                      id:
+                      channel:
                         type: string
-                        format: uuid
-                      idempotency_key:
-                        type: string
-                        format: uuid
-                      transfer_type:
-                        $ref: '#/components/schemas/TransferType'
-                      channel_ref_number:
-                        type: string
-                      cgp_ref_number:
-                        type: integer
-                      sinpe_ref:
-                        type: string
-                      status:
-                        $ref: '#/components/schemas/PaymentStatus'
-                      amount:
+                      fee:
                         type: object
                         properties:
                           value:
                             type: integer
-                            description: Amount in cents (multiply by 0.01 to get actual amount)
                           currency:
                             type: string
                           formatted:
                             type: string
-                      description:
-                        type: string
-                        nullable: true
-                      reference:
-                        type: string
-                        nullable: true
-                      error_message:
-                        type: string
-                        nullable: true
-                      created_at:
-                        type: string
-                        format: date-time
-                      submitted_at:
-                        type: string
-                        format: date-time
-                      completed_at:
-                        type: string
-                        format: date-time
-                        nullable: true
-                      payment_type:
-                        $ref: '#/components/schemas/PaymentType'
-                      payer:
-                        type: object
-                        properties:
-                          iban:
-                            $ref: '#/components/schemas/CostaRicaIBAN'
-                          document_number:
-                            type: string
-                          name:
-                            type: string
-                      payee:
-                        type: object
-                        properties:
-                          document_number:
-                            type: string
-                          name:
-                            type: string
-                          iban:
-                            oneOf:
-                              - $ref: '#/components/schemas/CostaRicaIBAN'
-                              - type: string
-                                nullable: true
-                          phone_number:
-                            oneOf:
-                              - $ref: '#/components/schemas/CostaRicaPhone'
-                              - type: string
-                                nullable: true
-              examples:
-                PIN Payment:
-                  value:
-                    success: true
-                    message: Payment status retrieved successfully
-                    data:
-                      id: ca43e1b9-ae79-4e52-8712-791d474a1ede
-                      idempotency_key: a3f21177-d5df-4fc2-bddb-063cd0283316
-                      cgp_ref_number: 10259
-                      channel_ref_number: '2026010500001270607738051'
-                      sinpe_ref: '2026010537022010000102590'
-                      transfer_type: debit
-                      status: completed
-                      amount:
-                        value: 1700
-                        currency: CRC
-                        formatted: '17.00 CRC'
-                      description: null
-                      reference: null
-                      error_message: null
-                      created_at: '2026-01-05T14:31:11.000000Z'
-                      submitted_at: '2026-01-05T14:31:14.000000Z'
-                      completed_at: '2026-01-05T14:31:14.000000Z'
-                      payment_type: pin
-                      payer:
-                        iban: CR06037010600471851492
-                        document_number: '0700000021'
-                        name: Bob Darl
-                      payee:
-                        document_number: '0101110114'
-                        name: CARLOS ALBERTO AMADOR HIDALGO
-                        iban: CR02010200000000000001
-                SINPE Payment:
-                  value:
-                    success: true
-                    message: Payment status retrieved successfully
-                    data:
-                      id: 1fe1add0-9d17-418e-a850-d34dfb630a96
-                      idempotency_key: 7e15acae-8c4a-4379-8059-e4207ff39ed0
-                      cgp_ref_number: 96
-                      channel_ref_number: '2026010500002553137596121'
-                      sinpe_ref: '2026010537083000000000961'
-                      transfer_type: debit
-                      status: completed
-                      amount:
-                        value: 1012
-                        currency: CRC
-                        formatted: '10.12 CRC'
-                      description: null
-                      reference: null
-                      error_message: null
-                      created_at: '2026-01-06T02:23:23.000000Z'
-                      submitted_at: '2026-01-06T02:23:31.000000Z'
-                      completed_at: '2026-01-06T02:23:31.000000Z'
-                      payment_type: sinpe
-                      payer:
-                        iban: CR06037010600471851492
-                        document_number: '0700000021'
-                        name: Bob Darl
-                      payee:
-                        document_number: '0100000001'
-                        name: Juan Perez
-                        phone_number: '77770001'
+                        required:
+                          - value
+                          - currency
+                          - formatted
+                    required:
+                      - channel
+                      - fee
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
+        '409':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
         '422':
-          description: Validation error
+          $ref: '#/components/responses/ValidationException'
+        '500':
+          description: ''
           content:
             application/json:
               schema:
@@ -580,47 +209,22 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Payment validation failed
                   data:
-                    type: object
-                    nullable: true
+                    type: 'null'
                   errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              example:
-                success: false
-                message: Payment ID must be a valid UUID
-                data: null
-                errors:
-                  payment_id:
-                    - Payment ID must be a valid UUID
-        '404':
-          description: Payment not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Payment not found
-                data: null
-                errors: {}
-      tags:
-        - Payments
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+      description: Validates payment details without initiating the transaction. Returns validation status and any errors.
       security:
         - BearerAuth: []
+  /api/payments/{id}:
     parameters:
       - name: id
         in: path
@@ -628,53 +232,130 @@ paths:
         schema:
           type: string
           format: uuid
+    get:
+      operationId: payment.getPaymentStatus
+      summary: Get Payment Details
+      tags:
+        - Payments
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Payment status retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/PaymentResource'
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '422':
+          $ref: '#/components/responses/ValidationException'
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Unable to retrieve payment details
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+      security:
+        - BearerAuth: []
   /api/payments/history:
     get:
+      operationId: payment.getPaymentHistory
       summary: Get Historical Transfers
+      tags:
+        - Payments
       parameters:
-        - name: payment_method
+        - name: per_page
           in: query
-          required: false
-          deprecated: false
-          schema:
-            type: string
-            enum: [pin, sinpe]
-          example: pin
-        - name: transfer_type
-          in: query
-          required: false
-          deprecated: false
-          schema:
-            type: string
-            enum: [debit, credit]
-          example: debit
-        - name: recipient_identifier
-          in: query
-          required: false
-          deprecated: false
-          schema:
-            $ref: '#/components/schemas/CostaRicaNationalIdentifier'
-          example: '111090807'
-        - name: limit
-          in: query
-          required: false
-          deprecated: false
           schema:
             type: integer
             minimum: 1
             maximum: 1000
-          example: 10
-        - name: offset
+        - name: page
           in: query
-          required: false
-          deprecated: false
           schema:
             type: integer
-            minimum: 0
-          example: 0
+            minimum: 1
+        - name: channel
+          in: query
+          schema:
+            type:
+              - string
+              - 'null'
+            enum:
+              - pin
+              - sinpe_movil
+        - name: transfer_type
+          in: query
+          schema:
+            type:
+              - string
+              - 'null'
+            enum:
+              - debit
+              - credit
+        - name: recipient_document_number
+          in: query
+          schema:
+            type:
+              - string
+              - 'null'
+            pattern: ^(CR\d{20}|(506)?[2678]\d{7}|((0[1-9]|[1-9])\d{8}|1\d{11}|5\d{11}|3\d{9}))$
+            maxLength: 255
       responses:
         '200':
-          description: Payment history retrieved successfully
+          description: ''
           content:
             application/json:
               schema:
@@ -684,219 +365,31 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Payment history retrieved successfully
                   data:
-                    type: object
-                    properties:
-                      payments:
-                        type: array
-                        items:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                              format: uuid
-                            idempotency_key:
-                              type: string
-                              format: uuid
-                            transfer_type:
-                              $ref: '#/components/schemas/TransferType'
-                            channel_ref_number:
-                              type: string
-                            cgp_ref_number:
-                              type: integer
-                            sinpe_ref:
-                              type: string
-                            status:
-                              $ref: '#/components/schemas/PaymentStatus'
-                            amount:
-                              type: object
-                              properties:
-                                value:
-                                  type: integer
-                                  description: Amount in cents (multiply by 0.01 to get actual amount)
-                                currency:
-                                  type: string
-                                formatted:
-                                  type: string
-                            description:
-                              type: string
-                              nullable: true
-                            reference:
-                              type: string
-                              nullable: true
-                            error_message:
-                              type: string
-                              nullable: true
-                            created_at:
-                              type: string
-                              format: date-time
-                            submitted_at:
-                              type: string
-                              format: date-time
-                            completed_at:
-                              type: string
-                              format: date-time
-                              nullable: true
-                            payment_type:
-                              $ref: '#/components/schemas/PaymentType'
-                            payer:
-                              type: object
-                              properties:
-                                iban:
-                                  $ref: '#/components/schemas/CostaRicaIBAN'
-                                document_number:
-                                  type: string
-                                name:
-                                  type: string
-                            payee:
-                              type: object
-                              properties:
-                                document_number:
-                                  type: string
-                                name:
-                                  type: string
-                                iban:
-                                  oneOf:
-                                    - $ref: '#/components/schemas/CostaRicaIBAN'
-                                    - type: string
-                                      nullable: true
-                                phone_number:
-                                  oneOf:
-                                    - $ref: '#/components/schemas/CostaRicaPhone'
-                                    - type: string
-                                      nullable: true
-                      count:
-                        type: integer
-              examples:
-                With Items:
-                  value:
-                    success: true
-                    message: Payment history retrieved successfully
-                    data:
-                      payments:
-                        - id: 09382be6-3df3-4fb1-9800-a2d07e765e70
-                          idempotency_key: 5e54af47-ddaf-41cd-ac05-ae39a5b26809
-                          cgp_ref_number: 10260
-                          channel_ref_number: '2026010500001490851047982'
-                          sinpe_ref: '2026010537022010000102609'
-                          transfer_type: debit
-                          status: completed
-                          amount:
-                            value: 100
-                            currency: CRC
-                            formatted: '1.00 CRC'
-                          description: null
-                          reference: null
-                          error_message: null
-                          created_at: '2026-01-05T16:54:36.000000Z'
-                          submitted_at: '2026-01-05T16:54:44.000000Z'
-                          completed_at: '2026-01-05T16:54:44.000000Z'
-                          payment_type: pin
-                          payer:
-                            iban: CR06037010600471851492
-                            document_number: '0700000021'
-                            name: Bob Darl
-                          payee:
-                            document_number: '0101110114'
-                            name: CARLOS ALBERTO AMADOR HIDALGO
-                            iban: CR02010200000000000001
-                        - id: ca43e1b9-ae79-4e52-8712-791d474a1ede
-                          idempotency_key: a3f21177-d5df-4fc2-bddb-063cd0283316
-                          cgp_ref_number: 10259
-                          channel_ref_number: '2026010500001270607738051'
-                          sinpe_ref: '2026010537022010000102590'
-                          transfer_type: debit
-                          status: completed
-                          amount:
-                            value: 1700
-                            currency: CRC
-                            formatted: '17.00 CRC'
-                          description: null
-                          reference: null
-                          error_message: null
-                          created_at: '2026-01-05T14:31:11.000000Z'
-                          submitted_at: '2026-01-05T14:31:14.000000Z'
-                          completed_at: '2026-01-05T14:31:14.000000Z'
-                          payment_type: pin
-                          payer:
-                            iban: CR06037010600471851492
-                            document_number: '0700000021'
-                            name: Bob Darl
-                          payee:
-                            document_number: '0101110114'
-                            name: CARLOS ALBERTO AMADOR HIDALGO
-                            iban: CR02010200000000000001
-                        - id: c464988c-7fbf-42c9-a1e1-2d5ca262fc63
-                          idempotency_key: 4be2dbb7-d30a-4c60-becd-87b0f2080150
-                          cgp_ref_number: 10258
-                          channel_ref_number: '2026010500001271073502302'
-                          sinpe_ref: '2026010537022010000102584'
-                          transfer_type: debit
-                          status: completed
-                          amount:
-                            value: 1500
-                            currency: CRC
-                            formatted: '15.00 CRC'
-                          description: null
-                          reference: null
-                          error_message: null
-                          created_at: '2026-01-05T14:23:45.000000Z'
-                          submitted_at: '2026-01-05T14:24:00.000000Z'
-                          completed_at: '2026-01-05T14:24:00.000000Z'
-                          payment_type: pin
-                          payer:
-                            iban: CR06037010600471851492
-                            document_number: '0700000021'
-                            name: Bob Darl
-                          payee:
-                            document_number: '0101110114'
-                            name: CARLOS ALBERTO AMADOR HIDALGO
-                            iban: CR02010200000000000001
-                      count: 3
-                Empty:
-                  value:
-                    success: true
-                    message: Payment history retrieved successfully
-                    data:
-                      payments: []
-                      count: 0
+                    type: array
+                    items: {}
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
         '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              example:
-                success: false
-                message: Invalid payment_method, must be "pin" or "sinpe"
-                data: null
-                errors:
-                  payment_method:
-                    - Invalid payment_method, must be "pin" or "sinpe"
-      tags:
-        - Payments
+          $ref: '#/components/responses/ValidationException'
       security:
         - BearerAuth: []
   /api/payments/service-status:
     get:
+      operationId: payment.getServiceStatus
       summary: Get Service Status
+      tags:
+        - Payments
       responses:
         '200':
-          description: Service status retrieved successfully
+          description: ''
           content:
             application/json:
               schema:
@@ -906,6 +399,7 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Service status retrieved successfully
                   data:
                     type: object
                     properties:
@@ -916,7 +410,12 @@ paths:
                             type: boolean
                           status:
                             type: string
-                            enum: [online, offline]
+                            enum:
+                              - online
+                              - offline
+                        required:
+                          - available
+                          - status
                       sinpe_service:
                         type: object
                         properties:
@@ -924,118 +423,51 @@ paths:
                             type: boolean
                           status:
                             type: string
-                            enum: [online, offline]
+                            enum:
+                              - online
+                              - offline
+                        required:
+                          - available
+                          - status
                       overall_status:
                         type: string
-                        enum: [online, partial, offline]
-              example:
-                success: true
-                message: Service status retrieved successfully
-                data:
-                  pin_service:
-                    available: true
-                    status: online
-                  sinpe_service:
-                    available: true
-                    status: online
-                  overall_status: online
-      tags:
-        - Payments
-      security:
-        - BearerAuth: []
+                        enum:
+                          - online
+                          - partial
+                          - offline
+                    required:
+                      - pin_service
+                      - sinpe_service
+                      - overall_status
+                required:
+                  - success
+                  - message
+                  - data
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Unable to check service status
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+      security: []
   /api/accounts/{id}:
-    get:
-      summary: Get Account
-      responses:
-        '200':
-          description: Account retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                      iban:
-                        type: string
-                      currency:
-                        type: string
-                        enum: [CRC, USD]
-                      created_at:
-                        type: string
-                        format: date-time
-                      updated_at:
-                        type: string
-                        format: date-time
-              example:
-                success: true
-                message: Account retrieved successfully
-                data:
-                  id: 123e4567-e89b-12d3-a456-426614174000
-                  iban: CR37012345678901234567
-                  currency: CRC
-                  created_at: 2025-06-09T18:30:00.000000Z
-                  updated_at: 2025-06-09T18:30:00.000000Z
-        '404':
-          description: Account not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Account not found
-                data: null
-                errors: {}
-        '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              example:
-                success: false
-                message: Account ID must be a valid UUID
-                data: null
-                errors:
-                  id:
-                    - Account ID must be a valid UUID
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
     parameters:
       - name: id
         in: path
@@ -1043,13 +475,13 @@ paths:
         schema:
           type: string
           format: uuid
-  /api/accounts:
     get:
-      summary: List Accounts
-      description: 'Retrieve all accounts belonging to the authenticated user. **Note: Response format will change soon.**'
+      operationId: account.show
+      tags:
+        - Account
       responses:
         '200':
-          description: 'Accounts retrieved successfully. **Note: Response format will change soon.**'
+          description: ''
           content:
             application/json:
               schema:
@@ -1059,357 +491,281 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Account retrieved successfully
                   data:
-                    type: array
-                    items:
-                      type: object
-                      properties:
-                        id:
-                          type: string
-                          format: uuid
-                        iban:
-                          type: string
-                        currency:
-                          type: string
-                          enum: [CRC, USD]
-                        created_at:
-                          type: string
-                          format: date-time
-                        updated_at:
-                          type: string
-                          format: date-time
-              example:
-                success: true
-                message: Accounts retrieved successfully
-                data:
-                  - id: 123e4567-e89b-12d3-a456-426614174000
-                    iban: CR37012345678901234567
-                    currency: CRC
-                    created_at: 2025-06-09T18:30:00.000000Z
-                    updated_at: 2025-06-09T18:30:00.000000Z
-                  - id: 223e4567-e89b-12d3-a456-426614174001
-                    iban: CR37012345678901234568
-                    currency: CRC
-                    created_at: 2025-06-09T19:00:00.000000Z
-                    updated_at: 2025-06-09T19:00:00.000000Z
+                    $ref: '#/components/schemas/AccountDetailsResource'
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Account not found
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '422':
+          $ref: '#/components/responses/ValidationException'
+        '503':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Unable to retrieve account balance
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+      summary: Get Account
+      security:
+        - BearerAuth: []
+  /api/accounts:
+    get:
+      operationId: account.index
       tags:
         - Account
+      parameters:
+        - name: per_page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Accounts retrieved successfully
+                  data:
+                    type: array
+                    items: {}
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
+        '422':
+          $ref: '#/components/responses/ValidationException'
+        '503':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Unable to retrieve account balance
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+      summary: List Accounts
       security:
         - BearerAuth: []
     post:
-      summary: Create Account
-      responses:
-        '201':
-          description: Account created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                      iban:
-                        type: string
-                      currency:
-                        type: string
-                        enum: [CRC, USD]
-                      created_at:
-                        type: string
-                        format: date-time
-                      updated_at:
-                        type: string
-                        format: date-time
-              example:
-                success: true
-                message: Account created successfully
-                data:
-                  id: 123e4567-e89b-12d3-a456-426614174000
-                  iban: CR37012345678901234567
-                  currency: CRC
-                  created_at: 2025-06-09T18:30:00.000000Z
-                  updated_at: 2025-06-09T18:30:00.000000Z
-        '400':
-          description: Bad request
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-        '403':
-          description: User needs to complete verification
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
+      operationId: account.store
       tags:
         - Account
-      security:
-        - BearerAuth: []
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - currency
-              properties:
-                currency:
-                  type: string
-                  enum: [CRC, USD]
-                  description: Currency for the account
-            example:
-              currency: CRC
+              $ref: '#/components/schemas/CreateAccountRequest'
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: string
+        '201':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Account created successfully
+                  data:
+                    $ref: '#/components/schemas/AccountResource'
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '422':
+          $ref: '#/components/responses/ValidationException'
+      summary: Create Account
+      security:
+        - BearerAuth: []
   /api/accounts/{id}/balance:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+          format: uuid
     get:
+      operationId: account.balance
+      tags:
+        - Account
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Balance retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/AccountWithBalanceResource'
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Account not found
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '422':
+          $ref: '#/components/responses/ValidationException'
+        '503':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Unable to retrieve account balance
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
       summary: Get Account Balance
-      responses:
-        '200':
-          description: Balance retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      iban:
-                        type: string
-                      currency:
-                        type: string
-                        enum: [CRC, USD]
-                      balance:
-                        type: integer
-                        description: Balance in cents (multiply by 0.01 to get actual amount)
-                      formatted:
-                        type: string
-                        description: Formatted balance string with currency and comma separators
-                example:
-                  success: true
-                  message: Balance retrieved successfully
-                  data:
-                    iban: CR06037010600471851492
-                    currency: CRC
-                    balance: 19955888
-                    formatted: '199,558.88 CRC'
-        '404':
-          description: Account not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Account not found
-                data: null
-                errors: {}
-        '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              example:
-                success: false
-                message: Account ID must be a valid UUID
-                data: null
-                errors:
-                  id:
-                    - Account ID must be a valid UUID
-      tags:
-        - Account
       security:
         - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-  /api/accounts/{id}/details:
-    get:
-      summary: Get Account Details
-      responses:
-        '200':
-          description: Account details retrieved successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                      document_number:
-                        type: string
-                      iban:
-                        type: string
-                      origin_code:
-                        $ref: '#/components/schemas/AccountOrigin'
-                      currency:
-                        type: string
-                        enum: [CRC, USD]
-                      owner_name:
-                        type: string
-                      status:
-                        $ref: '#/components/schemas/AccountStatus'
-
-                      created_at:
-                        type: string
-                        format: date-time
-                      updated_at:
-                        type: string
-                        format: date-time
-                example:
-                  success: true
-                  message: Account details retrieved successfully
-                  data:
-                    id: db88a007-f3c6-412c-9898-a800c8edfadf
-                    document_number: '0700000021'
-                    iban: CR06037010600471851492
-                    origin_code: special_savings
-                    currency: CRC
-                    owner_name: 'Bob Darl'
-                    status: active
-                    created_at: '2026-01-03T08:01:44.000000Z'
-                    updated_at: '2026-01-03T08:01:44.000000Z'
-        '404':
-          description: Account not found
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Account not found
-                data: null
-                errors: {}
-        '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              example:
-                success: false
-                message: Account ID must be a valid UUID
-                data: null
-                errors:
-                  id:
-                    - Account ID must be a valid UUID
-      tags:
-        - Account
-      security:
-        - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
   /api/phone/information/{phone}:
     get:
+      operationId: phone.getPhoneInformation
       summary: Verify Phone Is Registered
+      tags:
+        - Verification
       parameters:
         - name: phone
           in: path
           required: true
-          deprecated: false
           schema:
             type: string
-            pattern: '^(506)?[678]\d{7}$'
-          example: '88881234'
+            pattern: ^(506)?[2678]\d{7}$
       responses:
         '200':
-          description: Phone information retrieved successfully
+          description: ''
           content:
             application/json:
               schema:
@@ -1419,6 +775,7 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Phone information retrieved successfully
                   data:
                     type: object
                     properties:
@@ -1427,8 +784,12 @@ paths:
                       name:
                         type: string
                       document_number:
-                        type: string
-                        description: Raw document number (no dashes)
+                        anyOf:
+                          - type: array
+                            items: {}
+                          - type: string
+                      document_type:
+                        type: 'null'
                       currency:
                         type: string
                       country_code:
@@ -1436,68 +797,26 @@ paths:
                       entity_name:
                         type: string
                       status:
-                        $ref: '#/components/schemas/PhoneVerificationStatus'
-                example:
-                  success: true
-                  message: Phone information retrieved successfully
-                  data:
-                    phone_number: '77770001'
-                    name: Juan Perez
-                    document_number: '0100000001'
-                    currency: CRC
-                    country_code: CR
-                    entity_name: Banco BAC San José
-                    status: registered
-        '404':
-          description: Phone number not found in SINPE registry
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Phone number not found in SINPE registry
-                data: null
-                errors: {}
-        '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
                         type: string
-                example:
-                  success: false
-                  message: Phone number must be a valid Costa Rican phone number (8 digits starting with 6, 7, or 8)
-                  data: null
-                  errors:
-                    phone:
-                      - Phone number must be a valid Costa Rican phone number (8 digits starting with 6, 7, or 8)
-        '500':
-          description: Internal server error
+                    required:
+                      - phone_number
+                      - name
+                      - document_number
+                      - document_type
+                      - currency
+                      - country_code
+                      - entity_name
+                      - status
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
+        '404':
+          description: ''
           content:
             application/json:
               schema:
@@ -1507,34 +826,38 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Phone number not found in SINPE registry
                   data:
-                    type: object
-                    nullable: true
+                    type: 'null'
                   errors:
-                    type: object
-              example:
-                success: false
-                message: Unable to retrieve phone information
-                data: null
-      tags:
-        - Verification
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '422':
+          $ref: '#/components/responses/ValidationException'
       security:
         - BearerAuth: []
   /api/iban/information/{iban}:
     get:
+      operationId: iban.getIbanInformation
       summary: Verify IBAN Is Registered
+      tags:
+        - Verification
       parameters:
         - name: iban
           in: path
           required: true
-          deprecated: false
           schema:
             type: string
-            pattern: '^CR\d{20}$'
-          example: CR02010200000000000001
+            pattern: ^CR\d{20}$
       responses:
         '200':
-          description: IBAN information retrieved successfully
+          description: ''
           content:
             application/json:
               schema:
@@ -1544,6 +867,7 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: IBAN information retrieved successfully
                   data:
                     type: object
                     properties:
@@ -1553,7 +877,8 @@ paths:
                         type: string
                       document_number:
                         type: string
-                        description: Raw document number (no dashes)
+                      document_type:
+                        type: string
                       currency:
                         type: string
                       country_code:
@@ -1561,20 +886,28 @@ paths:
                       entity_name:
                         type: string
                       status:
-                        $ref: '#/components/schemas/IBANStatus'
-                example:
-                  success: true
-                  message: IBAN information retrieved successfully
-                  data:
-                    iban: CR02010200000000000001
-                    name: CARLOS ALBERTO AMADOR HIDALGO
-                    document_number: '0101110114'
-                    currency: CRC
-                    country_code: CR
-                    entity_name: CR - Banco BAC San José
-                    status: active
+                        type:
+                          - string
+                          - 'null'
+                    required:
+                      - iban
+                      - name
+                      - document_number
+                      - document_type
+                      - currency
+                      - country_code
+                      - entity_name
+                      - status
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
         '404':
-          description: IBAN not found
+          description: ''
           content:
             application/json:
               schema:
@@ -1584,60 +917,37 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: IBAN not found
                   data:
-                    type: object
-                    nullable: true
+                    type: 'null'
                   errors:
-                    type: object
-              example:
-                success: false
-                message: IBAN not found
-                data: null
-                errors: {}
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
         '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              example:
-                success: false
-                message: IBAN must be a valid Costa Rican IBAN (CR followed by 20 digits)
-                data: null
-                errors:
-                  iban:
-                    - IBAN must be a valid Costa Rican IBAN (CR followed by 20 digits)
-      tags:
-        - Verification
+          $ref: '#/components/responses/ValidationException'
       security:
         - BearerAuth: []
   /api/webhooks/subscriptions/{id}:
     get:
+      operationId: webhookSubscription.show
       summary: Get Webhook
+      tags:
+        - Webhook
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-            format: uuid
       responses:
         '200':
-          description: Webhook subscription retrieved successfully
+          description: ''
           content:
             application/json:
               schema:
@@ -1647,81 +957,19 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Webhook subscription retrieved successfully
                   data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                      user_id:
-                        type: string
-                        format: uuid
-                      url:
-                        type: string
-                      events:
-                        type: array
-                        items:
-                          type: string
-                          enum:
-                            [
-                              payment.created,
-                              payment.processing,
-                              payment.completed,
-                              payment.failed,
-                              transaction.received,
-                            ]
-                      active:
-                        type: boolean
-                      max_attempts:
-                        type: integer
-                      timeout:
-                        type: integer
-                      headers:
-                        type: object
-                        additionalProperties:
-                          type: string
-                      last_sent_at:
-                        type: string
-                        format: date-time
-                        nullable: true
-                      created_at:
-                        type: string
-                        format: date-time
-                      updated_at:
-                        type: string
-                        format: date-time
-                      suspended_at:
-                        type: string
-                        format: date-time
-                        nullable: true
-                      suspended_reason:
-                        type: string
-                        nullable: true
-              example:
-                success: true
-                message: Webhook subscription retrieved successfully
-                data:
-                  id: 071c00a7-e248-437a-b42a-171eb087c704
-                  user_id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
-                  url: https://api04.bullbitcoin.dev/selva/payment
-                  events:
-                    - payment.created
-                    - payment.processing
-                    - payment.completed
-                    - payment.failed
-                    - transaction.received
-                  active: false
-                  max_attempts: 5
-                  timeout: 30
-                  headers:
-                    X-Custom-Header: value
-                  last_sent_at: null
-                  created_at: '2025-12-15T21:27:25.000000Z'
-                  updated_at: '2025-12-15T22:41:23.000000Z'
-                  suspended_at: '2025-12-15T22:41:23.000000Z'
-                  suspended_reason: Manual suspension
+                    type:
+                      - object
+                      - 'null'
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
         '404':
-          description: Webhook subscription not found
+          description: ''
           content:
             application/json:
               schema:
@@ -1731,18 +979,20 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Webhook subscription not found
                   data:
-                    type: object
-                    nullable: true
+                    type: 'null'
                   errors:
-                    type: object
-              example:
-                success: false
-                message: Webhook subscription not found
-                data: null
-                errors: {}
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
         '422':
-          description: Validation error
+          description: ''
           content:
             application/json:
               schema:
@@ -1752,38 +1002,34 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Validation failed
                   data:
-                    type: object
-                    nullable: true
+                    type: 'null'
                   errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              example:
-                success: false
-                message: Validation failed
-                data: null
-                errors:
-                  id:
-                    - The id field must be a valid UUID.
-      tags:
-        - Webhook
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
       security:
         - BearerAuth: []
     delete:
+      operationId: webhookSubscription.destroy
       summary: Delete Webhook
+      tags:
+        - Webhook
       parameters:
         - name: id
           in: path
           required: true
           schema:
             type: string
-            format: uuid
       responses:
         '200':
-          description: Webhook subscription deleted successfully
+          description: ''
           content:
             application/json:
               schema:
@@ -1793,60 +1039,43 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Webhook subscription deleted successfully
                   data:
                     type: object
                     properties:
                       id:
                         type: string
-                        format: uuid
                       url:
                         type: string
                       events:
-                        type: array
-                        items:
-                          type: string
-                          enum:
-                            [
-                              payment.created,
-                              payment.processing,
-                              payment.completed,
-                              payment.failed,
-                              transaction.received,
-                            ]
+                        type: string
                       max_attempts:
-                        type: integer
+                        type: string
                       timeout:
-                        type: integer
+                        type: string
                       headers:
-                        type: object
-                        additionalProperties:
-                          type: string
+                        type: string
                       created_at:
                         type: string
-                        format: date-time
                       updated_at:
                         type: string
-                        format: date-time
-              example:
-                success: true
-                message: Webhook subscription deleted successfully
-                data:
-                  id: ad991538-b62a-44ca-98a4-8af7e8bd21ea
-                  url: https://webhook-test.com/fcd684635d8e381dfa1a8f7205c29118
-                  events:
-                    - payment.created
-                    - payment.processing
-                    - payment.completed
-                    - payment.failed
-                    - transaction.received
-                  max_attempts: 5
-                  timeout: 30
-                  headers:
-                    X-Custom-Header: value
-                  created_at: '2025-12-12T18:39:42.000000Z'
-                  updated_at: '2026-01-01T04:26:13.000000Z'
+                    required:
+                      - id
+                      - url
+                      - events
+                      - max_attempts
+                      - timeout
+                      - headers
+                      - created_at
+                      - updated_at
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
         '404':
-          description: Webhook subscription not found
+          description: ''
           content:
             application/json:
               schema:
@@ -1856,18 +1085,20 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Webhook subscription not found
                   data:
-                    type: object
-                    nullable: true
+                    type: 'null'
                   errors:
-                    type: object
-              example:
-                success: false
-                message: Webhook subscription not found
-                data: null
-                errors: {}
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
         '422':
-          description: Validation error
+          description: ''
           content:
             application/json:
               schema:
@@ -1877,41 +1108,64 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Validation failed
                   data:
-                    type: object
-                    nullable: true
+                    type: 'null'
                   errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              example:
-                success: false
-                message: Validation failed
-                data: null
-                errors:
-                  id:
-                    - The id field must be a valid UUID.
-      tags:
-        - Webhook
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Failed to delete webhook subscription
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
       security:
         - BearerAuth: []
   /api/webhooks/subscriptions:
     get:
+      operationId: webhookSubscription.index
       summary: List Webhooks
+      tags:
+        - Webhook
       parameters:
         - name: per_page
           in: query
-          required: false
           schema:
             type: integer
             minimum: 1
             maximum: 1000
-          example: 15
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
       responses:
         '200':
-          description: Webhook subscriptions retrieved successfully
+          description: ''
           content:
             application/json:
               schema:
@@ -1921,386 +1175,118 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Webhook subscriptions retrieved successfully
                   data:
                     type: object
                     properties:
                       current_page:
                         type: integer
+                        minimum: 1
                       data:
                         type: array
                         items:
-                          type: object
-                          properties:
-                            id:
-                              type: string
-                              format: uuid
-                            user_id:
-                              type: string
-                              format: uuid
-                            url:
-                              type: string
-                              maxLength: 2048
-                            events:
-                              type: array
-                              items:
-                                type: string
-                                enum:
-                                  [
-                                    payment.created,
-                                    payment.processing,
-                                    payment.completed,
-                                    payment.failed,
-                                    transaction.received,
-                                  ]
-                            active:
-                              type: boolean
-                            max_attempts:
-                              type: integer
-                            timeout:
-                              type: integer
-                            headers:
-                              type: object
-                              additionalProperties:
-                                type: string
-                            last_sent_at:
-                              type: string
-                              format: date-time
-                              nullable: true
-                            created_at:
-                              type: string
-                              format: date-time
-                            updated_at:
-                              type: string
-                              format: date-time
-                            suspended_at:
-                              type: string
-                              format: date-time
-                              nullable: true
-                            suspended_reason:
-                              type: string
-                              nullable: true
+                          $ref: '#/components/schemas/WebhookSubscription'
                       first_page_url:
-                        type: string
-                        nullable: true
+                        type:
+                          - string
+                          - 'null'
                       from:
-                        type: integer
-                        nullable: true
+                        type:
+                          - integer
+                          - 'null'
+                        minimum: 1
+                      last_page_url:
+                        type:
+                          - string
+                          - 'null'
                       last_page:
                         type: integer
-                      last_page_url:
-                        type: string
-                        nullable: true
+                        minimum: 1
                       links:
                         type: array
+                        description: Generated paginator links.
                         items:
                           type: object
                           properties:
                             url:
-                              type: string
-                              nullable: true
+                              type:
+                                - string
+                                - 'null'
                             label:
                               type: string
-                            page:
-                              type: integer
-                              nullable: true
                             active:
                               type: boolean
+                          required:
+                            - url
+                            - label
+                            - active
                       next_page_url:
-                        type: string
-                        nullable: true
+                        type:
+                          - string
+                          - 'null'
                       path:
-                        type: string
+                        type:
+                          - string
+                          - 'null'
+                        description: Base path for paginator generated URLs.
                       per_page:
                         type: integer
+                        description: Number of items shown per page.
+                        minimum: 0
                       prev_page_url:
-                        type: string
-                        nullable: true
+                        type:
+                          - string
+                          - 'null'
                       to:
-                        type: integer
-                        nullable: true
+                        type:
+                          - integer
+                          - 'null'
+                        description: Number of the last item in the slice.
+                        minimum: 1
                       total:
                         type: integer
-              example:
-                success: true
-                message: Webhook subscriptions retrieved successfully
-                data:
-                  current_page: 1
-                  data:
-                    - id: 071c00a7-e248-437a-b42a-171eb087c704
-                      user_id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
-                      url: https://api04.bullbitcoin.dev/selva/payment
-                      events:
-                        - payment.created
-                        - payment.processing
-                        - payment.completed
-                        - payment.failed
-                        - transaction.received
-                      active: false
-                      max_attempts: 5
-                      timeout: 30
-                      headers:
-                        X-Custom-Header: value
-                      last_sent_at: null
-                      created_at: '2025-12-15T21:27:25.000000Z'
-                      updated_at: '2025-12-15T22:41:23.000000Z'
-                      suspended_at: '2025-12-15T22:41:23.000000Z'
-                      suspended_reason: Manual suspension
-                    - id: ad991538-b62a-44ca-98a4-8af7e8bd21ea
-                      user_id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
-                      url: https://webhook-test.com/fcd684635d8e381dfa1a8f7205c29118
-                      events:
-                        - payment.created
-                        - payment.processing
-                        - payment.completed
-                        - payment.failed
-                        - transaction.received
-                      active: true
-                      max_attempts: 5
-                      timeout: 30
-                      headers:
-                        X-Custom-Header: value
-                      last_sent_at: '2025-12-31T22:48:51.000000Z'
-                      created_at: '2025-12-12T18:39:42.000000Z'
-                      updated_at: '2025-12-31T22:48:51.000000Z'
-                      suspended_at: null
-                      suspended_reason: null
-                  first_page_url: https://dev.selva.fi.cr/api/webhooks/subscriptions?page=1
-                  from: 1
-                  last_page: 1
-                  last_page_url: https://dev.selva.fi.cr/api/webhooks/subscriptions?page=1
-                  links:
-                    - url: null
-                      label: Previous
-                      page: null
-                      active: false
-                    - url: https://dev.selva.fi.cr/api/webhooks/subscriptions?page=1
-                      label: '1'
-                      page: 1
-                      active: true
-                    - url: null
-                      label: Next
-                      page: null
-                      active: false
-                  next_page_url: null
-                  path: https://dev.selva.fi.cr/api/webhooks/subscriptions
-                  per_page: 15
-                  prev_page_url: null
-                  to: 2
-                  total: 2
-      tags:
-        - Webhook
+                        description: Total number of items being paginated.
+                        minimum: 0
+                    required:
+                      - current_page
+                      - data
+                      - first_page_url
+                      - from
+                      - last_page_url
+                      - last_page
+                      - links
+                      - next_page_url
+                      - path
+                      - per_page
+                      - prev_page_url
+                      - to
+                      - total
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
+        '422':
+          $ref: '#/components/responses/ValidationException'
       security:
         - BearerAuth: []
     post:
+      operationId: webhookSubscription.store
       summary: Create Webhook
-      responses:
-        '201':
-          description: Webhook subscription created successfully
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    properties:
-                      url:
-                        type: string
-                      events:
-                        type: array
-                        items:
-                          type: string
-                          enum:
-                            [
-                              payment.created,
-                              payment.processing,
-                              payment.completed,
-                              payment.failed,
-                              transaction.received,
-                            ]
-                      secret:
-                        type: string
-                        description: Secret key for webhook signature verification (only returned once during creation)
-                      max_attempts:
-                        type: integer
-                      timeout:
-                        type: integer
-                      headers:
-                        type: object
-                        additionalProperties:
-                          type: string
-                      active:
-                        type: boolean
-                      user_id:
-                        type: string
-                        format: uuid
-                      id:
-                        type: string
-                        format: uuid
-                      updated_at:
-                        type: string
-                        format: date-time
-                      created_at:
-                        type: string
-                        format: date-time
-              example:
-                success: true
-                message: Webhook subscription created successfully
-                data:
-                  url: https://webhook-test.com/0a2d430ff5e3e474d9e1299f894d3468
-                  events:
-                    - payment.created
-                    - payment.processing
-                    - payment.completed
-                    - payment.failed
-                    - transaction.received
-                  secret: 91mfngr6a0fCVFPiKp36q9rgvB6YF8aE
-                  max_attempts: 5
-                  timeout: 30
-                  headers:
-                    X-Custom-Header: value
-                  active: true
-                  user_id: d37da6d4-c34c-44e9-bb00-7273a378a5ad
-                  id: 183e2bd0-4664-48de-b0a6-7954f9022ac4
-                  updated_at: '2026-01-01T04:22:14.000000Z'
-                  created_at: '2026-01-01T04:22:14.000000Z'
-        '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              examples:
-                Duplicate Subscription:
-                  value:
-                    success: false
-                    message: A webhook subscription with same URL and events already exists
-                    data: null
-                    errors:
-                      events:
-                        - A webhook subscription with same URL and events already exists
-                Invalid Event Type:
-                  value:
-                    success: false
-                    message: 'Invalid webhook event type, allowed events: payment.created, payment.processing, payment.completed, payment.failed, transaction.received'
-                    data: null
-                    errors:
-                      events.0:
-                        - 'Invalid webhook event type, allowed events: payment.created, payment.processing, payment.completed, payment.failed, transaction.received'
-                Multiple Validation Errors:
-                  value:
-                    success: false
-                    message: A webhook subscription with same URL and events already exists
-                    data: null
-                    errors:
-                      events:
-                        - A webhook subscription with same URL and events already exists
-                      max_attempts:
-                        - Max attempts must be at least 1
-        '500':
-          description: Internal server error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Failed to create webhook subscription
-                data: null
       tags:
         - Webhook
-      security:
-        - BearerAuth: []
       requestBody:
+        required: true
         content:
           application/json:
             schema:
-              type: object
-              required:
-                - url
-                - events
-              properties:
-                url:
-                  type: string
-                  format: uri
-                  maxLength: 2048
-                  description: Webhook endpoint URL (must use HTTPS)
-                events:
-                  type: array
-                  minItems: 1
-                  items:
-                    type: string
-                    enum:
-                      [
-                        payment.created,
-                        payment.processing,
-                        payment.completed,
-                        payment.failed,
-                        transaction.received,
-                      ]
-                  description: Array of event types to subscribe to
-                max_attempts:
-                  type: integer
-                  minimum: 1
-                  maximum: 10
-                  default: 3
-                  description: Maximum number of retry attempts for failed webhooks
-                timeout:
-                  type: integer
-                  minimum: 5
-                  maximum: 120
-                  default: 30
-                  description: Timeout in seconds for webhook requests
-                headers:
-                  type: object
-                  description: Custom headers to include in webhook requests
-                  additionalProperties:
-                    type: string
-                    maxLength: 255
-              example:
-                url: https://webhook-test.com/endpoint
-                events:
-                  - payment.created
-                  - payment.completed
-                  - payment.failed
-                max_attempts: 5
-                timeout: 30
-                headers:
-                  X-Custom-Header: value
-  /api/webhooks/subscriptions/{id}/suspend:
-    post:
-      summary: Suspend Webhook
+              $ref: '#/components/schemas/StoreWebhookSubscriptionRequest'
       responses:
-        '200':
-          description: Webhook subscription suspended successfully
+        '201':
+          description: ''
           content:
             application/json:
               schema:
@@ -2310,77 +1296,21 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Webhook subscription created successfully
                   data:
-                    type: object
-                    properties:
-                      id:
-                        type: string
-                        format: uuid
-                      active:
-                        type: boolean
-                      suspended_at:
-                        type: string
-                        format: date-time
-                      suspended_reason:
-                        type: string
-              example:
-                success: true
-                message: Webhook subscription suspended successfully
-                data:
-                  id: ad991538-b62a-44ca-98a4-8af7e8bd21ea
-                  active: false
-                  suspended_at: '2026-01-01T04:25:14.000000Z'
-                  suspended_reason: Manual suspension
-        '409':
-          description: Webhook subscription is already suspended
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Webhook subscription is already suspended
-                data: null
-                errors: {}
+                    $ref: '#/components/schemas/WebhookSubscription'
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
         '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
-                        type: string
-              example:
-                success: false
-                message: Validation failed
-                data: null
-                errors:
-                  id:
-                    - The id field must be a valid UUID.
+          $ref: '#/components/responses/ValidationException'
         '500':
-          description: Internal server error
+          description: ''
           content:
             application/json:
               schema:
@@ -2390,19 +1320,32 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Failed to create webhook subscription
                   data:
-                    type: object
-                    nullable: true
+                    type: 'null'
                   errors:
-                    type: object
-              example:
-                success: false
-                message: Failed to suspend webhook subscription
-                data: null
-      tags:
-        - Webhook
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
       security:
         - BearerAuth: []
+  /api/webhooks/subscriptions/{id}/suspend:
+    post:
+      operationId: webhookSubscription.suspend
+      summary: Suspend Webhook
+      tags:
+        - Webhook
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
       requestBody:
         content:
           application/json:
@@ -2411,22 +1354,10 @@ paths:
               properties:
                 reason:
                   type: string
-                  description: Reason for suspension (optional)
-            example:
-              reason: Manual suspension
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
-  /api/webhooks/subscriptions/{id}/resume:
-    post:
-      summary: Resume Webhook
+                  default: Manual suspension
       responses:
         '200':
-          description: Webhook subscription resumed successfully
+          description: ''
           content:
             application/json:
               schema:
@@ -2436,76 +1367,31 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Webhook subscription suspended successfully
                   data:
                     type: object
                     properties:
                       id:
                         type: string
-                        format: uuid
                       active:
-                        type: boolean
-                      suspended_webhooks_count:
-                        type: integer
-                      retry_job_dispatched:
-                        type: boolean
-              example:
-                success: true
-                message: Webhook subscription resumed successfully
-                data:
-                  id: ad991538-b62a-44ca-98a4-8af7e8bd21ea
-                  active: true
-                  suspended_webhooks_count: 0
-                  retry_job_dispatched: true
-        '409':
-          description: Webhook subscription is not suspended
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-              example:
-                success: false
-                message: Webhook subscription is not suspended
-                data: null
-                errors: {}
-        '422':
-          description: Validation error
-          content:
-            application/json:
-              schema:
-                type: object
-                properties:
-                  success:
-                    type: boolean
-                  message:
-                    type: string
-                  data:
-                    type: object
-                    nullable: true
-                  errors:
-                    type: object
-                    additionalProperties:
-                      type: array
-                      items:
                         type: string
-              example:
-                success: false
-                message: Validation failed
-                data: null
-                errors:
-                  id:
-                    - The id field must be a valid UUID.
-        '500':
-          description: Internal server error
+                      suspended_at:
+                        type: string
+                      suspended_reason:
+                        type: string
+                    required:
+                      - id
+                      - active
+                      - suspended_at
+                      - suspended_reason
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '404':
+          description: ''
           content:
             application/json:
               schema:
@@ -2515,42 +1401,246 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Webhook subscription not found
                   data:
-                    type: object
-                    nullable: true
+                    type: 'null'
                   errors:
-                    type: object
-              example:
-                success: false
-                message: Failed to resume webhook subscription
-                data: null
-      tags:
-        - Webhook
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '409':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Webhook subscription is already suspended
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '422':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Validation failed
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Failed to suspend webhook subscription
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
       security:
         - BearerAuth: []
-    parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: string
-          format: uuid
+  /api/webhooks/subscriptions/{id}/resume:
+    post:
+      operationId: webhookSubscription.resume
+      summary: Resume Webhook
+      tags:
+        - Webhook
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Webhook subscription resumed successfully
+                  data:
+                    type: object
+                    properties:
+                      id:
+                        type: string
+                      active:
+                        type: string
+                      suspended_webhooks_count:
+                        type: string
+                      retry_job_dispatched:
+                        type: boolean
+                    required:
+                      - id
+                      - active
+                      - suspended_webhooks_count
+                      - retry_job_dispatched
+                required:
+                  - success
+                  - message
+                  - data
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '404':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Webhook subscription not found
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '409':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Webhook subscription is not suspended
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '422':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Validation failed
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+        '500':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Failed to resume webhook subscription
+                  data:
+                    type: 'null'
+                  errors:
+                    anyOf:
+                      - type: object
+                      - type: string
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+      security:
+        - BearerAuth: []
 components:
   schemas:
     CostaRicaIBAN:
       type: string
       description: Costa Rican IBAN number
-      pattern: '^CR\d{20}$'
+      pattern: ^CR\d{20}$
       example: CR02010200000000000001
     CostaRicaPhone:
       type: string
       description: Costa Rican phone number (8 digits starting with 6, 7, or 8, optionally prefixed with 506 country code)
-      pattern: '^(506)?[678]\d{7}$'
+      pattern: ^(506)?[678]\d{7}$
       example: '88881234'
     CostaRicaNationalID:
       type: string
       description: Costa Rican national ID (Cédula)
-      pattern: '^\d{9,10}$'
+      pattern: ^\d{9,10}$
       example: '0123456789'
     CostaRicaNationalIdentifier:
       type: string
@@ -2558,33 +1648,514 @@ components:
       example: '111090807'
     PaymentStatus:
       type: string
-      enum: [pending, processing, completed, failed]
+      enum:
+        - pending
+        - processing
+        - completed
+        - failed
     TransferType:
       type: string
-      enum: [debit, credit]
+      enum:
+        - debit
+        - credit
     PaymentType:
       type: string
-      enum: [pin, sinpe]
+      enum:
+        - pin
+        - sinpe
     AccountOrigin:
       type: string
       enum:
-        [
-          loans,
-          special_savings,
-          payroll_deduction_savings,
-          credit_card,
-          bank_ledger,
-        ]
+        - loans
+        - special_savings
+        - payroll_deduction_savings
+        - credit_card
+        - bank_ledger
     AccountStatus:
       type: string
-      enum: [inactive, active, closed]
+      enum:
+        - inactive
+        - active
+        - closed
     PhoneVerificationStatus:
       type: string
-      enum: [registered, not_registered]
+      enum:
+        - registered
+        - not_registered
     IBANStatus:
       type: string
-      enum: [active, closed, blocked]
+      enum:
+        - active
+        - closed
+        - blocked
+    AccountDetailsResource:
+      type: object
+      properties:
+        id:
+          type: string
+        document_number:
+          type: string
+        document_type:
+          type: string
+        iban:
+          type: string
+        origin_code:
+          type: string
+        balance:
+          type: object
+          properties:
+            value:
+              type: integer
+            currency:
+              type: string
+            formatted:
+              type: string
+          required:
+            - value
+            - currency
+            - formatted
+        owner_name:
+          type: string
+        status:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required:
+        - id
+        - document_number
+        - document_type
+        - iban
+        - origin_code
+        - balance
+        - owner_name
+        - status
+        - created_at
+        - updated_at
+      title: AccountDetailsResource
+    AccountResource:
+      type: object
+      properties:
+        id:
+          type: string
+        iban:
+          type: string
+        currency:
+          $ref: '#/components/schemas/Currency'
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required:
+        - id
+        - iban
+        - currency
+        - created_at
+        - updated_at
+      title: AccountResource
+    AccountWithBalanceResource:
+      type: object
+      properties:
+        iban:
+          type: string
+        currency:
+          type: string
+        balance:
+          type: integer
+        formatted:
+          type: string
+      required:
+        - iban
+        - currency
+        - balance
+        - formatted
+      title: AccountWithBalanceResource
+    CreateAccountRequest:
+      type: object
+      properties:
+        currency:
+          $ref: '#/components/schemas/Currency'
+      required:
+        - currency
+      title: CreateAccountRequest
+    Currency:
+      type: string
+      enum:
+        - CRC
+        - USD
+      title: Currency
+    PaymentResource:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Identifiers
+        idempotency_key:
+          type: string
+        cgp_ref_number:
+          type: string
+        channel_reference:
+          type: string
+        sinpe_reference:
+          type: string
+        transfer_type:
+          type: string
+          description: Details
+        status:
+          type: string
+        amount:
+          type: object
+          properties:
+            value:
+              type: string
+            currency:
+              type: string
+            formatted:
+              type: string
+          required:
+            - value
+            - currency
+            - formatted
+        fee:
+          type:
+            - object
+            - 'null'
+          properties:
+            value:
+              type: string
+            currency:
+              type: string
+            formatted:
+              type: string
+          required:
+            - value
+            - currency
+            - formatted
+        payer:
+          type: object
+          description: Payer and Payee
+          properties:
+            iban:
+              type: string
+            document_number:
+              type: string
+            document_type:
+              type: string
+            name:
+              type: string
+          required:
+            - iban
+            - document_number
+            - document_type
+            - name
+        payee:
+          type: object
+          properties:
+            document_number:
+              type: string
+            document_type:
+              type: string
+            name:
+              type: string
+            phone_number:
+              type: string
+            iban:
+              type: string
+          required:
+            - document_number
+            - document_type
+            - name
+            - phone_number
+            - iban
+        description:
+          type: string
+          description: Messages
+        reference:
+          type: string
+        error_message:
+          type: string
+        created_at:
+          type: string
+          description: Dates
+        submitted_at:
+          type: string
+        completed_at:
+          type: string
+        channel:
+          type: string
+      required:
+        - id
+        - idempotency_key
+        - cgp_ref_number
+        - channel_reference
+        - sinpe_reference
+        - transfer_type
+        - status
+        - amount
+        - fee
+        - payer
+        - payee
+        - description
+        - reference
+        - error_message
+        - created_at
+        - submitted_at
+        - completed_at
+        - channel
+      title: PaymentResource
+    SendPaymentRequest:
+      type: object
+      properties:
+        source_account_id:
+          type: string
+          format: uuid
+        recipient_iban:
+          type:
+            - string
+            - 'null'
+          pattern: ^CR\d{20}$
+        recipient_phone:
+          type:
+            - string
+            - 'null'
+          pattern: ^(506)?[2678]\d{7}$
+        recipient_email:
+          type:
+            - string
+            - 'null'
+          format: email
+          maxLength: 255
+        amount:
+          type: integer
+          minimum: 1
+          maximum: 500000000
+        reference:
+          type:
+            - string
+            - 'null'
+          maxLength: 100
+        description:
+          type:
+            - string
+            - 'null'
+          maxLength: 500
+      required:
+        - source_account_id
+        - amount
+      title: SendPaymentRequest
+    StoreWebhookSubscriptionRequest:
+      type: object
+      properties:
+        url:
+          type: string
+          format: uri
+          maxLength: 2048
+        max_attempts:
+          type: integer
+          minimum: 1
+          maximum: 10
+        timeout:
+          type: integer
+          minimum: 5
+          maximum: 120
+        events:
+          type: array
+          items:
+            type: string
+            enum:
+              - payment.created
+              - payment.processing
+              - payment.completed
+              - payment.failed
+              - transaction.received
+          minItems: 1
+        headers:
+          type: array
+          items:
+            type: string
+            maxLength: 255
+      required:
+        - url
+        - events
+      title: StoreWebhookSubscriptionRequest
+    UserResource:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        email_verified_at:
+          type: string
+        created_at:
+          type: string
+        updated_at:
+          type: string
+      required:
+        - id
+        - name
+        - email
+        - email_verified_at
+        - created_at
+        - updated_at
+      title: UserResource
+    WebhookSubscription:
+      type: object
+      properties:
+        id:
+          type: string
+        user_id:
+          type: string
+        url:
+          type: string
+        events:
+          type: array
+          items: {}
+        active:
+          type: boolean
+        max_attempts:
+          type: integer
+        timeout:
+          type: integer
+        headers:
+          type:
+            - array
+            - 'null'
+          items: {}
+        last_sent_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        created_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        updated_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        suspended_at:
+          type:
+            - string
+            - 'null'
+          format: date-time
+        suspended_reason:
+          type:
+            - string
+            - 'null'
+      required:
+        - id
+        - user_id
+        - url
+        - events
+        - active
+        - max_attempts
+        - timeout
+        - headers
+        - last_sent_at
+        - created_at
+        - updated_at
+        - suspended_at
+        - suspended_reason
+      title: WebhookSubscription
   securitySchemes:
     BearerAuth:
       type: http
       scheme: bearer
+  responses:
+    AuthenticationException:
+      description: Unauthenticated
+      content:
+        application/json:
+          example:
+            success: false
+            message: Source account is required
+            data: null
+            errors: {}
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                const: false
+              message:
+                type: string
+                description: Error overview.
+              data:
+                type: 'null'
+              errors:
+                type: object
+                description: Additional error details when available.
+                additionalProperties: true
+            required:
+              - success
+              - message
+              - data
+              - errors
+    ValidationException:
+      description: Validation error
+      content:
+        application/json:
+          example:
+            success: false
+            message: Source account is required
+            data: null
+            errors: {}
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                const: false
+              message:
+                type: string
+                description: Errors overview.
+              data:
+                type: 'null'
+              errors:
+                type: object
+                description: A detailed description of each field that failed validation.
+                additionalProperties:
+                  type: array
+                  items:
+                    type: string
+            required:
+              - success
+              - message
+              - data
+              - errors
+    AuthorizationException:
+      description: Authorization error
+      content:
+        application/json:
+          example:
+            success: false
+            message: Source account is required
+            data: null
+            errors: {}
+          schema:
+            type: object
+            properties:
+              success:
+                type: boolean
+                const: false
+              message:
+                type: string
+                description: Error overview.
+              data:
+                type: 'null'
+              errors:
+                type: object
+                description: Additional error details when available.
+                additionalProperties: true
+            required:
+              - success
+              - message
+              - data
+              - errors

@@ -12,10 +12,11 @@ All API errors follow a consistent format:
 
 ```json
 {
-  "error": "error_code",
+  "success": false,
   "message": "Human-readable error message",
-  "details": {
-    "field": "Additional error details"
+  "data": null,
+  "errors": {
+    "field": ["Additional error details"]
   }
 }
 ```
@@ -32,15 +33,16 @@ The API uses standard HTTP status codes:
 | 400         | Bad Request           | Invalid request parameters or body       |
 | 401         | Unauthorized          | Invalid or missing authentication token  |
 | 403         | Forbidden             | Insufficient permissions                 |
+| 422         | Unprocessable Content | Request validation failed                |
 | 404         | Not Found             | Resource does not exist                  |
 | 500         | Internal Server Error | Server error occurred                    |
 | 503         | Service Unavailable   | Service temporarily unavailable          |
 
-## Common Error Codes
+## Common Error Responses
 
 ### Authentication Errors
 
-#### `invalid_client`
+#### Invalid client credentials
 
 - **Status**: 401
 - **Description**: Invalid client ID or secret
@@ -48,12 +50,14 @@ The API uses standard HTTP status codes:
 
 ```json
 {
-  "error": "invalid_client",
-  "message": "Invalid client credentials"
+  "success": false,
+  "message": "Invalid client credentials",
+  "data": null,
+  "errors": {}
 }
 ```
 
-#### `invalid_grant`
+#### Invalid authorization grant
 
 - **Status**: 401
 - **Description**: Invalid or expired authorization code
@@ -61,12 +65,14 @@ The API uses standard HTTP status codes:
 
 ```json
 {
-  "error": "invalid_grant",
-  "message": "The authorization code is invalid or has expired"
+  "success": false,
+  "message": "The authorization code is invalid or has expired",
+  "data": null,
+  "errors": {}
 }
 ```
 
-#### `unauthorized`
+#### Unauthorized
 
 - **Status**: 401
 - **Description**: Invalid or expired access token
@@ -74,14 +80,16 @@ The API uses standard HTTP status codes:
 
 ```json
 {
-  "error": "unauthorized",
-  "message": "Invalid or expired access token"
+  "success": false,
+  "message": "Invalid or expired access token",
+  "data": null,
+  "errors": {}
 }
 ```
 
 ### Request Errors
 
-#### `invalid_request`
+#### Invalid request
 
 - **Status**: 400
 - **Description**: Missing or invalid request parameters
@@ -89,33 +97,35 @@ The API uses standard HTTP status codes:
 
 ```json
 {
-  "error": "invalid_request",
+  "success": false,
   "message": "The request is missing a required parameter",
-  "details": {
+  "data": null,
+  "errors": {
     "missing_field": "amount"
   }
 }
 ```
 
-#### `validation_error`
+#### Validation failed
 
-- **Status**: 400
+- **Status**: 422
 - **Description**: Request body validation failed
 - **Solution**: Review validation errors and fix the request
 
 ```json
 {
-  "error": "validation_error",
+  "success": false,
   "message": "Request validation failed",
-  "details": {
-    "amount": "Amount must be greater than 0"
+  "data": null,
+  "errors": {
+    "amount": ["Amount must be greater than 0"]
   }
 }
 ```
 
 ### Resource Errors
 
-#### `not_found`
+#### Resource not found
 
 - **Status**: 404
 - **Description**: Requested resource does not exist
@@ -123,12 +133,14 @@ The API uses standard HTTP status codes:
 
 ```json
 {
-  "error": "not_found",
-  "message": "The requested resource was not found"
+  "success": false,
+  "message": "The requested resource was not found",
+  "data": null,
+  "errors": {}
 }
 ```
 
-#### `forbidden`
+#### Forbidden
 
 - **Status**: 403
 - **Description**: Insufficient permissions
@@ -136,14 +148,16 @@ The API uses standard HTTP status codes:
 
 ```json
 {
-  "error": "forbidden",
-  "message": "You do not have permission to access this resource"
+  "success": false,
+  "message": "You do not have permission to access this resource",
+  "data": null,
+  "errors": {}
 }
 ```
 
 ### Server Errors
 
-#### `internal_error`
+#### Internal server error
 
 - **Status**: 500
 - **Description**: Internal server error
@@ -151,12 +165,14 @@ The API uses standard HTTP status codes:
 
 ```json
 {
-  "error": "internal_error",
-  "message": "An internal server error occurred"
+  "success": false,
+  "message": "An internal server error occurred",
+  "data": null,
+  "errors": {}
 }
 ```
 
-#### `service_unavailable`
+#### Service unavailable
 
 - **Status**: 503
 - **Description**: Service temporarily unavailable
@@ -164,9 +180,10 @@ The API uses standard HTTP status codes:
 
 ```json
 {
-  "error": "service_unavailable",
+  "success": false,
   "message": "Service temporarily unavailable",
-  "details": {
+  "data": null,
+  "errors": {
     "retry_after": 60
   }
 }
@@ -265,19 +282,22 @@ async function makeAuthenticatedRequest(url, options = {}) {
 
 ### 4. User-Friendly Error Messages
 
-Map error codes to user-friendly messages:
+Map HTTP status codes to user-friendly messages:
 
 ```javascript
 const errorMessages = {
-  invalid_request: 'Please check your input and try again',
-  unauthorized: 'Your session has expired. Please log in again',
-  not_found: 'The requested item could not be found',
-  forbidden: 'You do not have permission to perform this action',
-  internal_error: 'A server error occurred. Please try again later',
+  400: 'Please check your input and try again',
+  401: 'Your session has expired. Please log in again',
+  403: 'You do not have permission to perform this action',
+  422: 'Please review the highlighted fields and try again',
+  404: 'The requested item could not be found',
+  500: 'A server error occurred. Please try again later',
 };
 
-function getUserFriendlyError(errorCode) {
-  return errorMessages[errorCode] || 'An unexpected error occurred';
+function getUserFriendlyError(error, status) {
+  return (
+    error.message || errorMessages[status] || 'An unexpected error occurred'
+  );
 }
 ```
 
@@ -287,12 +307,13 @@ Payment and account creation endpoints return detailed validation errors:
 
 ```json
 {
-  "error": "validation_error",
+  "success": false,
   "message": "Request validation failed",
-  "details": {
-    "amount": "Amount must be greater than 0",
-    "currency": "Invalid currency code",
-    "recipient_identifier": "Invalid account identifier format"
+  "data": null,
+  "errors": {
+    "amount": ["Amount must be greater than 0"],
+    "currency": ["Invalid currency code"],
+    "recipient_identifier": ["Invalid account identifier format"]
   }
 }
 ```
@@ -308,7 +329,12 @@ app.post('/webhooks', async (req, res) => {
   try {
     // Verify signature
     if (!verifySignature(req.headers['signature'], req.body)) {
-      return res.status(401).json({ error: 'Invalid signature' });
+      return res.status(401).json({
+        success: false,
+        message: 'Invalid signature',
+        data: null,
+        errors: {},
+      });
     }
 
     // Process webhook
@@ -341,8 +367,9 @@ Log all errors for monitoring and debugging:
 ```javascript
 async function logError(error, context) {
   console.error('API Error:', {
-    error: error.error,
+    success: error.success,
     message: error.message,
+    errors: error.errors,
     status: context.status,
     endpoint: context.url,
     timestamp: new Date().toISOString(),

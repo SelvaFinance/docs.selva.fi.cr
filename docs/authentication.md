@@ -167,17 +167,19 @@ If authentication fails, you'll receive an error response:
 
 ```json
 {
-  "error": "invalid_grant",
-  "message": "The authorization code is invalid or has expired"
+  "success": false,
+  "message": "The authorization code is invalid or has expired",
+  "data": null,
+  "errors": {}
 }
 ```
 
 Common errors:
 
-- `invalid_client`: Invalid client ID or secret
-- `invalid_grant`: Invalid or expired authorization code
-- `invalid_scope`: Requested scope is invalid
-- `invalid_token`: Access token is missing, invalid, or expired
+- Invalid client credentials
+- Invalid or expired authorization code
+- Requested scope is invalid
+- Access token is missing, invalid, or expired
 
 See the [Error Handling guide](/docs/errors) for more details.
 
