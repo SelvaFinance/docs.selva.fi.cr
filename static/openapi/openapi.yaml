@@ -1435,13 +1435,34 @@ paths:
                     type: string
                     const: Webhook subscription retrieved successfully
                   data:
-                    type:
-                      - object
-                      - 'null'
+                    $ref: '#/components/schemas/WebhookSubscription'
                 required:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: Webhook subscription retrieved successfully
+                data:
+                  id: a20239e2-f4d6-4a93-9fa1-7dd0534e028e
+                  user_id: 19acabe8-ce4d-4fc8-9279-6eedf39995e6
+                  url: https://webhook.example.com/selva-events
+                  events:
+                    - payment.created
+                    - payment.processing
+                    - payment.completed
+                    - payment.failed
+                    - transaction.received
+                  active: true
+                  max_attempts: 10
+                  timeout: 30
+                  headers:
+                    X-Custom-Header: value
+                  last_sent_at: null
+                  created_at: '2026-04-13T06:57:01.000000Z'
+                  updated_at: '2026-04-13T06:57:01.000000Z'
+                  suspended_at: null
+                  suspended_reason: null
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '404':
@@ -2648,7 +2669,8 @@ components:
           type: string
         events:
           type: array
-          items: {}
+          items:
+            type: string
         active:
           type: boolean
         max_attempts:
@@ -2657,9 +2679,10 @@ components:
           type: integer
         headers:
           type:
-            - array
+            - object
             - 'null'
-          items: {}
+          additionalProperties:
+            type: string
         last_sent_at:
           type:
             - string
