@@ -22,8 +22,7 @@ Authorization: Bearer <token>
 ```
 
 Provision access in the SELVA dashboard, then use the issued bearer
-token in your requests. See [Authentication](/docs/authentication) for
-details.
+token in your requests.
 
 ## Payments
 

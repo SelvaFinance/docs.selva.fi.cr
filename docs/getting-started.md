@@ -25,8 +25,6 @@ header for every authenticated request:
 Authorization: Bearer YOUR_ACCESS_TOKEN
 ```
 
-See [Authentication](/docs/authentication) for token handling guidance.
-
 ## Make your first request
 
 Start with `GET /api/accounts` to list the accounts available to your
@@ -88,7 +86,6 @@ console.log(payment);
 
 ## Next steps
 
-- Learn more about [Authentication](/docs/authentication)
 - Explore the <a href="/api-reference" target="_blank">API Reference</a>
 - Review [Common Workflows](/docs/common-workflows)
 - See [Error Handling](/docs/errors)

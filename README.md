@@ -8,7 +8,6 @@ This documentation site provides comprehensive API documentation for the Selva F
 
 - Interactive API reference powered by Scalar
 - Getting started guides
-- Authentication documentation
 - Common workflows and examples
 - Error handling guide
 
@@ -71,7 +70,6 @@ docs.selva.fi.cr/
 
 - **Overview** (`/docs/overview`) - API overview and capabilities
 - **Getting Started** (`/docs/getting-started`) - Quickstart guide
-- **Authentication** (`/docs/authentication`) - OAuth 2.0 flow documentation
 - **API Reference** (`/api-reference`) - Interactive API documentation
 - **Common Workflows** (`/docs/common-workflows`) - Integration patterns
 - **Errors** (`/docs/errors`) - Error handling guide

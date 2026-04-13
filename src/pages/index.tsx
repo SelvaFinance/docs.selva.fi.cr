@@ -75,9 +75,9 @@ const highlights = [
 
 const modules = [
   {
-    title: 'Authentication',
-    body: 'Exchange client credentials for scoped tokens with predictable expiry.',
-    link: '/docs/authentication',
+    title: 'Webhooks',
+    body: 'Subscribe to events and manage delivery controls programmatically.',
+    link: '/docs/common-workflows',
   },
   {
     title: 'Payments',

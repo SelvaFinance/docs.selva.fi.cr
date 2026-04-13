@@ -38,7 +38,6 @@ const columns = [
     links: [
       { label: 'Getting started', to: '/docs/getting-started' },
       { label: 'Common workflows', to: '/docs/common-workflows' },
-      { label: 'Authentication', to: '/docs/authentication' },
     ],
   },
   {

@@ -6,7 +6,6 @@ const sidebars = {
   tutorialSidebar: [
     'overview',
     'getting-started',
-    'authentication',
     'common-workflows',
     'errors',
   ],
