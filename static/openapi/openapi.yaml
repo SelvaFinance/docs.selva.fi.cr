@@ -42,8 +42,8 @@ paths:
                   name: Alice Johnson
                   email: alice.johnson@example.com
                   email_verified_at: null
-                  created_at: '2026-02-04T19:34:16.000000Z'
-                  updated_at: '2026-02-04T19:44:49.000000Z'
+                  created_at: '2026-04-01T00:00:00.000000Z'
+                  updated_at: '2026-04-01T00:10:00.000000Z'
         '401':
           $ref: '#/components/responses/AuthenticationException'
       summary: Get User
@@ -326,9 +326,9 @@ paths:
                   description: null
                   reference: null
                   error_message: null
-                  created_at: '2026-04-13T04:26:48.000000Z'
-                  submitted_at: '2026-04-13T04:26:50.000000Z'
-                  completed_at: '2026-04-13T04:26:58.000000Z'
+                  created_at: '2026-04-01T00:00:00.000000Z'
+                  submitted_at: '2026-04-01T00:01:00.000000Z'
+                  completed_at: '2026-04-01T00:02:00.000000Z'
                   channel: pin
         '401':
           $ref: '#/components/responses/AuthenticationException'
@@ -567,9 +567,9 @@ paths:
                       description: null
                       reference: null
                       error_message: null
-                      created_at: '2026-04-13T04:26:48.000000Z'
-                      submitted_at: '2026-04-13T04:26:50.000000Z'
-                      completed_at: '2026-04-13T04:26:58.000000Z'
+                      created_at: '2026-04-01T00:00:00.000000Z'
+                      submitted_at: '2026-04-01T00:01:00.000000Z'
+                      completed_at: '2026-04-01T00:02:00.000000Z'
                       channel: pin
                     - id: 80c530a1-4f79-485d-bc0d-5c560d8ff300
                       idempotency_key: 6f19de2e-f9f0-4d4b-86cd-819bcfc024f2
@@ -596,9 +596,9 @@ paths:
                       description: null
                       reference: null
                       error_message: null
-                      created_at: '2026-04-07T13:27:59.000000Z'
-                      submitted_at: '2026-04-07T13:28:03.000000Z'
-                      completed_at: '2026-04-07T13:28:03.000000Z'
+                      created_at: '2026-04-01T00:03:00.000000Z'
+                      submitted_at: '2026-04-01T00:04:00.000000Z'
+                      completed_at: '2026-04-01T00:05:00.000000Z'
                       channel: pin
                   first_page_url: https://staging.selva.fi.cr/api/payments/history?page=1
                   from: 1
@@ -791,8 +791,8 @@ paths:
                     formatted: 100,000.00 CRC
                   owner_name: Alice Johnson
                   status: active
-                  created_at: '2026-04-13T05:42:59.000000Z'
-                  updated_at: '2026-04-13T05:42:59.000000Z'
+                  created_at: '2026-04-01T00:00:00.000000Z'
+                  updated_at: '2026-04-01T00:10:00.000000Z'
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '403':
@@ -990,8 +990,8 @@ paths:
                         formatted: 0.00 CRC
                       owner_name: Alice Johnson
                       status: active
-                      created_at: '2026-04-13T05:42:59.000000Z'
-                      updated_at: '2026-04-13T05:42:59.000000Z'
+                      created_at: '2026-04-01T00:00:00.000000Z'
+                      updated_at: '2026-04-01T00:10:00.000000Z'
                     - id: 6077687b-d558-4b19-8a7d-9d908cdc0e94
                       document_number: '3918734189'
                       document_type: 3
@@ -1003,8 +1003,8 @@ paths:
                         formatted: 3.00 USD
                       owner_name: Alice Johnson
                       status: active
-                      created_at: '2026-04-06T18:26:42.000000Z'
-                      updated_at: '2026-04-06T18:26:42.000000Z'
+                      created_at: '2026-04-01T00:20:00.000000Z'
+                      updated_at: '2026-04-01T00:20:00.000000Z'
                     - id: 2532b0df-c614-42b6-8a4f-d9d866e6aedd
                       document_number: '3918734189'
                       document_type: 3
@@ -1016,8 +1016,8 @@ paths:
                         formatted: 414,089.00 CRC
                       owner_name: Alice Johnson
                       status: active
-                      created_at: '2026-04-01T14:58:05.000000Z'
-                      updated_at: '2026-04-01T14:58:05.000000Z'
+                      created_at: '2026-04-01T00:30:00.000000Z'
+                      updated_at: '2026-04-01T00:30:00.000000Z'
                     - id: c7684804-f667-4007-a9e8-8b3d385aac66
                       document_number: '3918734189'
                       document_type: 3
@@ -1029,8 +1029,8 @@ paths:
                         formatted: 61.00 USD
                       owner_name: Alice Johnson
                       status: active
-                      created_at: '2026-02-07T03:32:27.000000Z'
-                      updated_at: '2026-02-07T03:32:27.000000Z'
+                      created_at: '2026-04-01T00:40:00.000000Z'
+                      updated_at: '2026-04-01T00:40:00.000000Z'
                     - id: c91bafa8-6d0e-4493-aa59-58ba9d6f67d4
                       document_number: '3918734189'
                       document_type: 3
@@ -1042,8 +1042,8 @@ paths:
                         formatted: 5,198.15 CRC
                       owner_name: Alice Johnson
                       status: active
-                      created_at: '2026-02-04T19:52:22.000000Z'
-                      updated_at: '2026-02-04T19:52:22.000000Z'
+                      created_at: '2026-04-01T00:50:00.000000Z'
+                      updated_at: '2026-04-01T00:50:00.000000Z'
                   first_page_url: https://staging.selva.fi.cr/api/accounts?page=1
                   from: 1
                   last_page: 1
@@ -1135,8 +1135,8 @@ paths:
                   id: 45a03920-6826-48cc-8141-46995bdbd201
                   iban: CR09037010700634070547
                   currency: CRC
-                  created_at: '2026-04-13T05:42:59.000000Z'
-                  updated_at: '2026-04-13T05:42:59.000000Z'
+                  created_at: '2026-04-01T00:00:00.000000Z'
+                  updated_at: '2026-04-01T00:10:00.000000Z'
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '422':
@@ -1490,8 +1490,8 @@ paths:
                   headers:
                     X-Custom-Header: value
                   last_sent_at: null
-                  created_at: '2026-04-13T06:57:01.000000Z'
-                  updated_at: '2026-04-13T06:57:01.000000Z'
+                  created_at: '2026-04-01T00:00:00.000000Z'
+                  updated_at: '2026-04-01T00:10:00.000000Z'
                   suspended_at: null
                   suspended_reason: null
         '401':
@@ -1622,8 +1622,8 @@ paths:
                   timeout: 30
                   headers:
                     X-Custom-Header: value
-                  created_at: '2026-04-13T06:57:01.000000Z'
-                  updated_at: '2026-04-13T07:25:42.000000Z'
+                  created_at: '2026-04-01T00:00:00.000000Z'
+                  updated_at: '2026-04-01T00:10:00.000000Z'
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '404':
@@ -1844,8 +1844,8 @@ paths:
                       headers:
                         X-Custom-Header: value
                       last_sent_at: null
-                      created_at: '2026-04-13T06:57:01.000000Z'
-                      updated_at: '2026-04-13T06:57:01.000000Z'
+                      created_at: '2026-04-01T00:00:00.000000Z'
+                      updated_at: '2026-04-01T00:10:00.000000Z'
                       suspended_at: null
                       suspended_reason: null
                   first_page_url: https://staging.selva.fi.cr/api/webhooks/subscriptions?page=1
@@ -1938,8 +1938,8 @@ paths:
                   active: true
                   user_id: 19acabe8-ce4d-4fc8-9279-6eedf39995e6
                   id: a20239e2-f4d6-4a93-9fa1-7dd0534e028e
-                  updated_at: '2026-04-13T06:57:01.000000Z'
-                  created_at: '2026-04-13T06:57:01.000000Z'
+                  updated_at: '2026-04-01T00:10:00.000000Z'
+                  created_at: '2026-04-01T00:00:00.000000Z'
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '403':
@@ -2031,7 +2031,7 @@ paths:
                 data:
                   id: a20239e2-f4d6-4a93-9fa1-7dd0534e028e
                   active: false
-                  suspended_at: '2026-04-13T07:21:51.000000Z'
+                  suspended_at: '2026-04-01T00:20:00.000000Z'
                   suspended_reason: Manual suspension
         '401':
           $ref: '#/components/responses/AuthenticationException'
