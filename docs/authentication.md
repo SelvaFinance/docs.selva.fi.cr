@@ -4,195 +4,66 @@ sidebar_position: 3
 
 # Authentication
 
-The Selva API uses OAuth 2.0 for authentication. This guide explains how to implement the OAuth 2.0 authorization code flow.
+SELVA API access is managed through the dashboard.
 
-## OAuth 2.0 Flow Overview
+## Get API access in the dashboard
 
-The Selva API uses the **Authorization Code** flow, which is the most secure OAuth 2.0 flow for server-side applications.
+Use the SELVA dashboard to provision API access for your environment.
+Once access has been enabled, SELVA will issue the bearer token your
+application should use when calling authenticated endpoints.
 
-```
-┌─────────┐         ┌──────────────┐         ┌──────────┐
-│  Your   │         │   Selva API  │         │   User   │
-│   App   │         │              │         │          │
-└────┬────┘         └──────┬───────┘         └────┬─────┘
-     │                     │                      │
-     │  1. Redirect to     │                      │
-     │     /oauth/authorize│                      │
-     ├────────────────────>│                      │
-     │                     │  2. User authorizes  │
-     │                     │<────────────────────┤
-     │                     │                      │
-     │  3. Authorization   │                      │
-     │     code returned   │                      │
-     │<────────────────────┤                      │
-     │                     │                      │
-     │  4. Exchange code   │                      │
-     │     for token      │                      │
-     ├────────────────────>│                      │
-     │                     │                      │
-     │  5. Access token   │                      │
-     │     returned       │                      │
-     │<────────────────────┤                      │
-     │                     │                      │
-```
+If you need access for a new environment, or if your token needs to be
+rotated, manage that through the dashboard.
 
-## Step 1: Redirect User to Authorization Endpoint
+## Send authenticated requests
 
-Direct the user to the authorization endpoint with the required parameters:
-
-```
-GET https://dev.selva.fi.cr/oauth/authorize?
-  client_id=your-client-id&
-  redirect_uri=https://your-app.com/callback&
-  response_type=code&
-  scope=read-user read-accounts send-payments manage-webhooks
-```
-
-### Parameters
-
-- **client_id** (required): Your application's client ID
-- **redirect_uri** (required): The URI to redirect to after authorization. Must match a registered redirect URI.
-- **response_type** (required): Must be `code` for authorization code flow
-- **scope** (optional): Space-separated scopes you need (for example `read-accounts send-payments`)
-
-### Example
-
-```javascript
-const authUrl = new URL('https://dev.selva.fi.cr/oauth/authorize');
-authUrl.searchParams.set('client_id', 'your-client-id');
-authUrl.searchParams.set('redirect_uri', 'https://your-app.com/callback');
-authUrl.searchParams.set('response_type', 'code');
-authUrl.searchParams.set('scope', 'read-accounts send-payments');
-
-// Redirect user to authUrl.toString()
-window.location.href = authUrl.toString();
-```
-
-## Step 2: Handle the Authorization Callback
-
-After the user authorizes your application, they'll be redirected back to your `redirect_uri` with an authorization code:
-
-```
-https://your-app.com/callback?code=AUTHORIZATION_CODE&state=optional_state
-```
-
-Extract the `code` parameter from the URL.
-
-## Step 3: Exchange Code for Access Token
-
-Exchange the authorization code for an access token by making a POST request to the token endpoint:
+Include the issued token in the `Authorization` header of every
+authenticated request:
 
 ```bash
-curl -X POST https://dev.selva.fi.cr/oauth/token \
-  -H "Content-Type: application/json" \
-  -d '{
-    "grant_type": "authorization_code",
-    "client_id": "your-client-id",
-    "client_secret": "your-client-secret",
-    "redirect_uri": "https://your-app.com/callback",
-    "code": "AUTHORIZATION_CODE",
-    "scope": "read-accounts send-payments manage-webhooks"
-  }'
-```
-
-### Response
-
-```json
-{
-  "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
-  "token_type": "Bearer",
-  "expires_in": 3600,
-  "refresh_token": "refresh-token-here",
-  "scope": "read-accounts send-payments manage-webhooks"
-}
-```
-
-## Step 4: Use the Access Token
-
-Include the access token in the `Authorization` header of all API requests (and `X-Idempotency-Key` where required):
-
-```bash
-curl -X GET https://dev.selva.fi.cr/api/accounts \
+curl https://{base-url}/api/accounts \
   -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
 ```
 
-## Token Expiration
-
-Access tokens expire after a set period (typically 1 hour). When a token expires:
-
-1. Use the `refresh_token` to obtain a new access token
-2. Or redirect the user through the authorization flow again
-
-Include `Accept: application/json` on token and API calls to ensure consistent responses.
-
-## Refresh Tokens
-
-To refresh an expired access token:
+Payment creation requests must also include an `X-Idempotency-Key`
+header so retries can be handled safely:
 
 ```bash
-curl -X POST https://dev.selva.fi.cr/oauth/token \
+curl https://{base-url}/api/payments \
+  -X POST \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
   -H "Content-Type: application/json" \
+  -H "X-Idempotency-Key: YOUR_IDEMPOTENCY_KEY" \
   -d '{
-    "grant_type": "refresh_token",
-    "client_id": "your-client-id",
-    "client_secret": "your-client-secret",
-    "refresh_token": "your-refresh-token"
+    "source_account_id": "YOUR_SOURCE_ACCOUNT_ID",
+    "amount": 10000
   }'
 ```
 
-## Scopes
+## Security best practices
 
-Request only what you need (space-separated):
+1. Store bearer tokens securely and never commit them to version control.
+2. Use HTTPS for every request.
+3. Rotate tokens through the dashboard when access changes.
+4. Limit token distribution to the services that need it.
+5. Use a unique `X-Idempotency-Key` for every payment creation request.
 
-- **read-user**: Read basic profile information
-- **read-accounts**: View account information, balances, transfers
-- **manage-accounts**: Create accounts
-- **send-payments**: Create/validate/payments and view payment history/status
-- **manage-webhooks**: Manage webhook subscriptions
+## Authentication errors
 
-Request scopes during the authorization step. Users can grant or deny specific scopes.
+Authenticated endpoints return `401 Unauthorized` when the
+`Authorization` header is missing or the bearer token is invalid.
 
-## Security Best Practices
+Typical causes include:
 
-1. **Never expose client secrets**: Keep your `client_secret` on the server side only
-2. **Use HTTPS**: Always use HTTPS for all API calls
-3. **Store tokens securely**: Encrypt tokens in your database and rotate refresh tokens as needed
-4. **Validate redirect URIs**: Only use registered redirect URIs
-5. **Handle errors gracefully**: Implement proper error handling for expired or invalid tokens
-6. **Use idempotency keys**: Include `X-Idempotency-Key` headers for payment requests (required for `POST /api/payments`)
+- Missing `Authorization: Bearer <token>` header
+- Expired or revoked bearer token
+- Using a token issued for a different environment
 
-## Error Responses
+If a request starts returning `401`, verify that your application is
+using the current token issued in the dashboard.
 
-If authentication fails, you'll receive an error response:
+## Next steps
 
-```json
-{
-  "success": false,
-  "message": "The authorization code is invalid or has expired",
-  "data": null,
-  "errors": {}
-}
-```
-
-Common errors:
-
-- Invalid client credentials
-- Invalid or expired authorization code
-- Requested scope is invalid
-- Access token is missing, invalid, or expired
-
-See the [Error Handling guide](/docs/errors) for more details.
-
-## Testing Authentication
-
-You can test the authentication flow using:
-
-1. **Postman**: Import our Postman collection and use the OAuth 2.0 helper
-2. **cURL**: Use the examples above
-3. **API Reference**: Try the endpoints in the <a href="/api-reference" target="_blank">API Reference</a>
-
-## Next Steps
-
-- Explore the <a href="/api-reference" target="_blank">API Reference</a> to see all available endpoints
-- Learn about [Common Workflows](/docs/common-workflows) for typical integration patterns
-- Review [Error Handling](/docs/errors) to handle errors properly
+- Make your first request with [Getting Started](/docs/getting-started)
+- Explore the <a href="/api-reference" target="_blank">API Reference</a>
+- Review [Error Handling](/docs/errors) for common failure modes
