@@ -9,7 +9,7 @@ This is the **Selva Finance API Documentation** site built with:
 - **Docusaurus 3.x** - Static site generator for documentation
 - **Scalar** - Interactive OpenAPI documentation
 - **TypeScript/React** - Custom components
-- **Node.js 20+** - Runtime requirement
+- **Node.js 22+** - Runtime requirement
 
 ## Project Structure
 
