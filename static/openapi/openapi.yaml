@@ -745,6 +745,23 @@ paths:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: Account retrieved successfully
+                data:
+                  id: 45a03920-6826-48cc-8141-46995bdbd201
+                  document_number: '3918734189'
+                  document_type: 3
+                  iban: CR09037010700634070547
+                  origin_code: special_savings
+                  balance:
+                    value: 10000000
+                    currency: CRC
+                    formatted: 100,000.00 CRC
+                  owner_name: Alice Johnson
+                  status: active
+                  created_at: '2026-04-13T05:42:59.000000Z'
+                  updated_at: '2026-04-13T05:42:59.000000Z'
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '403':
@@ -1951,7 +1968,7 @@ components:
         document_number:
           type: string
         document_type:
-          type: string
+          type: integer
         iban:
           type: string
         origin_code:
@@ -1974,7 +1991,7 @@ components:
         owner_name:
           type: string
         status:
-          $ref: '#/components/schemas/PaymentStatus'
+          $ref: '#/components/schemas/AccountStatus'
         created_at:
           type: string
         updated_at:
