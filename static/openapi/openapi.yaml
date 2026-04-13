@@ -52,12 +52,6 @@ paths:
             schema:
               $ref: '#/components/schemas/SendPaymentRequest'
       responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: string
         '201':
           description: ''
           content:
@@ -886,12 +880,6 @@ paths:
             schema:
               $ref: '#/components/schemas/CreateAccountRequest'
       responses:
-        '200':
-          description: ''
-          content:
-            application/json:
-              schema:
-                type: string
         '201':
           description: ''
           content:
@@ -910,6 +898,15 @@ paths:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: Account created successfully
+                data:
+                  id: 45a03920-6826-48cc-8141-46995bdbd201
+                  iban: CR09037010700634070547
+                  currency: CRC
+                  created_at: '2026-04-13T05:42:59.000000Z'
+                  updated_at: '2026-04-13T05:42:59.000000Z'
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '422':
