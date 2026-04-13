@@ -31,7 +31,6 @@ const columns = [
     links: [
       { label: 'API reference', to: '/api-reference' },
       { label: 'Release notes', to: '/docs/release-notes' },
-      { label: 'MCP (Coming soon)', to: '/docs/mcp' },
     ],
   },
   {
@@ -39,7 +38,6 @@ const columns = [
     links: [
       { label: 'Getting started', to: '/docs/getting-started' },
       { label: 'Common workflows', to: '/docs/common-workflows' },
-      { label: 'Authentication', to: '/docs/authentication' },
     ],
   },
   {

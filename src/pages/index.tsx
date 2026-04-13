@@ -75,9 +75,9 @@ const highlights = [
 
 const modules = [
   {
-    title: 'Authentication',
-    body: 'Exchange client credentials for scoped tokens with predictable expiry.',
-    link: '/docs/authentication',
+    title: 'Webhooks',
+    body: 'Subscribe to events and manage delivery controls programmatically.',
+    link: '/docs/common-workflows',
   },
   {
     title: 'Payments',
@@ -99,8 +99,7 @@ const modules = [
 const workflows = [
   {
     title: 'Accept a payment',
-    detail:
-      'Create a charge, confirm, and capture with idempotency guarantees.',
+    detail: 'Create a payment and capture with idempotency guarantees.',
     link: '/docs/getting-started',
   },
   {
@@ -110,9 +109,10 @@ const workflows = [
     link: '/docs/common-workflows',
   },
   {
-    title: 'Reconcile settlements',
-    detail: 'Match payouts to ledger entries and export finance-ready reports.',
-    link: '/docs/errors',
+    title: 'Track payment history',
+    detail:
+      'Review transfer history, payment status, and account balances for reconciliation workflows.',
+    link: '/docs/common-workflows',
   },
 ];
 

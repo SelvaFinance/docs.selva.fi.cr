@@ -6,6 +6,8 @@ sidebar_position: 4
 
 The Selva API provides a comprehensive set of endpoints for payment processing, account management, and webhook subscriptions.
 
+Authentication is managed through the SELVA dashboard. For authenticated endpoints, include the bearer token issued for your environment in the `Authorization` header.
+
 ## Interactive API Documentation
 
 Explore all available endpoints, try requests, and view responses using our interactive API documentation powered by Scalar.
@@ -16,22 +18,12 @@ The API reference is automatically generated from our OpenAPI specification and 
 
 ## Endpoint Categories
 
-### Authentication
-
-- `GET /oauth/authorize` - Initiate OAuth authorization flow
-- `POST /oauth/token` - Exchange authorization code for access token
-
 ### Accounts
 
 - `GET /api/accounts` - List all accounts
 - `POST /api/accounts` - Create a new account
-- `GET /api/accounts/information` - Get account information
-- `GET /api/accounts/{identifier}/information` - Get account information by identifier
+- `GET /api/accounts/{id}` - Get account details
 - `GET /api/accounts/{id}/balance` - Get account balance
-- `GET /api/accounts/{id}/details` - Get account details
-- `GET /api/accounts/{id}/movements` - Get account movements
-- `GET /api/accounts/{id}/kyc` - Get KYC status
-- `GET /api/accounts/{id}/transactions/{transactionCode}` - Get transaction by code
 
 ### Payments
 
@@ -39,11 +31,12 @@ The API reference is automatically generated from our OpenAPI specification and 
 - `POST /api/payments/validate` - Validate payment details
 - [`GET /api/payments/history`](/api-reference#tag/payments/get/api/payments/history) - Get payment history
 - [`GET /api/payments/{id}`](/api-reference#tag/payments/get/api/payments/%7Bid%7D) - Get payment by ID
+- `GET /api/payments/service-status` - Check payment rail availability
 
 ### Verification
 
-- `GET /api/phone/information` - Get phone number information
-- `GET /api/iban/information` - Get IBAN information
+- `GET /api/phone/information/{phone}` - Get phone number information
+- `GET /api/iban/information/{iban}` - Get IBAN information
 
 ### Webhooks
 
@@ -51,11 +44,8 @@ The API reference is automatically generated from our OpenAPI specification and 
 - `POST /api/webhooks/subscriptions` - Create webhook subscription
 - `GET /api/webhooks/subscriptions/{id}` - Get webhook subscription
 - `DELETE /api/webhooks/subscriptions/{id}` - Delete webhook subscription
-- `POST /api/NotifyIncomingTransfers` - Incoming transfer webhook
-
-### System
-
-- `GET /api/IsServiceAvailable` - Check service availability
+- `POST /api/webhooks/subscriptions/{id}/suspend` - Suspend webhook delivery
+- `POST /api/webhooks/subscriptions/{id}/resume` - Resume webhook delivery
 
 ## Request Format
 
@@ -63,7 +53,7 @@ All API requests use:
 
 - **Content-Type**: `application/json` for POST requests
 - **Authorization**: `Bearer {access_token}` header for authenticated requests
-- **Idempotency**: Include `X-Idempotency-Key` header for payment requests
+- **Idempotency**: Include `X-Idempotency-Key` header for `POST /api/payments`
 
 ## Response Format
 
@@ -89,21 +79,19 @@ API rate limits are applied per client and endpoint. Rate limit information is i
 
 ## Pagination
 
-List endpoints support pagination using `limit` and `offset` parameters:
+List endpoints support pagination using `page` and `per_page` parameters:
 
 ```
-GET /api/payments/history?limit=20&offset=0
+GET /api/payments/history?page=1&per_page=20
 ```
 
 Response includes pagination metadata:
 
 ```json
 {
-  "data": [...],
-  "limit": 20,
-  "offset": 0,
-  "total": 100,
-  "has_more": true
+  "success": true,
+  "message": "Payment history retrieved successfully",
+  "data": []
 }
 ```
 
@@ -117,17 +105,18 @@ All errors follow a consistent format:
 
 ```json
 {
-  "error": "error_code",
+  "success": false,
   "message": "Human-readable error message",
-  "details": {}
+  "data": null,
+  "errors": {}
 }
 ```
 
-See the [Error Handling guide](/docs/errors) for detailed error codes and handling strategies.
+See the [Error Handling guide](/docs/errors) for detailed error examples and handling strategies.
 
 ## OpenAPI Specification
 
-Download the complete OpenAPI 3.0 specification:
+Download the complete OpenAPI 3.1 specification:
 
 - [openapi.yaml](/openapi/openapi.yaml)
 
