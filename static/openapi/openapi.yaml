@@ -7,8 +7,8 @@ info:
 
     Authenticated endpoints use Passport bearer tokens. Internal KINDO callback routes are intentionally excluded.
 servers:
-  - url: https://dev.selva.fi.cr
-  - url: https://selva.fi.cr
+  - url: https://staging.selva.fi.cr
+  - url: https://app.selva.fi.cr
 paths:
   /api/user:
     get:
