@@ -1144,6 +1144,14 @@ paths:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: Balance retrieved successfully
+                data:
+                  iban: CR19037010600733756399
+                  currency: CRC
+                  balance: 519815
+                  formatted: 5,198.15 CRC
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '403':
