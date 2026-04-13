@@ -13,7 +13,7 @@ without initiating a transfer. It's worth doing this step on every
 payment to surface errors early.
 
 Once validated, create the payment with `POST /payments`. Always include
-an `X-Idempotency-Key` header — Selva uses it to deduplicate requests,
+an `X-Idempotency-Key` header — SELVA uses it to deduplicate requests,
 so if a network failure causes you to retry, you won't process the same
 payment twice.
 
@@ -42,8 +42,8 @@ confirm they're sending money to the right person.
 ## Setting up webhooks
 
 Register a URL to receive events with `POST /webhooks/subscriptions`.
-Each subscription accepts a signing secret — Selva signs every outgoing
-payload with it so you can verify the request came from Selva and
+Each subscription accepts a signing secret — SELVA signs every outgoing
+payload with it so you can verify the request came from SELVA and
 wasn't tampered with.
 
 Subscriptions can be suspended and resumed independently via
@@ -56,10 +56,10 @@ configuration.
 
 `4xx` responses indicate a problem with your request and are not worth
 retrying as-is. Fix the request first. `5xx` responses indicate a
-problem on Selva's side — retry these with exponential backoff.
+problem on SELVA's side — retry these with exponential backoff.
 
 For payment creation specifically, always retry with the same
-`X-Idempotency-Key`. Selva will return the result of the original
+`X-Idempotency-Key`. SELVA will return the result of the original
 request rather than creating a duplicate.
 
 See the [error reference](/docs/errors) for the full list of error
