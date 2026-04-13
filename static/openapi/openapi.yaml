@@ -397,11 +397,9 @@ paths:
         - name: recipient_document_number
           in: query
           schema:
-            type:
-              - string
-              - 'null'
-            pattern: ^(CR\d{20}|(506)?[2678]\d{7}|((0[1-9]|[1-9])\d{8}|1\d{11}|5\d{11}|3\d{9}))$
-            maxLength: 255
+            anyOf:
+              - $ref: '#/components/schemas/DocumentIdentifier'
+              - type: 'null'
       responses:
         '200':
           description: ''
@@ -1897,9 +1895,10 @@ components:
       description: Costa Rican national ID (Cédula)
       pattern: ^\d{9,10}$
       example: '0123456789'
-    CostaRicaNationalIdentifier:
+    DocumentIdentifier:
       type: string
-      description: Costa Rican national identifier (Cédula, DIMEX, or Legal Entity)
+      description: Raw document identifier. Accepts national ID, DIMEX, government ID, legal entity ID, autonomous institution ID, DIDI, or passport.
+      pattern: ^((0[1-9]|[1-9])\d{8}|1\d{11}|2\d{9}|3\d{9}|4\d{9}|5\d{11}|[A-Za-z0-9]{6,19})$
       example: '111090807'
     PaymentStatus:
       type: string
