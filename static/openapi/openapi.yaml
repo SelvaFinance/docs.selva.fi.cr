@@ -156,11 +156,13 @@ paths:
                           value:
                             type: integer
                             description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
-                            example: 1000
+                            example: 100
                           currency:
                             type: string
+                            example: CRC
                           formatted:
                             type: string
+                            example: 1.00 CRC
                         required:
                           - value
                           - currency
@@ -172,6 +174,15 @@ paths:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: Payment data is valid
+                data:
+                  channel: pin
+                  fee:
+                    value: 100
+                    currency: CRC
+                    formatted: 1.00 CRC
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '403':
