@@ -34,6 +34,16 @@ paths:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: User retrieved successfully
+                data:
+                  id: 19acabe8-ce4d-4fc8-9279-6eedf39995e6
+                  name: Alice Johnson
+                  email: alice.johnson@example.com
+                  email_verified_at: null
+                  created_at: '2026-02-04T19:34:16.000000Z'
+                  updated_at: '2026-02-04T19:44:49.000000Z'
         '401':
           $ref: '#/components/responses/AuthenticationException'
       summary: Get User
@@ -63,6 +73,7 @@ paths:
                     type: boolean
                   message:
                     type: string
+                    const: Payment initiated successfully
                   data:
                     type: object
                     properties:
@@ -70,8 +81,20 @@ paths:
                         type: string
                       channel:
                         type: string
+                        enum:
+                          - pin
+                          - sinpe_movil
                       status:
                         type: string
+                        enum:
+                          - pending
+                          - processing
+                          - completed
+                          - failed
+                          - timeout
+                          - service_unavailable
+                          - validation_failed
+                          - system_error
                       channel_reference:
                         type: string
                     required:
@@ -83,6 +106,14 @@ paths:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: Payment initiated successfully
+                data:
+                  id: 7b200345-c922-476e-bbc4-e2a143165ca6
+                  channel: pin
+                  status: pending
+                  channel_reference: '2026041300001400641289793'
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '403':
@@ -1545,13 +1576,19 @@ paths:
                       url:
                         type: string
                       events:
-                        type: string
+                        type: array
+                        items:
+                          type: string
                       max_attempts:
-                        type: string
+                        type: integer
                       timeout:
-                        type: string
+                        type: integer
                       headers:
-                        type: string
+                        type:
+                          - object
+                          - 'null'
+                        additionalProperties:
+                          type: string
                       created_at:
                         type: string
                       updated_at:
@@ -1569,6 +1606,24 @@ paths:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: Webhook subscription deleted successfully
+                data:
+                  id: a20239e2-f4d6-4a93-9fa1-7dd0534e028e
+                  url: https://webhook.example.com/selva-events
+                  events:
+                    - payment.created
+                    - payment.processing
+                    - payment.completed
+                    - payment.failed
+                    - transaction.received
+                  max_attempts: 10
+                  timeout: 30
+                  headers:
+                    X-Custom-Header: value
+                  created_at: '2026-04-13T06:57:01.000000Z'
+                  updated_at: '2026-04-13T07:25:42.000000Z'
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '404':
@@ -2105,9 +2160,9 @@ paths:
                       id:
                         type: string
                       active:
-                        type: string
+                        type: boolean
                       suspended_webhooks_count:
-                        type: string
+                        type: integer
                       retry_job_dispatched:
                         type: boolean
                     required:
@@ -2119,6 +2174,14 @@ paths:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: Webhook subscription resumed successfully
+                data:
+                  id: a20239e2-f4d6-4a93-9fa1-7dd0534e028e
+                  active: true
+                  suspended_webhooks_count: 0
+                  retry_job_dispatched: true
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '404':
@@ -2607,7 +2670,9 @@ components:
         email:
           type: string
         email_verified_at:
-          type: string
+          type:
+            - string
+            - 'null'
         created_at:
           type: string
         updated_at:
