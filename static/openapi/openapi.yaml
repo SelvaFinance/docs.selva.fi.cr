@@ -269,6 +269,42 @@ paths:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: Payment status retrieved successfully
+                data:
+                  id: 4aebf342-8e69-4712-8cbc-77326bf19660
+                  idempotency_key: f80fa916-f435-4003-a772-81b03d5c4162
+                  cgp_ref_number: 10739
+                  channel_reference: '2026041200001915461001586'
+                  sinpe_reference: '2026041237022010000107394'
+                  transfer_type: debit
+                  status: completed
+                  amount:
+                    value: 10000
+                    currency: CRC
+                    formatted: 100.00 CRC
+                  fee:
+                    value: 100
+                    currency: CRC
+                    formatted: 1.00 CRC
+                  payer:
+                    iban: CR41037010700577264928
+                    document_number: '3918734189'
+                    document_type: 3
+                    name: Alice Johnson
+                  payee:
+                    document_number: '0304930258'
+                    document_type: 0
+                    name: Bob Smith
+                    iban: CR27010400128230020117
+                  description: null
+                  reference: null
+                  error_message: null
+                  created_at: '2026-04-13T04:26:48.000000Z'
+                  submitted_at: '2026-04-13T04:26:50.000000Z'
+                  completed_at: '2026-04-13T04:26:58.000000Z'
+                  channel: pin
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '403':
@@ -1811,23 +1847,26 @@ components:
         idempotency_key:
           type: string
         cgp_ref_number:
-          type: string
+          type: integer
         channel_reference:
           type: string
         sinpe_reference:
           type: string
         transfer_type:
           type: string
-          description: Details
+          description: Transfer direction.
+          enum:
+            - credit
+            - debit
         status:
           type: string
         amount:
           type: object
           properties:
             value:
-              type: string
+              type: integer
               description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
-              example: '1000'
+              example: 10000
             currency:
               type: string
             formatted:
@@ -1842,9 +1881,9 @@ components:
             - 'null'
           properties:
             value:
-              type: string
+              type: integer
               description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
-              example: '1000'
+              example: 100
             currency:
               type: string
             formatted:
@@ -1862,7 +1901,7 @@ components:
             document_number:
               type: string
             document_type:
-              type: string
+              type: integer
             name:
               type: string
           required:
@@ -1876,7 +1915,7 @@ components:
             document_number:
               type: string
             document_type:
-              type: string
+              type: integer
             name:
               type: string
             phone_number:
@@ -1887,15 +1926,20 @@ components:
             - document_number
             - document_type
             - name
-            - phone_number
             - iban
         description:
-          type: string
+          type:
+            - string
+            - 'null'
           description: Messages
         reference:
-          type: string
+          type:
+            - string
+            - 'null'
         error_message:
-          type: string
+          type:
+            - string
+            - 'null'
         created_at:
           type: string
           description: Dates
@@ -1905,6 +1949,10 @@ components:
           type: string
         channel:
           type: string
+          description: Payment channel.
+          enum:
+            - pin
+            - sinpe_movil
       required:
         - id
         - idempotency_key
