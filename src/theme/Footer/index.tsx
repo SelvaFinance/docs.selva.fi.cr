@@ -31,7 +31,6 @@ const columns = [
     links: [
       { label: 'API reference', to: '/api-reference' },
       { label: 'Release notes', to: '/docs/release-notes' },
-      { label: 'MCP (Coming soon)', to: '/docs/mcp' },
     ],
   },
   {

@@ -15,10 +15,6 @@
     "message": "API Reference",
     "description": "Navbar item with label API Reference"
   },
-  "item.label.MCP (Coming soon)": {
-    "message": "MCP (Coming soon)",
-    "description": "Navbar item with label MCP (Coming soon)"
-  },
   "item.label.Release Notes": {
     "message": "Release Notes",
     "description": "Navbar item with label Release Notes"

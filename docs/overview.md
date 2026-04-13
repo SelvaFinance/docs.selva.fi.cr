@@ -2,86 +2,79 @@
 sidebar_position: 1
 ---
 
-# API Overview
+# The SELVA API
 
-Welcome to the Selva API documentation. The Selva API provides comprehensive financial services for building payment and banking applications.
+The SELVA API is organized around REST. It accepts JSON request bodies,
+returns JSON responses, and uses standard HTTP status codes and verbs.
 
-## What is Selva?
+All requests must be made over HTTPS to one of these base URLs:
 
-Selva (Soluciones Electrónicas Locales de Valor) is a financial services platform that enables businesses to integrate payment processing, account management, and banking operations into their applications.
-
-## Key Features
-
-### Payment Processing
-
-- Send payments via PIN (IBAN) or SINPE Móvil (phone)
-- Validate payment payloads before submitting (`POST /api/payments/validate`)
-- Initiate payments with idempotency protection (`POST /api/payments` with `X-Idempotency-Key`)
-- Retrieve payment history and specific payment status
-- Check payment rail availability (`GET /api/payments/service-status`)
-
-### Account Management
-
-- Create multi-currency accounts
-- List, view, and fetch balances/details for accounts
-- Retrieve account movements and specific transfer details
-- KYC is handled at the user level (see KYC & Onboarding)
-
-### KYC & Onboarding
-
-- Track KYC status (`GET /api/kyc/status`)
-- Create/update KYC applications (`GET/POST /api/kyc/application`)
-- Submit applications and upload documents (`POST /api/kyc/submit`, `POST /api/kyc/document`)
-
-### Verification Services
-
-- Validate SINPE phone ownership (`GET /api/phone/information`)
-- Validate IBAN and account holder data (`GET /api/iban/information`)
-
-### Webhooks
-
-- Manage subscriptions (list/get/create/delete)
-- Control delivery with suspend/resume actions and per-subscription secrets
-- Receive payment and account events in real time
-
-## API Architecture
-
-The Selva API follows RESTful principles and uses standard HTTP methods:
-
-- **GET** - Retrieve resources
-- **POST** - Create resources or perform actions
-- **DELETE** - Remove resources
-
-All API requests use JSON for request and response bodies, and require OAuth 2.0 authentication.
-
-## Base URLs
-
-- **Development**: `https://dev.selva.fi.cr/api`
-- **Production**: `https://api.selva.fi.cr/api` (contact support for access)
-- **Local**: `http://localhost:8000/api` (for local development)
+- **Staging** — [https://staging.selva.fi.cr/api](https://staging.SELVA.fi.cr/api)
+- **Production** — [https://app.selva.fi.cr/api](https://app.SELVA.fi.cr/api)
 
 ## Authentication
 
-The API uses OAuth 2.0 for authentication. You'll need to:
+The API uses OAuth 2.0. Every request must include a valid access token
+in the `Authorization` header:
 
-1. Obtain client credentials from the Selva dashboard
-2. Implement the OAuth 2.0 authorization code flow
-3. Include access tokens in the `Authorization` header
+```
+Authorization: Bearer <token>
+```
 
-See the [Authentication guide](/docs/authentication) for detailed instructions.
+Obtain your client credentials from the SELVA dashboard, then follow
+the [OAuth 2.0 authorization code flow](/docs/authentication) to
+exchange them for an access token.
 
-## Rate Limits
+## Payments
 
-No explicit per-endpoint rate limits are enforced yet. Payments rely on idempotency keys to prevent duplicates; contact support for production quota details.
+Payments in SELVA move money via two rails: **PIN** (identified by an
+IBAN) and **SINPE Móvil** (identified by a phone number). Before
+submitting a payment, you can validate its payload with
+`POST /payments/validate` to catch errors early without initiating a
+transfer.
+
+When creating a payment, pass an `X-Idempotency-Key` header to safely
+retry requests without risk of double-processing. SELVA uses this key
+to return the result of the original request if the same key is seen
+again.
+
+Use `GET /payments/service-status` to check whether the payment rails
+are currently operational before submitting.
+
+## Accounts
+
+Accounts hold balances in either **CRC** or **USD**. Each account has a
+history of movements — individual credit and debit entries — that you
+can paginate through and inspect individually.
+
+## Verification
+
+Before initiating a payment, you can verify the destination. Use
+`GET /phone/information` to confirm that a phone number is registered
+for SINPE Móvil, and `GET /iban/information` to validate an IBAN and
+retrieve the account holder's name.
+
+## Webhooks
+
+SELVA delivers real-time events to your server for payment and account
+activity. Each webhook subscription can have its own signing secret,
+which SELVA uses to sign the payload so you can verify its authenticity
+on receipt.
+
+Subscriptions can be suspended and resumed independently — useful for
+taking a specific endpoint offline without deleting the subscription.
+
+## Errors
+
+The API uses conventional HTTP response codes. `2xx` indicates success.
+`4xx` indicates a problem with the request — invalid parameters, missing
+fields, or a failed business rule. `5xx` indicates a problem on SELVA's
+side.
+
+Error responses include a machine-readable `code` field and a
+human-readable `message`. See the [error reference](/docs/errors) for
+the full list of error codes.
 
 ## Support
 
-For questions, issues, or feature requests:
-
-- **Email**: support@selva.fi.cr
-- **Documentation**: This site
-- **Status**: Check payment rail availability at `GET /api/payments/service-status`
-
-## Getting Started
-
-Ready to start integrating? Check out our [Getting Started guide](/docs/getting-started) to make your first API call.
+Reach us at support@selva.fi.cr.

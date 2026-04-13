@@ -139,11 +139,6 @@ const config = {
             label: 'Developer Guide',
           },
           {
-            to: '/docs/mcp',
-            label: 'MCP (Coming soon)',
-            position: 'left',
-          },
-          {
             to: '/docs/release-notes',
             label: 'Release Notes',
             position: 'left',
