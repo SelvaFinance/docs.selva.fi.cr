@@ -1956,7 +1956,7 @@ paths:
                       id:
                         type: string
                       active:
-                        type: string
+                        type: boolean
                       suspended_at:
                         type: string
                       suspended_reason:
@@ -1970,6 +1970,14 @@ paths:
                   - success
                   - message
                   - data
+              example:
+                success: true
+                message: Webhook subscription suspended successfully
+                data:
+                  id: a20239e2-f4d6-4a93-9fa1-7dd0534e028e
+                  active: false
+                  suspended_at: '2026-04-13T07:21:51.000000Z'
+                  suspended_reason: Manual suspension
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '404':
