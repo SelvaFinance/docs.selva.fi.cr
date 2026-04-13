@@ -14,16 +14,16 @@ All requests must be made over HTTPS to one of these base URLs:
 
 ## Authentication
 
-The API uses OAuth 2.0. Every request must include a valid access token
-in the `Authorization` header:
+SELVA manages API access through the dashboard. Every request must
+include a valid access token in the `Authorization` header:
 
 ```
 Authorization: Bearer <token>
 ```
 
-Obtain your client credentials from the SELVA dashboard, then follow
-the [OAuth 2.0 authorization code flow](/docs/authentication) to
-exchange them for an access token.
+Provision access in the SELVA dashboard, then use the issued bearer
+token in your requests. See [Authentication](/docs/authentication) for
+details.
 
 ## Payments
 
