@@ -155,6 +155,8 @@ paths:
                         properties:
                           value:
                             type: integer
+                            description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
+                            example: 1000
                           currency:
                             type: string
                           formatted:
@@ -1706,6 +1708,8 @@ components:
           properties:
             value:
               type: integer
+              description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
+              example: 1000
             currency:
               type: string
             formatted:
@@ -1763,6 +1767,8 @@ components:
           type: string
         balance:
           type: integer
+          description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
+          example: 1000
         formatted:
           type: string
       required:
@@ -1809,6 +1815,8 @@ components:
           properties:
             value:
               type: string
+              description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
+              example: '1000'
             currency:
               type: string
             formatted:
@@ -1824,6 +1832,8 @@ components:
           properties:
             value:
               type: string
+              description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
+              example: '1000'
             currency:
               type: string
             formatted:
@@ -1928,8 +1938,10 @@ components:
           maxLength: 255
         amount:
           type: integer
+          description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
           minimum: 1
           maximum: 500000000
+          example: 1000
         reference:
           type:
             - string
