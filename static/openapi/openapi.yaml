@@ -784,7 +784,6 @@ paths:
                   document_number: '3918734189'
                   document_type: 3
                   iban: CR09037010700634070547
-                  origin_code: special_savings
                   balance:
                     value: 10000000
                     currency: CRC
@@ -983,7 +982,6 @@ paths:
                       document_number: '3918734189'
                       document_type: 3
                       iban: CR09037010700634070547
-                      origin_code: special_savings
                       balance:
                         value: 0
                         currency: CRC
@@ -996,7 +994,6 @@ paths:
                       document_number: '3918734189'
                       document_type: 3
                       iban: CR66037020700582638942
-                      origin_code: special_savings
                       balance:
                         value: 300
                         currency: USD
@@ -1009,7 +1006,6 @@ paths:
                       document_number: '3918734189'
                       document_type: 3
                       iban: CR41037010700577264928
-                      origin_code: special_savings
                       balance:
                         value: 41408900
                         currency: CRC
@@ -1022,7 +1018,6 @@ paths:
                       document_number: '3918734189'
                       document_type: 3
                       iban: CR79037020600884970835
-                      origin_code: special_savings
                       balance:
                         value: 6100
                         currency: USD
@@ -1035,7 +1030,6 @@ paths:
                       document_number: '3918734189'
                       document_type: 3
                       iban: CR19037010600733756399
-                      origin_code: special_savings
                       balance:
                         value: 519815
                         currency: CRC
@@ -1476,7 +1470,6 @@ paths:
                 message: Webhook subscription retrieved successfully
                 data:
                   id: a20239e2-f4d6-4a93-9fa1-7dd0534e028e
-                  user_id: 19acabe8-ce4d-4fc8-9279-6eedf39995e6
                   url: https://webhook.example.com/selva-events
                   events:
                     - payment.created
@@ -1830,7 +1823,6 @@ paths:
                   current_page: 1
                   data:
                     - id: a20239e2-f4d6-4a93-9fa1-7dd0534e028e
-                      user_id: 19acabe8-ce4d-4fc8-9279-6eedf39995e6
                       url: https://webhook.example.com/selva-events
                       events:
                         - payment.created
@@ -1936,7 +1928,6 @@ paths:
                   headers:
                     X-Custom-Header: value
                   active: true
-                  user_id: 19acabe8-ce4d-4fc8-9279-6eedf39995e6
                   id: a20239e2-f4d6-4a93-9fa1-7dd0534e028e
                   updated_at: '2026-04-01T00:10:00.000000Z'
                   created_at: '2026-04-01T00:00:00.000000Z'
@@ -2357,8 +2348,6 @@ components:
           type: integer
         iban:
           type: string
-        origin_code:
-          type: string
         balance:
           type: object
           properties:
@@ -2387,7 +2376,6 @@ components:
         - document_number
         - document_type
         - iban
-        - origin_code
         - balance
         - owner_name
         - status
@@ -2708,8 +2696,6 @@ components:
             type: string
         active:
           type: boolean
-        user_id:
-          type: string
         id:
           type: string
         updated_at:
@@ -2726,7 +2712,6 @@ components:
         - timeout
         - headers
         - active
-        - user_id
         - id
         - updated_at
         - created_at
@@ -2735,8 +2720,6 @@ components:
       type: object
       properties:
         id:
-          type: string
-        user_id:
           type: string
         url:
           type: string
@@ -2782,7 +2765,6 @@ components:
             - 'null'
       required:
         - id
-        - user_id
         - url
         - events
         - active
