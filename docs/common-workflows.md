@@ -4,84 +4,63 @@ sidebar_position: 5
 
 # Common Workflows
 
-This guide covers common integration patterns and workflows for the Selva API.
+## Processing a payment
 
-## Workflow 1: Payment Processing
+Before submitting a payment, validate the payload with
+`POST /payments/validate`. This returns the detected payment type, an
+estimated fee, and whether the target rail is currently available —
+without initiating a transfer. It's worth doing this step on every
+payment to surface errors early.
 
-Complete flow for processing a payment from validation to completion.
+Once validated, create the payment with `POST /payments`. Always include
+an `X-Idempotency-Key` header — Selva uses it to deduplicate requests,
+so if a network failure causes you to retry, you won't process the same
+payment twice.
 
-### Step 1: Validate Payment
+Payments are processed asynchronously. Poll `GET /payments/{id}` to
+check the current state, or set up a webhook subscription to receive
+status updates without polling.
 
-Use `POST /api/payments/validate` to pre-check payloads and return payment type, fee estimate, and service availability. See [Validate Payment](/api-reference#tag/payments/post/api/payments/validate).
+## Managing accounts
 
-### Step 2: Create Payment
+Create an account with `POST /accounts`, specifying either `CRC` or
+`USD` as the currency. Once created, use `GET /accounts/{id}/balance`
+to retrieve the current balance and `GET /accounts/{id}/movements` to
+page through the transaction history. Individual movements can be
+inspected at `GET /accounts/{id}/movements/{movementId}`.
 
-Send payments with idempotency protection via `POST /api/payments` (requires `X-Idempotency-Key` header). See [Create Payment](/api-reference#tag/payments/post/api/payments).
+## Verifying a destination
 
-### Step 3: Poll for Status
+Before sending a payment, you can confirm the destination is valid.
+`GET /iban/information/{iban}` returns the account holder's name for a
+given IBAN. `GET /phone/information/{phone}` confirms whether a phone
+number is registered for SINPE Móvil and returns the holder's name.
 
-Retrieve current state with `GET /api/payments/{paymentId}`. For history listings, use `GET /api/payments/history`. See [Payment Status](/api-reference#tag/payments/get/api/payments/%7Bid%7D) and [Payment History](/api-reference#tag/payments/get/api/payments/history).
+Doing this before creating a payment gives your users a chance to
+confirm they're sending money to the right person.
 
-## Workflow 2: Account Management
+## Setting up webhooks
 
-Complete flow for managing accounts and viewing transactions.
+Register a URL to receive events with `POST /webhooks/subscriptions`.
+Each subscription accepts a signing secret — Selva signs every outgoing
+payload with it so you can verify the request came from Selva and
+wasn't tampered with.
 
-### Create Account
+Subscriptions can be suspended and resumed independently via
+`POST /webhooks/subscriptions/{id}/suspend` and
+`POST /webhooks/subscriptions/{id}/resume`. This lets you take an
+endpoint offline temporarily without losing the subscription
+configuration.
 
-`POST /api/accounts` (scope: `manage-accounts`). See [Create Account](/api-reference#tag/accounts/post/api/accounts).
+## Handling errors
 
-### Get Account Balance
+`4xx` responses indicate a problem with your request and are not worth
+retrying as-is. Fix the request first. `5xx` responses indicate a
+problem on Selva's side — retry these with exponential backoff.
 
-`GET /api/accounts/{id}/balance` (scope: `read-accounts`). See [Account Balance](/api-reference#tag/accounts/get/api/accounts/%7Bid%7D/balance).
+For payment creation specifically, always retry with the same
+`X-Idempotency-Key`. Selva will return the result of the original
+request rather than creating a duplicate.
 
-### View Account Movements
-
-`GET /api/accounts/{id}/transfers` with date filters (scope: `read-accounts`). For a specific transfer use `GET /api/accounts/{id}/transfers/{transferId}`. See [Account Transfers](/api-reference#tag/accounts/get/api/accounts/%7Bid%7D/transfers) and [Transfer Detail](/api-reference#tag/accounts/get/api/accounts/%7Bid%7D/transfers/%7BtransferId%7D).
-
-## Workflow 3: Webhook Integration
-
-Set up webhooks to receive real-time notifications.
-
-### Step 1: Create Webhook Subscription
-
-`POST /api/webhooks/subscriptions` to register a URL, events, secret, retry policy, and headers. See [Create Webhook Subscription](/api-reference#tag/webhooks/post/api/webhooks/subscriptions).
-
-### Step 2: Manage and Inspect Subscriptions
-
-`GET /api/webhooks/subscriptions` (list), `GET /api/webhooks/subscriptions/{id}` (details), `DELETE /api/webhooks/subscriptions/{id}` (delete), `POST /api/webhooks/subscriptions/{id}/suspend|resume` (delivery controls). See [List Subscriptions](/api-reference#tag/webhooks/get/api/webhooks/subscriptions), [Subscription Detail](/api-reference#tag/webhooks/get/api/webhooks/subscriptions/%7Bid%7D), [Delete Subscription](/api-reference#tag/webhooks/delete/api/webhooks/subscriptions/%7Bid%7D), [Suspend](/api-reference#tag/webhooks/post/api/webhooks/subscriptions/%7Bid%7D/suspend), and [Resume](/api-reference#tag/webhooks/post/api/webhooks/subscriptions/%7Bid%7D/resume).
-
-### Step 3: Handle Incoming Events
-
-Implement your `/webhooks` endpoint to verify signatures and process events published from the subscription. See [Webhook Event Payloads](/api-reference#tag/webhooks) and **Notify Incoming Transfers** for Kindo/Prosoft notifications.
-
-## Workflow 4: Verification Services
-
-Verify account information before processing payments.
-
-### Verify IBAN
-
-`GET /api/iban/information` to retrieve holder data and normalize IBANs. See [IBAN Information](/api-reference#tag/verification/get/api/iban/information).
-
-### Verify Phone Number
-
-`GET /api/phone/information` (SINPE lookup) to confirm ownership and registration. See [Phone Information](/api-reference#tag/verification/get/api/phone/information).
-
-## Workflow 5: Error Handling and Retries
-
-Implement robust error handling with exponential backoff. Use idempotency for payments, treat 4xx as non-retriable, and back off on 5xx. See [Error Handling](/api-reference#error-handling) for status codes and formats, and [Create Payment](/api-reference#tag/payments/post/api/payments) for idempotency behavior.
-
-## Best Practices
-
-1. **Always validate payments** before creating them
-2. **Use idempotency keys** for payment requests
-3. **Implement webhook signature verification** for security
-4. **Handle rate limits** with exponential backoff
-5. **Store access tokens securely** and refresh them before expiration
-6. **Log all API calls** for debugging and auditing
-7. **Handle errors gracefully** with user-friendly messages
-
-## Next Steps
-
-- Review the <a href="/api-reference" target="_blank">API Reference</a> for all available endpoints
-- Check the [Error Handling guide](/docs/errors) for error response examples and strategies
-- See [Authentication](/docs/authentication) for token management
+See the [error reference](/docs/errors) for the full list of error
+codes and their meanings.
