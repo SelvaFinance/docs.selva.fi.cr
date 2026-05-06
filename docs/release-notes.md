@@ -7,6 +7,16 @@ title: Release Notes
 
 Updates to the Selva API platform, including payments, account management, and more.
 
+### May 6, 2026
+
+#### Documentation Updates
+
+- Added incoming webhook notification payload examples for `payment.created`, `payment.processing`, `payment.completed`, `payment.failed`, and `transaction.received`.
+- Documented `fee` behavior in payment webhook notifications: `fee` is `null` for `payment.created` and `payment.processing`, and defined for `payment.completed` once final processing cost is known.
+- Added separate `transaction.received` examples for PIN and SINPE Móvil incoming credits.
+- Clarified that SINPE Móvil incoming transaction origins can have `payer.iban: null`, and origin `payer.phone_number` can also be `null` when not provided by the upstream response.
+- Added OpenAPI webhook schemas and examples for incoming webhook delivery payloads.
+
 ### April 10, 2026
 
 #### Breaking Changes

@@ -2269,6 +2269,238 @@ paths:
                   - errors
       security:
         - BearerAuth: []
+webhooks:
+  selvaEvents:
+    post:
+      summary: Incoming Webhook Notification
+      description: SELVA sends subscribed payment and transaction events to your webhook URL as JSON.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncomingWebhookNotification'
+            examples:
+              paymentCreated:
+                summary: payment.created
+                value:
+                  event: payment.created
+                  data:
+                    id: 4aebf342-8e69-4712-8cbc-77326bf19660
+                    idempotency_key: f80fa916-f435-4003-a772-81b03d5c4162
+                    cgp_ref_number: null
+                    channel_reference: '2026041200001915461001586'
+                    sinpe_reference: null
+                    channel: pin
+                    transfer_type: debit
+                    payer:
+                      iban: CR41037010700577264928
+                      document_number: '3918734189'
+                      document_type: 3
+                      phone_number: null
+                      name: Alice Johnson
+                    payee:
+                      iban: CR27010400128230020117
+                      document_number: '0304930258'
+                      document_type: 0
+                      phone_number: null
+                      name: Bob Smith
+                    amount:
+                      value: 10000
+                      currency: CRC
+                      formatted: 100.00 CRC
+                    fee: null
+                    description: null
+                    reference: null
+                    status: pending
+                    created_at: '2026-04-01 00:00:00'
+                    completed_at: null
+                  timestamp: '2026-04-01T00:00:00-06:00'
+              paymentProcessing:
+                summary: payment.processing
+                value:
+                  event: payment.processing
+                  data:
+                    id: 4aebf342-8e69-4712-8cbc-77326bf19660
+                    idempotency_key: f80fa916-f435-4003-a772-81b03d5c4162
+                    cgp_ref_number: null
+                    channel_reference: '2026041200001915461001586'
+                    sinpe_reference: null
+                    channel: pin
+                    transfer_type: debit
+                    payer:
+                      iban: CR41037010700577264928
+                      document_number: '3918734189'
+                      document_type: 3
+                      phone_number: null
+                      name: Alice Johnson
+                    payee:
+                      iban: CR27010400128230020117
+                      document_number: '0304930258'
+                      document_type: 0
+                      phone_number: null
+                      name: Bob Smith
+                    amount:
+                      value: 10000
+                      currency: CRC
+                      formatted: 100.00 CRC
+                    fee: null
+                    description: null
+                    reference: null
+                    status: processing
+                    created_at: '2026-04-01 00:00:00'
+                    completed_at: null
+                  timestamp: '2026-04-01T00:01:00-06:00'
+              paymentCompleted:
+                summary: payment.completed
+                value:
+                  event: payment.completed
+                  data:
+                    id: 4aebf342-8e69-4712-8cbc-77326bf19660
+                    idempotency_key: f80fa916-f435-4003-a772-81b03d5c4162
+                    cgp_ref_number: 10739
+                    channel_reference: '2026041200001915461001586'
+                    sinpe_reference: '2026041237022010000107394'
+                    channel: pin
+                    transfer_type: debit
+                    payer:
+                      iban: CR41037010700577264928
+                      document_number: '3918734189'
+                      document_type: 3
+                      phone_number: null
+                      name: Alice Johnson
+                    payee:
+                      iban: CR27010400128230020117
+                      document_number: '0304930258'
+                      document_type: 0
+                      phone_number: null
+                      name: Bob Smith
+                    amount:
+                      value: 10000
+                      currency: CRC
+                      formatted: 100.00 CRC
+                    fee:
+                      value: 100
+                      currency: CRC
+                      formatted: 1.00 CRC
+                    description: null
+                    reference: null
+                    status: completed
+                    created_at: '2026-04-01 00:00:00'
+                    completed_at: '2026-04-01 00:02:00'
+                  timestamp: '2026-04-01T00:02:00-06:00'
+              paymentFailed:
+                summary: payment.failed
+                value:
+                  event: payment.failed
+                  data:
+                    id: 80c530a1-4f79-485d-bc0d-5c560d8ff300
+                    idempotency_key: 6f19de2e-f9f0-4d4b-86cd-819bcfc024f2
+                    cgp_ref_number: null
+                    channel_reference: '2026040700001211177562391'
+                    sinpe_reference: null
+                    channel: pin
+                    transfer_type: debit
+                    payer:
+                      iban: CR19037010600733756399
+                      document_number: '3918734189'
+                      document_type: 3
+                      phone_number: null
+                      name: Alice Johnson
+                    payee:
+                      iban: CR09010200009097516385
+                      document_number: '0303870686'
+                      document_type: 0
+                      phone_number: null
+                      name: Bob Smith
+                    amount:
+                      value: 9900
+                      currency: CRC
+                      formatted: 99.00 CRC
+                    fee: null
+                    description: null
+                    reference: null
+                    status: failed
+                    created_at: '2026-04-01 00:03:00'
+                    completed_at: null
+                    error: 'Service unavailable: payment result missing from response'
+                    state_code: rejected
+                  timestamp: '2026-04-01T00:04:00-06:00'
+              transactionReceived:
+                summary: transaction.received for PIN
+                description: PIN incoming transaction. The origin phone number can be null when it is not provided by the payment rail.
+                value:
+                  event: transaction.received
+                  data:
+                    id: 80c530a1-4f79-485d-bc0d-5c560d8ff300
+                    idempotency_key: CREDIT_6f19de2e_f9f0_4d4b_86cd_819bcfc024f2
+                    cgp_ref_number: 10680
+                    channel_reference: null
+                    sinpe_reference: '2026040737022010000106803'
+                    channel: pin
+                    transfer_type: credit
+                    payer:
+                      iban: CR27010400128230020117
+                      document_number: '0304930258'
+                      document_type: 0
+                      phone_number: null
+                      name: Bob Smith
+                    payee:
+                      iban: CR41037010700577264928
+                      document_number: '3918734189'
+                      document_type: 3
+                      phone_number: null
+                      name: Alice Johnson
+                    amount:
+                      value: 10000
+                      currency: CRC
+                      formatted: 100.00 CRC
+                    fee: null
+                    description: Incoming PIN payment
+                    reference: null
+                    status: completed
+                    created_at: '2026-04-01 00:05:00'
+                    completed_at: '2026-04-01 00:05:00'
+                  timestamp: '2026-04-01T00:05:00-06:00'
+              transactionReceivedSinpeMovil:
+                summary: transaction.received for SINPE Movil
+                description: SINPE Movil incoming transaction. The origin IBAN can be null, and the origin phone number can also be null when the upstream response does not provide it.
+                value:
+                  event: transaction.received
+                  data:
+                    id: 7b200345-c922-476e-bbc4-e2a143165ca6
+                    idempotency_key: CREDIT_f80fa916_f435_4003_a772_81b03d5c4162
+                    cgp_ref_number: 2002
+                    channel_reference: null
+                    sinpe_reference: '2026042800000000000000002'
+                    channel: sinpe_movil
+                    transfer_type: credit
+                    payer:
+                      iban: null
+                      document_number: '0308880719'
+                      document_type: null
+                      phone_number: '88881234'
+                      name: Bob Smith
+                    payee:
+                      iban: CR41037010700577264928
+                      document_number: '3918734189'
+                      document_type: 3
+                      phone_number: '88880001'
+                      name: Alice Johnson
+                    amount:
+                      value: 3000000
+                      currency: CRC
+                      formatted: 30,000.00 CRC
+                    fee: null
+                    description: Incoming SINPE Movil payment
+                    reference: null
+                    status: completed
+                    created_at: '2026-04-01 00:06:00'
+                    completed_at: '2026-04-01 00:06:00'
+                  timestamp: '2026-04-01T00:06:00-06:00'
+      responses:
+        '200':
+          description: Return any 2xx response to acknowledge successful delivery.
 components:
   schemas:
     CostaRicaIBAN:
@@ -2613,6 +2845,157 @@ components:
         - source_account_id
         - amount
       title: SendPaymentRequest
+    WebhookEvent:
+      type: string
+      enum:
+        - payment.created
+        - payment.processing
+        - payment.completed
+        - payment.failed
+        - transaction.received
+      title: WebhookEvent
+    IncomingWebhookNotification:
+      type: object
+      description: Incoming notification payload sent to subscribed webhook URLs.
+      properties:
+        event:
+          $ref: '#/components/schemas/WebhookEvent'
+        data:
+          $ref: '#/components/schemas/IncomingWebhookData'
+        timestamp:
+          type: string
+          format: date-time
+      required:
+        - event
+        - data
+        - timestamp
+      title: IncomingWebhookNotification
+    IncomingWebhookData:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        idempotency_key:
+          type: string
+        cgp_ref_number:
+          type:
+            - integer
+            - 'null'
+        channel_reference:
+          type:
+            - string
+            - 'null'
+        sinpe_reference:
+          type:
+            - string
+            - 'null'
+        channel:
+          type: string
+          enum:
+            - pin
+            - sinpe_movil
+        transfer_type:
+          $ref: '#/components/schemas/TransferType'
+        payer:
+          $ref: '#/components/schemas/IncomingWebhookParty'
+          description: Origin party. For SINPE Movil incoming transactions, iban can be null. The origin phone_number can also be null when it is not provided by the upstream response.
+        payee:
+          $ref: '#/components/schemas/IncomingWebhookParty'
+          description: Destination party receiving the transfer.
+        amount:
+          $ref: '#/components/schemas/IncomingWebhookMoney'
+        fee:
+          anyOf:
+            - $ref: '#/components/schemas/IncomingWebhookMoney'
+            - type: 'null'
+          description: Fee amount for the payment. This is null for payment.created and payment.processing, and is defined for payment.completed once the final processing cost is known.
+        description:
+          type:
+            - string
+            - 'null'
+        reference:
+          type:
+            - string
+            - 'null'
+        status:
+          $ref: '#/components/schemas/PaymentStatus'
+        created_at:
+          type: string
+        completed_at:
+          type:
+            - string
+            - 'null'
+        error:
+          type: string
+          description: Present when the event is payment.failed.
+        state_code:
+          type: string
+          description: Present when the event is payment.failed.
+      required:
+        - id
+        - idempotency_key
+        - cgp_ref_number
+        - channel_reference
+        - sinpe_reference
+        - channel
+        - transfer_type
+        - payer
+        - payee
+        - amount
+        - fee
+        - description
+        - reference
+        - status
+        - created_at
+        - completed_at
+      title: IncomingWebhookData
+    IncomingWebhookParty:
+      type: object
+      properties:
+        iban:
+          type:
+            - string
+            - 'null'
+          description: Party IBAN. This can be null for the payer in SINPE Movil incoming transactions.
+        document_number:
+          type: string
+        document_type:
+          type:
+            - integer
+            - 'null'
+        phone_number:
+          type:
+            - string
+            - 'null'
+          description: Party phone number. For the origin payer, this can be null when the payment rail or upstream response does not provide it.
+        name:
+          type: string
+      required:
+        - iban
+        - document_number
+        - document_type
+        - phone_number
+        - name
+      title: IncomingWebhookParty
+    IncomingWebhookMoney:
+      type: object
+      properties:
+        value:
+          type: integer
+          description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
+          example: 10000
+        currency:
+          type: string
+          example: CRC
+        formatted:
+          type: string
+          example: 100.00 CRC
+      required:
+        - value
+        - currency
+        - formatted
+      title: IncomingWebhookMoney
     StoreWebhookSubscriptionRequest:
       type: object
       properties:
