@@ -97,11 +97,48 @@ paths:
                           - system_error
                       channel_reference:
                         type: string
+                      idempotency_key:
+                        type: string
+                      source_account_id:
+                        type: string
+                        format: uuid
+                      recipient_iban:
+                        type:
+                          - string
+                          - 'null'
+                      recipient_phone:
+                        type:
+                          - string
+                          - 'null'
+                      amount:
+                        type: object
+                        properties:
+                          value:
+                            type: integer
+                            description: Amount in minor units of the currency. For example, 1000 is equivalent to 10.00.
+                            example: 10000
+                          currency:
+                            type: string
+                          formatted:
+                            type: string
+                        required:
+                          - value
+                          - currency
+                          - formatted
+                      description:
+                        type: string
+                        description: Payment description. If omitted, SELVA applies a channel-specific default.
                     required:
                       - id
                       - channel
                       - status
                       - channel_reference
+                      - idempotency_key
+                      - source_account_id
+                      - recipient_iban
+                      - recipient_phone
+                      - amount
+                      - description
                 required:
                   - success
                   - message
@@ -114,6 +151,15 @@ paths:
                   channel: pin
                   status: pending
                   channel_reference: '2026041300001400641289793'
+                  idempotency_key: f80fa916-f435-4003-a772-81b03d5c4162
+                  source_account_id: 45a03920-6826-48cc-8141-46995bdbd201
+                  recipient_iban: CR27010400128230020117
+                  recipient_phone: null
+                  amount:
+                    value: 10000
+                    currency: CRC
+                    formatted: 100.00 CRC
+                  description: PIN transfer payment
         '401':
           $ref: '#/components/responses/AuthenticationException'
         '403':
@@ -300,7 +346,6 @@ paths:
                 data:
                   id: 4aebf342-8e69-4712-8cbc-77326bf19660
                   idempotency_key: f80fa916-f435-4003-a772-81b03d5c4162
-                  cgp_ref_number: 10739
                   channel_reference: '2026041200001915461001586'
                   sinpe_reference: '2026041237022010000107394'
                   transfer_type: debit
@@ -324,7 +369,6 @@ paths:
                     name: Bob Smith
                     iban: CR27010400128230020117
                   description: null
-                  reference: null
                   error_message: null
                   created_at: '2026-04-01T00:00:00.000000Z'
                   submitted_at: '2026-04-01T00:01:00.000000Z'
@@ -541,7 +585,6 @@ paths:
                   data:
                     - id: 4aebf342-8e69-4712-8cbc-77326bf19660
                       idempotency_key: f80fa916-f435-4003-a772-81b03d5c4162
-                      cgp_ref_number: 10739
                       channel_reference: '2026041200001915461001586'
                       sinpe_reference: '2026041237022010000107394'
                       transfer_type: debit
@@ -565,7 +608,6 @@ paths:
                         name: Bob Smith
                         iban: CR27010400128230020117
                       description: null
-                      reference: null
                       error_message: null
                       created_at: '2026-04-01T00:00:00.000000Z'
                       submitted_at: '2026-04-01T00:01:00.000000Z'
@@ -573,7 +615,6 @@ paths:
                       channel: pin
                     - id: 80c530a1-4f79-485d-bc0d-5c560d8ff300
                       idempotency_key: 6f19de2e-f9f0-4d4b-86cd-819bcfc024f2
-                      cgp_ref_number: 10680
                       channel_reference: '2026040700001211177562391'
                       sinpe_reference: '2026040737022010000106803'
                       transfer_type: debit
@@ -594,7 +635,6 @@ paths:
                         name: Bob Smith
                         iban: CR09010200009097516385
                       description: null
-                      reference: null
                       error_message: null
                       created_at: '2026-04-01T00:03:00.000000Z'
                       submitted_at: '2026-04-01T00:04:00.000000Z'
@@ -745,6 +785,132 @@ paths:
                   - data
                   - errors
       security: []
+  /api/fx/rates:
+    get:
+      operationId: fx.getRates
+      summary: Get Exchange Rates
+      description: Returns the latest USD/CRC exchange rates with SELVA spread applied.
+      tags:
+        - Foreign Exchange
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Exchange rates retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/ExchangeRateResource'
+                required:
+                  - success
+                  - message
+                  - data
+              example:
+                success: true
+                message: Exchange rates retrieved successfully
+                data:
+                  bid: 498.0
+                  ask: 512.04
+                  last_updated_utc: '2026-04-01T00:00:00+00:00'
+                  source: https://www.ariari.com/
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
+        '503':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    const: false
+                  message:
+                    type: string
+                    const: Exchange rates are currently unavailable
+                  data:
+                    type: 'null'
+                  errors:
+                    type: object
+                    additionalProperties: true
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+      security:
+        - BearerAuth: []
+  /api/fx/ari-rates:
+    get:
+      operationId: fx.getAriRates
+      summary: Get Ari Exchange Rates
+      description: Returns the latest original Ari USD/CRC exchange rates without SELVA spread.
+      tags:
+        - Foreign Exchange
+      responses:
+        '200':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                  message:
+                    type: string
+                    const: Ari exchange rates retrieved successfully
+                  data:
+                    $ref: '#/components/schemas/ExchangeRateResource'
+                required:
+                  - success
+                  - message
+                  - data
+              example:
+                success: true
+                message: Ari exchange rates retrieved successfully
+                data:
+                  bid: 500.0
+                  ask: 510.0
+                  last_updated_utc: '2026-04-01T00:00:00+00:00'
+                  source: https://www.ariari.com/
+        '401':
+          $ref: '#/components/responses/AuthenticationException'
+        '403':
+          $ref: '#/components/responses/AuthorizationException'
+        '503':
+          description: ''
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    const: false
+                  message:
+                    type: string
+                    const: Ari exchange rates are currently unavailable
+                  data:
+                    type: 'null'
+                  errors:
+                    type: object
+                    additionalProperties: true
+                required:
+                  - success
+                  - message
+                  - data
+                  - errors
+      security:
+        - BearerAuth: []
   /api/accounts/{id}:
     parameters:
       - name: id
@@ -2288,7 +2454,6 @@ webhooks:
                   data:
                     id: 4aebf342-8e69-4712-8cbc-77326bf19660
                     idempotency_key: f80fa916-f435-4003-a772-81b03d5c4162
-                    cgp_ref_number: null
                     channel_reference: '2026041200001915461001586'
                     sinpe_reference: null
                     channel: pin
@@ -2311,7 +2476,6 @@ webhooks:
                       formatted: 100.00 CRC
                     fee: null
                     description: null
-                    reference: null
                     status: pending
                     created_at: '2026-04-01 00:00:00'
                     completed_at: null
@@ -2323,7 +2487,6 @@ webhooks:
                   data:
                     id: 4aebf342-8e69-4712-8cbc-77326bf19660
                     idempotency_key: f80fa916-f435-4003-a772-81b03d5c4162
-                    cgp_ref_number: null
                     channel_reference: '2026041200001915461001586'
                     sinpe_reference: null
                     channel: pin
@@ -2346,7 +2509,6 @@ webhooks:
                       formatted: 100.00 CRC
                     fee: null
                     description: null
-                    reference: null
                     status: processing
                     created_at: '2026-04-01 00:00:00'
                     completed_at: null
@@ -2358,7 +2520,6 @@ webhooks:
                   data:
                     id: 4aebf342-8e69-4712-8cbc-77326bf19660
                     idempotency_key: f80fa916-f435-4003-a772-81b03d5c4162
-                    cgp_ref_number: 10739
                     channel_reference: '2026041200001915461001586'
                     sinpe_reference: '2026041237022010000107394'
                     channel: pin
@@ -2384,7 +2545,6 @@ webhooks:
                       currency: CRC
                       formatted: 1.00 CRC
                     description: null
-                    reference: null
                     status: completed
                     created_at: '2026-04-01 00:00:00'
                     completed_at: '2026-04-01 00:02:00'
@@ -2396,7 +2556,6 @@ webhooks:
                   data:
                     id: 80c530a1-4f79-485d-bc0d-5c560d8ff300
                     idempotency_key: 6f19de2e-f9f0-4d4b-86cd-819bcfc024f2
-                    cgp_ref_number: null
                     channel_reference: '2026040700001211177562391'
                     sinpe_reference: null
                     channel: pin
@@ -2419,7 +2578,6 @@ webhooks:
                       formatted: 99.00 CRC
                     fee: null
                     description: null
-                    reference: null
                     status: failed
                     created_at: '2026-04-01 00:03:00'
                     completed_at: null
@@ -2434,7 +2592,6 @@ webhooks:
                   data:
                     id: 80c530a1-4f79-485d-bc0d-5c560d8ff300
                     idempotency_key: CREDIT_6f19de2e_f9f0_4d4b_86cd_819bcfc024f2
-                    cgp_ref_number: 10680
                     channel_reference: null
                     sinpe_reference: '2026040737022010000106803'
                     channel: pin
@@ -2457,7 +2614,6 @@ webhooks:
                       formatted: 100.00 CRC
                     fee: null
                     description: Incoming PIN payment
-                    reference: null
                     status: completed
                     created_at: '2026-04-01 00:05:00'
                     completed_at: '2026-04-01 00:05:00'
@@ -2470,7 +2626,6 @@ webhooks:
                   data:
                     id: 7b200345-c922-476e-bbc4-e2a143165ca6
                     idempotency_key: CREDIT_f80fa916_f435_4003_a772_81b03d5c4162
-                    cgp_ref_number: 2002
                     channel_reference: null
                     sinpe_reference: '2026042800000000000000002'
                     channel: sinpe_movil
@@ -2493,7 +2648,6 @@ webhooks:
                       formatted: 30,000.00 CRC
                     fee: null
                     description: Incoming SINPE Movil payment
-                    reference: null
                     status: completed
                     created_at: '2026-04-01 00:06:00'
                     completed_at: '2026-04-01 00:06:00'
@@ -2667,6 +2821,29 @@ components:
         - CRC
         - USD
       title: Currency
+    ExchangeRateResource:
+      type: object
+      properties:
+        bid:
+          type: number
+          format: float
+          description: USD buy rate in CRC.
+        ask:
+          type: number
+          format: float
+          description: USD sell rate in CRC.
+        last_updated_utc:
+          type: string
+          format: date-time
+        source:
+          type: string
+          format: uri
+      required:
+        - bid
+        - ask
+        - last_updated_utc
+        - source
+      title: ExchangeRateResource
     PaymentResource:
       type: object
       properties:
@@ -2675,8 +2852,6 @@ components:
           description: Identifiers
         idempotency_key:
           type: string
-        cgp_ref_number:
-          type: integer
         channel_reference:
           type: string
         sinpe_reference:
@@ -2762,10 +2937,6 @@ components:
             - string
             - 'null'
           description: Messages
-        reference:
-          type:
-            - string
-            - 'null'
         error_message:
           type:
             - string
@@ -2786,7 +2957,6 @@ components:
       required:
         - id
         - idempotency_key
-        - cgp_ref_number
         - channel_reference
         - sinpe_reference
         - transfer_type
@@ -2796,7 +2966,6 @@ components:
         - payer
         - payee
         - description
-        - reference
         - error_message
         - created_at
         - submitted_at
@@ -2831,16 +3000,12 @@ components:
           minimum: 1
           maximum: 500000000
           example: 1000
-        reference:
-          type:
-            - string
-            - 'null'
-          maxLength: 100
         description:
           type:
             - string
             - 'null'
-          maxLength: 500
+          minLength: 15
+          maxLength: 255
       required:
         - source_account_id
         - amount
@@ -2878,10 +3043,6 @@ components:
           format: uuid
         idempotency_key:
           type: string
-        cgp_ref_number:
-          type:
-            - integer
-            - 'null'
         channel_reference:
           type:
             - string
@@ -2914,10 +3075,6 @@ components:
           type:
             - string
             - 'null'
-        reference:
-          type:
-            - string
-            - 'null'
         status:
           $ref: '#/components/schemas/PaymentStatus'
         created_at:
@@ -2935,7 +3092,6 @@ components:
       required:
         - id
         - idempotency_key
-        - cgp_ref_number
         - channel_reference
         - sinpe_reference
         - channel
@@ -2945,7 +3101,6 @@ components:
         - amount
         - fee
         - description
-        - reference
         - status
         - created_at
         - completed_at

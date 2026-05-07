@@ -29,14 +29,19 @@ The API reference is automatically generated from our OpenAPI specification and 
 
 - `POST /api/payments` - Create a payment
 - `POST /api/payments/validate` - Validate payment details
-- [`GET /api/payments/history`](/api-reference#tag/payments/get/api/payments/history) - Get payment history
-- [`GET /api/payments/{id}`](/api-reference#tag/payments/get/api/payments/%7Bid%7D) - Get payment by ID
+- `GET /api/payments/history` - Get payment history
+- `GET /api/payments/{id}` - Get payment by ID
 - `GET /api/payments/service-status` - Check payment rail availability
 
 ### Verification
 
 - `GET /api/phone/information/{phone}` - Get phone number information
 - `GET /api/iban/information/{iban}` - Get IBAN information
+
+### Foreign Exchange
+
+- `GET /api/fx/rates` - Get USD/CRC exchange rates with SELVA spread applied
+- `GET /api/fx/ari-rates` - Get original Ari USD/CRC exchange rates without SELVA spread
 
 ### Webhooks
 

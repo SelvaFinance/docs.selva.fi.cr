@@ -7,6 +7,24 @@ title: Release Notes
 
 Updates to the Selva API platform, including payments, account management, and more.
 
+### May 7, 2026
+
+#### Breaking Changes
+
+- Removed `reference` from payment request payloads, payment responses, and webhook notification payloads. Use `description` for payment notes.
+- Removed `cgp_ref_number` from payment detail, payment history, and webhook notification payloads.
+- `GET /api/fx/rates` and `GET /api/fx/ari-rates` now require bearer authentication with payment-sending access.
+
+#### Response Changes
+
+- `POST /api/payments` now returns the initiated payment payload, including `idempotency_key`, `source_account_id`, `recipient_iban`, `recipient_phone`, `amount`, and `description`.
+- Payment creation responses now use `channel` consistently for `pin` and `sinpe_movil` payments.
+
+#### Validation Changes
+
+- `description` is optional, but when provided it must be between 15 and 255 characters.
+- If `description` is omitted, SELVA applies a channel-specific default: `PIN transfer payment` or `SINPE Móvil transfer payment`.
+
 ### May 6, 2026
 
 #### Documentation Updates
