@@ -69,7 +69,6 @@ defined once the final processing cost is known.
   "data": {
     "id": "4aebf342-8e69-4712-8cbc-77326bf19660",
     "idempotency_key": "f80fa916-f435-4003-a772-81b03d5c4162",
-    "cgp_ref_number": null,
     "channel_reference": "2026041200001915461001586",
     "sinpe_reference": null,
     "channel": "pin",
@@ -95,7 +94,6 @@ defined once the final processing cost is known.
     },
     "fee": null,
     "description": null,
-    "reference": null,
     "status": "pending",
     "created_at": "2026-04-01 00:00:00",
     "completed_at": null
@@ -112,7 +110,6 @@ defined once the final processing cost is known.
   "data": {
     "id": "4aebf342-8e69-4712-8cbc-77326bf19660",
     "idempotency_key": "f80fa916-f435-4003-a772-81b03d5c4162",
-    "cgp_ref_number": null,
     "channel_reference": "2026041200001915461001586",
     "sinpe_reference": null,
     "channel": "pin",
@@ -138,7 +135,6 @@ defined once the final processing cost is known.
     },
     "fee": null,
     "description": null,
-    "reference": null,
     "status": "processing",
     "created_at": "2026-04-01 00:00:00",
     "completed_at": null
@@ -155,7 +151,6 @@ defined once the final processing cost is known.
   "data": {
     "id": "4aebf342-8e69-4712-8cbc-77326bf19660",
     "idempotency_key": "f80fa916-f435-4003-a772-81b03d5c4162",
-    "cgp_ref_number": 10739,
     "channel_reference": "2026041200001915461001586",
     "sinpe_reference": "2026041237022010000107394",
     "channel": "pin",
@@ -185,7 +180,6 @@ defined once the final processing cost is known.
       "formatted": "1.00 CRC"
     },
     "description": null,
-    "reference": null,
     "status": "completed",
     "created_at": "2026-04-01 00:00:00",
     "completed_at": "2026-04-01 00:02:00"
@@ -202,7 +196,6 @@ defined once the final processing cost is known.
   "data": {
     "id": "80c530a1-4f79-485d-bc0d-5c560d8ff300",
     "idempotency_key": "6f19de2e-f9f0-4d4b-86cd-819bcfc024f2",
-    "cgp_ref_number": null,
     "channel_reference": "2026040700001211177562391",
     "sinpe_reference": null,
     "channel": "pin",
@@ -228,7 +221,6 @@ defined once the final processing cost is known.
     },
     "fee": null,
     "description": null,
-    "reference": null,
     "status": "failed",
     "created_at": "2026-04-01 00:03:00",
     "completed_at": null,
@@ -251,7 +243,6 @@ is not provided by the payment rail.
   "data": {
     "id": "80c530a1-4f79-485d-bc0d-5c560d8ff300",
     "idempotency_key": "CREDIT_6f19de2e_f9f0_4d4b_86cd_819bcfc024f2",
-    "cgp_ref_number": 10680,
     "channel_reference": null,
     "sinpe_reference": "2026040737022010000106803",
     "channel": "pin",
@@ -277,7 +268,6 @@ is not provided by the payment rail.
     },
     "fee": null,
     "description": "Incoming PIN payment",
-    "reference": null,
     "status": "completed",
     "created_at": "2026-04-01 00:05:00",
     "completed_at": "2026-04-01 00:05:00"
@@ -299,7 +289,6 @@ not provide it.
   "data": {
     "id": "7b200345-c922-476e-bbc4-e2a143165ca6",
     "idempotency_key": "CREDIT_f80fa916_f435_4003_a772_81b03d5c4162",
-    "cgp_ref_number": 2002,
     "channel_reference": null,
     "sinpe_reference": "2026042800000000000000002",
     "channel": "sinpe_movil",
@@ -325,7 +314,6 @@ not provide it.
     },
     "fee": null,
     "description": "Incoming SINPE Movil payment",
-    "reference": null,
     "status": "completed",
     "created_at": "2026-04-01 00:06:00",
     "completed_at": "2026-04-01 00:06:00"

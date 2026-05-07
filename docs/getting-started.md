@@ -75,8 +75,7 @@ const response = await fetch('https://{base-url}/api/payments', {
     source_account_id: 'YOUR_SOURCE_ACCOUNT_ID',
     amount: 10000,
     recipient_phone: 'YOUR_RECIPIENT_PHONE',
-    description: 'YOUR_DESCRIPTION',
-    reference: 'YOUR_REFERENCE',
+    description: 'Payment for invoice 123',
   }),
 });
 
