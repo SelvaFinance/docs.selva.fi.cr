@@ -18,7 +18,6 @@ Updates to the Selva API platform, including payments, account management, and m
 #### Response Changes
 
 - `POST /api/payments` now returns the initiated payment payload, including `idempotency_key`, `source_account_id`, `recipient_iban`, `recipient_phone`, `amount`, and `description`.
-- Payment creation responses now use `channel` consistently for `pin` and `sinpe_movil` payments.
 
 #### Validation Changes
 
@@ -43,6 +42,7 @@ Updates to the Selva API platform, including payments, account management, and m
 - Detailed account data is now returned from `GET /api/accounts/{id}`.
 - Payment request payloads now use `source_account_id` instead of `from_account_id`.
 - Payment history query parameters changed from `payment_method` to `channel`, `recipient_identifier` to `recipient_document_number`, and `limit`/`offset` to `per_page`/`page`.
+- Payment creation responses now use `channel` consistently for `pin` and `sinpe_movil` payments.
 
 #### Response Changes
 
