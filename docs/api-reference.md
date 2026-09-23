@@ -38,11 +38,6 @@ The API reference is automatically generated from our OpenAPI specification and 
 - `GET /api/phone/information/{phone}` - Get phone number information
 - `GET /api/iban/information/{iban}` - Get IBAN information
 
-### Foreign Exchange
-
-- `GET /api/fx/rates` - Get USD/CRC exchange rates with SELVA spread applied
-- `GET /api/fx/ari-rates` - Get original Ari USD/CRC exchange rates without SELVA spread
-
 ### Webhooks
 
 - `GET /api/webhooks/subscriptions` - List webhook subscriptions

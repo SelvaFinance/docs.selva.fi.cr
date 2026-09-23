@@ -13,7 +13,6 @@ Updates to the Selva API platform, including payments, account management, and m
 
 - Removed `reference` from payment request payloads, payment responses, and webhook notification payloads. Use `description` for payment notes.
 - Removed `cgp_ref_number` from payment detail, payment history, and webhook notification payloads.
-- `GET /api/fx/rates` and `GET /api/fx/ari-rates` now require bearer authentication with payment-sending access.
 
 #### Response Changes
 
