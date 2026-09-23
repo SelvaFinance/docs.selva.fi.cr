@@ -1284,7 +1284,7 @@ paths:
           required: true
           schema:
             type: string
-            pattern: ^(506)?[2678]\d{7}$
+            pattern: ^(506)?[678]\d{7}$
       responses:
         '200':
           description: ''
@@ -2838,7 +2838,7 @@ components:
           type:
             - string
             - 'null'
-          pattern: ^(506)?[2678]\d{7}$
+          pattern: ^(506)?[678]\d{7}$
         recipient_email:
           type:
             - string
